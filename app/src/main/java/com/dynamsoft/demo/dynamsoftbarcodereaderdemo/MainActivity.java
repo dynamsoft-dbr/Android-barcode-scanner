@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -22,7 +24,8 @@ import android.widget.TextView;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
-
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Frame;
@@ -31,21 +34,26 @@ import com.otaliastudios.cameraview.FrameProcessor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+	private static final int PRC_PHOTO_PICKER = 1;
+	private static final int RC_CHOOSE_PHOTO = 1;
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
 	@BindView(R.id.qr_view)
 	QRCodeView qrView;
 	@BindView(R.id.tv_flash)
 	TextView mFlash;
-
-
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -53,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
+	private boolean isCameraStarted = false;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -140,7 +149,9 @@ public class MainActivity extends AppCompatActivity {
 
 						}
 					});
-					builder.show();
+					if (!MainActivity.this.isFinishing()) {
+						builder.show();
+					}
 					break;
 				default:
 					break;
@@ -191,12 +202,19 @@ public class MainActivity extends AppCompatActivity {
 		mCache.put("pdf417", "1");
 		mCache.put("matrix", "1");
 
+		cameraView.addCameraListener(new CameraListener() {
+			@Override
+			public void onCameraOpened(CameraOptions options) {
+				super.onCameraOpened(options);
+				isCameraStarted = true;
+			}
+		});
 		cameraView.addFrameProcessor(new FrameProcessor() {
 			@SuppressLint("NewApi")
 			@Override
 			public void process(@NonNull Frame frame) {
 				try {
-					if (isDetected) {
+					if (isDetected && isCameraStarted) {
 						isDetected = false;
 						YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
 								frame.getSize().getWidth(), frame.getSize().getHeight(), null);
@@ -239,9 +257,10 @@ public class MainActivity extends AppCompatActivity {
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
-			Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+	/*		Intent intent = new Intent(MainActivity.this, SettingActivity.class);
 			intent.putExtra("type", barcodeType);
-			startActivityForResult(intent, 0);
+			startActivityForResult(intent, 0);*/
+			choicePhotoWrapper();
 			return true;
 		}
 
@@ -312,6 +331,39 @@ public class MainActivity extends AppCompatActivity {
 			isFlashOn = true;
 			cameraView.setFlash(Flash.TORCH);
 		}
+	}
+
+	@AfterPermissionGranted(PRC_PHOTO_PICKER)
+	private void choicePhotoWrapper() {
+		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+		if (EasyPermissions.hasPermissions(this, perms)) {
+
+			File takePhotoDir = new File(Environment.getExternalStorageDirectory(), "BGAPhotoPickerTakePhoto");
+
+			Intent photoPickerIntent = new BGAPhotoPickerActivity.IntentBuilder(this)
+					.selectedPhotos(null)
+					.pauseOnScroll(false)
+					.build();
+			startActivityForResult(photoPickerIntent, RC_CHOOSE_PHOTO);
+		} else {
+			EasyPermissions.requestPermissions(this, "Need permissions!", PRC_PHOTO_PICKER, perms);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
+
+	@Override
+	public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+	}
+
+	@Override
+	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
 	}
 }
 
