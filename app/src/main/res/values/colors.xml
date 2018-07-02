@@ -28,4 +28,6 @@
 	<color name="result">#9E9E9E</color>
 	<color name="type">#000000</color>
 	<color name="white">#FFFFFF</color>
+
+	<color name="bga_pp_colorPrimary">@android:color/black</color>
 </resources>

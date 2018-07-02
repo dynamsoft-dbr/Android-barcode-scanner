@@ -17,8 +17,8 @@ android {
         }
     }
 }
-repositories{
-    flatDir{
+repositories {
+    flatDir {
         dirs 'libs'
     }
 }
@@ -32,7 +32,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'cn.bingoogolapple:bga-baseadapter:1.2.7@aar'
-    implementation 'com.github.bumptech.glide:glide:4.3.1'
+    implementation 'com.github.bumptech.glide:glide:4.5.0'
     implementation 'cn.bingoogolapple:bga-photopicker:1.2.8@aar'
-    implementation (name:'DynamsoftBarcodeReaderAndroid-debug',ext:'aar')
+    implementation(name: 'DynamsoftBarcodeReaderAndroid-debug', ext: 'aar')
+    implementation 'pub.devrel:easypermissions:1.2.0'
 }
