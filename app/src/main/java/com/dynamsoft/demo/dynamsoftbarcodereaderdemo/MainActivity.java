@@ -24,7 +24,8 @@ import android.widget.TextView;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
-
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Frame;
@@ -45,16 +46,14 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+	private static final int PRC_PHOTO_PICKER = 1;
+	private static final int RC_CHOOSE_PHOTO = 1;
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
 	@BindView(R.id.qr_view)
 	QRCodeView qrView;
 	@BindView(R.id.tv_flash)
 	TextView mFlash;
-
-	private static final int PRC_PHOTO_PICKER = 1;
-	private static final int RC_CHOOSE_PHOTO = 1;
-
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
+	private boolean isCameraStarted = false;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -149,7 +149,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 						}
 					});
-					builder.show();
+					if (!MainActivity.this.isFinishing()) {
+						builder.show();
+					}
 					break;
 				default:
 					break;
@@ -200,12 +202,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		mCache.put("pdf417", "1");
 		mCache.put("matrix", "1");
 
+		cameraView.addCameraListener(new CameraListener() {
+			@Override
+			public void onCameraOpened(CameraOptions options) {
+				super.onCameraOpened(options);
+				isCameraStarted = true;
+			}
+		});
 		cameraView.addFrameProcessor(new FrameProcessor() {
 			@SuppressLint("NewApi")
 			@Override
 			public void process(@NonNull Frame frame) {
 				try {
-					if (isDetected) {
+					if (isDetected && isCameraStarted) {
 						isDetected = false;
 						YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
 								frame.getSize().getWidth(), frame.getSize().getHeight(), null);
