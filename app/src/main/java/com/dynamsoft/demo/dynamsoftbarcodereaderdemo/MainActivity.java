@@ -35,8 +35,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	QRCodeView qrView;
 	@BindView(R.id.tv_flash)
 	TextView mFlash;
+	@BindView(R.id.scanCountText)
+	TextView mScanCount;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -62,32 +66,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private String name = "";
 	private boolean isFlashOn = false;
 	private boolean isCameraStarted = false;
-
+	private ArrayList<String> allResultText = new ArrayList<String>();
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+
 			super.handleMessage(msg);
 			switch (msg.what) {
 				case 0:
 					isDetected = false;
-					TextResult result = (TextResult) msg.obj;
+					TextResult[] result = (TextResult[]) msg.obj;
 					final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-					if (result.localizationResult != null && result.localizationResult.resultPoints != null && result.localizationResult.resultPoints.length > 0) {
-						int x0 = result.localizationResult.resultPoints[0].x;
-						int y0 = result.localizationResult.resultPoints[0].y;
-						int x1 = result.localizationResult.resultPoints[1].x;
-						int y1 = result.localizationResult.resultPoints[1].y;
-						int x2 = result.localizationResult.resultPoints[2].x;
-						int y2 = result.localizationResult.resultPoints[2].y;
-						int x3 = result.localizationResult.resultPoints[3].x;
-						int y3 = result.localizationResult.resultPoints[3].y;
+					if (result[0].localizationResult != null && result[0].localizationResult.resultPoints != null && result[0].localizationResult.resultPoints.length > 0) {
+						int x0 = result[0].localizationResult.resultPoints[0].x;
+						int y0 = result[0].localizationResult.resultPoints[0].y;
+						int x1 = result[0].localizationResult.resultPoints[1].x;
+						int y1 = result[0].localizationResult.resultPoints[1].y;
+						int x2 = result[0].localizationResult.resultPoints[2].x;
+						int y2 = result[0].localizationResult.resultPoints[2].y;
+						int x3 = result[0].localizationResult.resultPoints[3].x;
+						int y3 = result[0].localizationResult.resultPoints[3].y;
 						int[] xAarray = new int[]{x0, x1, x2, x3};
 						int[] yAarray = new int[]{y0, y1, y2, y3};
 						Arrays.sort(xAarray);
 						Arrays.sort(yAarray);
 						String barcodeFormat = "";
-						switch (result.barcodeFormat) {
+						switch (result[0].barcodeFormat) {
 							case 234882047:
 								barcodeFormat = "all";
 								break;
@@ -131,16 +136,27 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 								barcodeFormat = "QR_CODE";
 								break;
 							case 134217728:
+
 								barcodeFormat = "DATAMATAIX";
 								break;
 							default:
 								break;
 						}
-						builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result.barcodeText + "\n\nRegion : {Left : " + xAarray[0]
+						builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result[0].barcodeText + "\n\nRegion : {Left : " + xAarray[0]
 								+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
 								+ "}");
+						for(int i = 0; i < result.length; i++) {
+							if (allResultText.contains(result[i].barcodeText)) {
+
+							}
+							else {
+								allResultText.add(result[i].barcodeText);
+								int count = allResultText.size();
+								mScanCount.setText(String.valueOf(count) + " Scanned");
+							}
+						}
 					} else {
-						builder.setMessage("type : " + result.barcodeFormat + "\n\n result : " + result.barcodeText);
+						builder.setMessage("type : " + result[0].barcodeFormat + "\n\n result : " + result[0].barcodeText);
 					}
 					builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 						@Override
@@ -163,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
 		ButterKnife.bind(this);
 		try {
 			reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/goxYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
@@ -227,8 +244,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							isDetected = false;
 							Log.d("barcode result", "process: " + result);
 							Message message = handler.obtainMessage();
-							message.obj = result[0];
+							message.obj = result;
 							message.what = 0;
+
 							handler.sendMessage(message);
 						} else {
 							isDetected = true;
