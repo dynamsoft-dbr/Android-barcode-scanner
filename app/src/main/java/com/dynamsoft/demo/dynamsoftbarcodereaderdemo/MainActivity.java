@@ -1,6 +1,5 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -23,18 +21,21 @@ import android.widget.TextView;
 
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
+import com.dynamsoft.barcode.jni.Point;
 import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Frame;
 import com.otaliastudios.cameraview.FrameProcessor;
+import com.otaliastudios.cameraview.Size;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,40 +43,46 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
-import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
+	private final int DETECT_BARCODE = 0x0001;
+
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
-	@BindView(R.id.qr_view)
-	QRCodeView qrView;
 	@BindView(R.id.tv_flash)
 	TextView mFlash;
 	@BindView(R.id.scanCountText)
 	TextView mScanCount;
+	@BindView(R.id.hud_view)
+	HUDCanvasView hudView;
+	@BindView(R.id.toolbar)
+	Toolbar toolbar;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
-	private int barcodeType = 0;
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
 	private boolean isCameraStarted = false;
 	private ArrayList<String> allResultText = new ArrayList<String>();
+	private int topViewHeight = 0;
+	private float previewScale = 0;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
-				case 0:
+				case DETECT_BARCODE:
 					isDetected = false;
 					TextResult[] result = (TextResult[]) msg.obj;
-					final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+					int degree = msg.arg1;
+					for (int i = 0; i < result.length; i++) {
+						drawDocumentBox(result[i].localizationResult.resultPoints, degree);
+					}
 					if (result[0].localizationResult != null && result[0].localizationResult.resultPoints != null && result[0].localizationResult.resultPoints.length > 0) {
 						int x0 = result[0].localizationResult.resultPoints[0].x;
 						int y0 = result[0].localizationResult.resultPoints[0].y;
@@ -134,34 +141,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 								barcodeFormat = "QR_CODE";
 								break;
 							case 134217728:
-
 								barcodeFormat = "DATAMATAIX";
 								break;
 							default:
 								break;
 						}
-						builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result[0].barcodeText + "\n\nRegion : {Left : " + xAarray[0]
-								+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
-								+ "}");
-						for (int i = 0; i < result.length; i++) {
-							if (!allResultText.contains(result[i].barcodeText)) {
-								allResultText.add(result[i].barcodeText);
+						for (TextResult aResult : result) {
+							if (!allResultText.contains(aResult.barcodeText)) {
+								allResultText.add(aResult.barcodeText);
 								int count = allResultText.size();
 								mScanCount.setText(count + " Scanned");
 							}
 						}
-					} else {
-						builder.setMessage("type : " + result[0].barcodeFormat + "\n\n result : " + result[0].barcodeText);
-					}
-					builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							isDetected = true;
-
-						}
-					});
-					if (!MainActivity.this.isFinishing()) {
-						builder.show();
 					}
 					break;
 				default:
@@ -182,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
@@ -217,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			public void onCameraOpened(CameraOptions options) {
 				super.onCameraOpened(options);
 				isCameraStarted = true;
+				obtainPreviewScale();
 			}
 		});
 		cameraView.addFrameProcessor(new CodeFrameProcesser());
@@ -224,27 +215,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 	/*		Intent intent = new Intent(MainActivity.this, SettingActivity.class);
 			intent.putExtra("type", barcodeType);
 			startActivityForResult(intent, 0);*/
-			choicePhotoWrapper();
 			return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -314,23 +297,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		}
 	}
 
-	@AfterPermissionGranted(PRC_PHOTO_PICKER)
-	private void choicePhotoWrapper() {
-		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
-		if (EasyPermissions.hasPermissions(this, perms)) {
-
-			File takePhotoDir = new File(Environment.getExternalStorageDirectory(), "BGAPhotoPickerTakePhoto");
-
-			Intent photoPickerIntent = new BGAPhotoPickerActivity.IntentBuilder(this)
-					.selectedPhotos(null)
-					.pauseOnScroll(false)
-					.build();
-			startActivityForResult(photoPickerIntent, RC_CHOOSE_PHOTO);
-		} else {
-			EasyPermissions.requestPermissions(this, "Need permissions!", PRC_PHOTO_PICKER, perms);
-		}
-	}
-
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -347,11 +313,29 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 	}
 
-	class CodeFrameProcesser implements FrameProcessor {
+	private void obtainPreviewScale() {
+		if (hudView.getWidth() == 0 || hudView.getHeight() == 0) {
+			return;
+		}
+		topViewHeight = toolbar.getHeight();
+		Size previewSize = cameraView.getPreviewSize();
+		previewScale = FrameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
+	}
 
+	private void drawDocumentBox(Point[] points, int degree) {
+		hudView.clear();
+		//obtainPreviewScale();
+		if (points != null) {
+			hudView.setCanvasDegree(degree);
+			hudView.setBoundaryPoints(points);
+		}
+		hudView.invalidate();
+		isDetected = true;
+	}
+
+	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
-
 			try {
 				if (isDetected && isCameraStarted) {
 					isDetected = false;
@@ -365,10 +349,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 					Log.d("barcode result", "result" + Arrays.toString(result));
 					if (result != null && result.length > 0) {
-						isDetected = false;
 						Message message = handler.obtainMessage();
 						message.obj = result;
-						message.what = 0;
+						message.what = DETECT_BARCODE;
+						message.arg1 = frame.getRotation();
 						handler.sendMessage(message);
 					} else {
 						isDetected = true;
