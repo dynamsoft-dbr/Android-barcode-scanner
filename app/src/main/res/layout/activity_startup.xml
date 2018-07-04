@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
+	android:id="@+id/tv_history"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="#000000">
+	android:background="#000000"
+	android:onClick="onViewClicked">
 
 	<ImageButton
 		android:id="@+id/imageButton"
@@ -20,7 +22,6 @@
 		android:onClick="onClick"
 		app:layout_constraintBottom_toTopOf="@+id/imageButton3"
 		app:layout_constraintEnd_toEndOf="@+id/imageButton3"
-		app:layout_constraintHorizontal_bias="0.498"
 		app:layout_constraintStart_toStartOf="@+id/imageButton3"
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintVertical_chainStyle="spread"/>
@@ -39,7 +40,6 @@
 		android:onClick="onClick"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.497"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/imageButton3"/>
 
@@ -57,8 +57,21 @@
 		android:onClick="onClick"
 		app:layout_constraintBottom_toTopOf="@+id/imageButton2"
 		app:layout_constraintEnd_toEndOf="@+id/imageButton2"
-		app:layout_constraintHorizontal_bias="0.498"
 		app:layout_constraintStart_toStartOf="@+id/imageButton2"
 		app:layout_constraintTop_toBottomOf="@+id/imageButton"
 		app:layout_constraintVertical_bias="0.236"/>
+
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="24dp"
+		android:layout_marginLeft="24dp"
+		android:layout_marginStart="24dp"
+		android:text="History"
+		android:textColor="@color/bga_pp_common_textColor"
+		android:textSize="20sp"
+		android:textStyle="bold"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"/>
 </android.support.constraint.ConstraintLayout>

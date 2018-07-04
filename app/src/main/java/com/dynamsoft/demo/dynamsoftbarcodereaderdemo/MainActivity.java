@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-
 			super.handleMessage(msg);
 			switch (msg.what) {
 				case 0:
@@ -145,14 +143,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result[0].barcodeText + "\n\nRegion : {Left : " + xAarray[0]
 								+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
 								+ "}");
-						for(int i = 0; i < result.length; i++) {
-							if (allResultText.contains(result[i].barcodeText)) {
-
-							}
-							else {
+						for (int i = 0; i < result.length; i++) {
+							if (!allResultText.contains(result[i].barcodeText)) {
 								allResultText.add(result[i].barcodeText);
 								int count = allResultText.size();
-								mScanCount.setText(String.valueOf(count) + " Scanned");
+								mScanCount.setText(count + " Scanned");
 							}
 						}
 					} else {
@@ -182,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 		ButterKnife.bind(this);
 		try {
-			reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/goxYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
+			reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/go" +
+					"xYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -192,10 +188,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			@Override
 			public void onClick(View v) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage("Dynamsoft Barcode Reader Mobile App Demo(Dynamsoft Barcode Reader" +
-						" SDK v6.2)\n\n© 2018 Dynamsoft. All rights reserved. " +
-						"\n\nIntegrate Barcode Reader Functionality into Your own Mobile App? " +
-						"\n\nClick 'Overview' button for further info.\n\n");
+				builder.setMessage(R.string.about);
 				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -226,37 +219,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				isCameraStarted = true;
 			}
 		});
-		cameraView.addFrameProcessor(new FrameProcessor() {
-			@SuppressLint("NewApi")
-			@Override
-			public void process(@NonNull Frame frame) {
-				try {
-					if (isDetected && isCameraStarted) {
-						isDetected = false;
-						YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
-								frame.getSize().getWidth(), frame.getSize().getHeight(), null);
-						int hgt = frame.getSize().getHeight();
-						int wid = frame.getSize().getWidth();
-						int[] stride = yuvImage.getStrides();
-						result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, stride[0], EnumImagePixelFormat.IPF_NV21, name);
-						Log.d("barcode result", "result" + result);
-						if (result != null && result.length > 0) {
-							isDetected = false;
-							Log.d("barcode result", "process: " + result);
-							Message message = handler.obtainMessage();
-							message.obj = result;
-							message.what = 0;
-
-							handler.sendMessage(message);
-						} else {
-							isDetected = true;
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		cameraView.addFrameProcessor(new CodeFrameProcesser());
 	}
 
 	@Override
@@ -382,6 +345,39 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	@Override
 	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
+	}
+
+	class CodeFrameProcesser implements FrameProcessor {
+
+		@Override
+		public void process(@NonNull Frame frame) {
+
+			try {
+				if (isDetected && isCameraStarted) {
+					isDetected = false;
+					YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
+							frame.getSize().getWidth(), frame.getSize().getHeight(), null);
+					int hgt = frame.getSize().getHeight();
+					int wid = frame.getSize().getWidth();
+					int[] stride = yuvImage.getStrides();
+
+					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, stride[0], EnumImagePixelFormat.IPF_NV21, name);
+
+					Log.d("barcode result", "result" + Arrays.toString(result));
+					if (result != null && result.length > 0) {
+						isDetected = false;
+						Message message = handler.obtainMessage();
+						message.obj = result;
+						message.what = 0;
+						handler.sendMessage(message);
+					} else {
+						isDetected = true;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
 

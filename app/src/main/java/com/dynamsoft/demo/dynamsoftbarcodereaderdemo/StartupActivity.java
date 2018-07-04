@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,8 @@ public class StartupActivity extends AppCompatActivity {
 	ImageButton imageButton2;
 	@BindView(R.id.imageButton3)
 	ImageButton imageButton3;
+	@BindView(R.id.textView)
+	TextView textView;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,7 +33,7 @@ public class StartupActivity extends AppCompatActivity {
 	}
 
 
-	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3})
+	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3,R.id.textView})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.imageButton:
@@ -38,9 +41,14 @@ public class StartupActivity extends AppCompatActivity {
 			case R.id.imageButton2:
 
 			case R.id.imageButton3:
-				startActivity(new Intent(StartupActivity.this,MainActivity.class));
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				break;
+			case R.id.textView:
+
+				break;
 			default:
 				break;
 		}
 	}
+
 }

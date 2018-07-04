@@ -36,4 +36,5 @@ dependencies {
     implementation 'cn.bingoogolapple:bga-photopicker:1.2.8@aar'
     implementation(name: 'DynamsoftBarcodeReaderAndroid-debug', ext: 'aar')
     implementation 'pub.devrel:easypermissions:1.2.0'
+    implementation 'com.orhanobut:logger:2.2.0'
 }
