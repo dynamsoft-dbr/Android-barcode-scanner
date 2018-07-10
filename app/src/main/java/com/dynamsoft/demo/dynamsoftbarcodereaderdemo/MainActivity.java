@@ -3,7 +3,9 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.ImageFormat;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,19 +14,24 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
-import com.dynamsoft.barcode.jni.Point;
+import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
@@ -32,10 +39,12 @@ import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Frame;
 import com.otaliastudios.cameraview.FrameProcessor;
 import com.otaliastudios.cameraview.Size;
+import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
 	private final int DETECT_BARCODE = 0x0001;
+	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
+	private final int BARCODE_RECT_COORD = 0x0003;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -60,6 +71,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	HUDCanvasView hudView;
 	@BindView(R.id.toolbar)
 	Toolbar toolbar;
+	@BindView(R.id.non_slidable_view)
+	LinearLayout nonSlidableView;
+	@BindView(R.id.drag_view)
+	TextView dragView;
+	@BindView(R.id.slidable_view)
+	FrameLayout slidableView;
+	@BindView(R.id.sliding_drawer)
+	SlidingDrawer slidingDrawer;
+	@BindView(R.id.rl_barcode_list)
+	RecyclerView rlBarcodeList;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -68,8 +89,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private boolean isFlashOn = false;
 	private boolean isCameraStarted = false;
 	private ArrayList<String> allResultText = new ArrayList<String>();
-	private int topViewHeight = 0;
-	private float previewScale = 0;
+	private float previewScale;
+	private Size previewSize = null;
+	private FrameUtil frameUtil;
+
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
@@ -77,26 +100,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			super.handleMessage(msg);
 			switch (msg.what) {
 				case DETECT_BARCODE:
-					isDetected = false;
 					TextResult[] result = (TextResult[]) msg.obj;
-					int degree = msg.arg1;
-					for (int i = 0; i < result.length; i++) {
-						drawDocumentBox(result[i].localizationResult.resultPoints, degree);
-					}
-					if (result[0].localizationResult != null && result[0].localizationResult.resultPoints != null && result[0].localizationResult.resultPoints.length > 0) {
-						int x0 = result[0].localizationResult.resultPoints[0].x;
-						int y0 = result[0].localizationResult.resultPoints[0].y;
-						int x1 = result[0].localizationResult.resultPoints[1].x;
-						int y1 = result[0].localizationResult.resultPoints[1].y;
-						int x2 = result[0].localizationResult.resultPoints[2].x;
-						int y2 = result[0].localizationResult.resultPoints[2].y;
-						int x3 = result[0].localizationResult.resultPoints[3].x;
-						int y3 = result[0].localizationResult.resultPoints[3].y;
-						int[] xAarray = new int[]{x0, x1, x2, x3};
-						int[] yAarray = new int[]{y0, y1, y2, y3};
-						Arrays.sort(xAarray);
-						Arrays.sort(yAarray);
-						String barcodeFormat = "";
+					dragView.setText(result[0].barcodeText);
+	/*					String barcodeFormat = "";
 						switch (result[0].barcodeFormat) {
 							case 234882047:
 								barcodeFormat = "all";
@@ -145,15 +151,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 								break;
 							default:
 								break;
-						}
-						for (TextResult aResult : result) {
-							if (!allResultText.contains(aResult.barcodeText)) {
-								allResultText.add(aResult.barcodeText);
-								int count = allResultText.size();
-								mScanCount.setText(count + " Scanned");
-							}
+						}*/
+					for (TextResult aResult : result) {
+						if (!allResultText.contains(aResult.barcodeText)) {
+							allResultText.add(aResult.barcodeText);
+							int count = allResultText.size();
+							mScanCount.setText(count + " Scanned");
 						}
 					}
+
+					break;
+				case BARCODE_RECT_COORD:
+					drawDocumentBox((ArrayList<RectPoint[]>) msg.obj);
+					break;
+				case OBTAIN_PREVIEW_SIZE:
+					obtainPreviewScale();
 					break;
 				default:
 					break;
@@ -167,13 +179,28 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setContentView(R.layout.activity_main);
 
 		ButterKnife.bind(this);
+		slidingDrawer.setDragView(dragView);
+		Logger.addLogAdapter(new AndroidLogAdapter());
 		try {
-			reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/go" +
-					"xYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
+			reader = new BarcodeReader("t0068MgAAAA70elzyXYmS7moRx7im7XPCr58/2f7IyvaQfe2y0go" +
+					"R2REXg7tfQ8Mv48LhyuiCPwaCnuPb7CKFYrg9B/Yc30k=");
+			JSONObject jsonObject = new JSONObject("{\n" +
+					"  \"ImageParameters\": {\n" +
+					"    \"Name\": \"Custom_100947_777\",\n" +
+					"    \"BarcodeFormatIds\": [\n" +
+					"      \"QR_CODE\"\n" +
+					"    ],\n" +
+					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
+					"    \"AntiDamageLevel\": 3,\n" +
+					"    \"ScaleDownThreshold\": 1000\n" +
+					"  }\n" +
+					"}");
+			reader.appendParameterTemplate(jsonObject.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		setSupportActionBar(toolbar);
+		frameUtil = new FrameUtil();
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -207,7 +234,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			public void onCameraOpened(CameraOptions options) {
 				super.onCameraOpened(options);
 				isCameraStarted = true;
-				obtainPreviewScale();
 			}
 		});
 		cameraView.addFrameProcessor(new CodeFrameProcesser());
@@ -317,18 +343,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		if (hudView.getWidth() == 0 || hudView.getHeight() == 0) {
 			return;
 		}
-		topViewHeight = toolbar.getHeight();
-		Size previewSize = cameraView.getPreviewSize();
-		previewScale = FrameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
+		previewSize = cameraView.getPreviewSize();
+		previewScale = frameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
 	}
 
-	private void drawDocumentBox(Point[] points, int degree) {
+	private void drawDocumentBox(ArrayList<RectPoint[]> rectCoord) {
 		hudView.clear();
-		//obtainPreviewScale();
-		if (points != null) {
-			hudView.setCanvasDegree(degree);
-			hudView.setBoundaryPoints(points);
-		}
+		hudView.setBoundaryPoints(rectCoord);
 		hudView.invalidate();
 		isDetected = true;
 	}
@@ -339,26 +360,49 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			try {
 				if (isDetected && isCameraStarted) {
 					isDetected = false;
-					YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
+					if (previewSize == null) {
+						Message obtainPreviewMsg = handler.obtainMessage();
+						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
+						handler.sendMessage(obtainPreviewMsg);
+					}
+					long beginHandle = System.currentTimeMillis();
+					YuvImage yuvImage = new YuvImage(frame.getData(), frame.getFormat(),
 							frame.getSize().getWidth(), frame.getSize().getHeight(), null);
-					int hgt = frame.getSize().getHeight();
 					int wid = frame.getSize().getWidth();
-					int[] stride = yuvImage.getStrides();
-
-					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, stride[0], EnumImagePixelFormat.IPF_NV21, name);
-
-					Log.d("barcode result", "result" + Arrays.toString(result));
+					int hgt = frame.getSize().getHeight();
+					long endFormatYuv = System.currentTimeMillis();
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					yuvImage.compressToJpeg(new Rect(0, 0, wid, hgt), 100, os);
+					byte[] jpegByteArray = os.toByteArray();
+					Bitmap srcBitmap = FrameUtil.rotateBitmap(BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length));
+					long endCon2BmpRot = System.currentTimeMillis();
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					srcBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+					byte[] bmpByte = baos.toByteArray();
+					long endHandle = System.currentTimeMillis();
+					Logger.d("time : format yuv: " + (endFormatYuv - beginHandle) + " convert to bmp&rotate :" +
+							(endCon2BmpRot - endFormatYuv) + " compress byte[] : " + (endHandle - endCon2BmpRot));
+					//result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_ARGB_8888, name);
+					result = reader.decodeFileInMemory(bmpByte, "Custom_100947_777");
+					long endDetect = System.currentTimeMillis();
+					Logger.d("detect code time : " + (endDetect - endHandle));
+					Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
 					if (result != null && result.length > 0) {
+						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, srcBitmap.getHeight(), srcBitmap.getWidth());
 						Message message = handler.obtainMessage();
 						message.obj = result;
 						message.what = DETECT_BARCODE;
-						message.arg1 = frame.getRotation();
 						handler.sendMessage(message);
+
+						Message coordMessage = handler.obtainMessage();
+						coordMessage.obj = rectCoord;
+						coordMessage.what = BARCODE_RECT_COORD;
+						handler.sendMessage(coordMessage);
 					} else {
 						isDetected = true;
 					}
 				}
-			} catch (Exception e) {
+			} catch (BarcodeReaderException e) {
 				e.printStackTrace();
 			}
 		}

@@ -5,13 +5,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
 import com.dynamsoft.barcode.jni.Point;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
+
+import java.util.ArrayList;
 
 /**
  * Draw an array of shapes on a canvas
@@ -21,11 +23,12 @@ public class HUDCanvasView extends View {
 	int paddingTop;
 	int paddingRight;
 	int paddingBottom;
-	private Point[] points = null;
+	private ArrayList<RectPoint[]> rectCoord = null;
 	private Path path = new Path();
 	private Paint paint;
 	private int degree;
-	private boolean canDrawBox = true;
+	private float previewScale;
+	private int srcWidth, srcHeight;
 
 	public HUDCanvasView(Context context) {
 		super(context);
@@ -54,22 +57,21 @@ public class HUDCanvasView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		if (points != null && points.length > 0 && canDrawBox) {
-			//canvas.save();
-			//canvas.rotate(degree,getWidth()/2,getHeight()/2);
-			path.reset();
-			path.moveTo(points[0].x + paddingLeft, points[0].y + paddingTop);
-			path.lineTo(points[1].x + paddingLeft, points[1].y + paddingTop);
-			path.lineTo(points[2].x + paddingLeft, points[2].y+ paddingTop);
-			path.lineTo(points[3].x + paddingLeft, points[3].y + paddingTop);
-			path.close();
-			canvas.drawPath(path, paint);
-			//canvas.restore();
+		if (rectCoord != null && rectCoord.size() > 0) {
+			for (int i = 0; i < rectCoord.size(); i++) {
+				path.reset();
+				path.moveTo(rectCoord.get(i)[0].x + paddingLeft, rectCoord.get(i)[0].y + paddingTop);
+				path.lineTo(rectCoord.get(i)[1].x + paddingLeft, rectCoord.get(i)[1].y + paddingTop);
+				path.lineTo(rectCoord.get(i)[2].x + paddingLeft, rectCoord.get(i)[2].y + paddingTop);
+				path.lineTo(rectCoord.get(i)[3].x + paddingLeft, rectCoord.get(i)[3].y + paddingTop);
+				path.close();
+				canvas.drawPath(path, paint);
+			}
 		}
 	}
 
-	public void setBoundaryPoints(Point[] points) {
-		this.points = points;
+	public void setBoundaryPoints(ArrayList<RectPoint[]> rectCoord) {
+		this.rectCoord = rectCoord;
 	}
 
 	public void setBoundaryColor(String color) {
@@ -77,16 +79,11 @@ public class HUDCanvasView extends View {
 	}
 
 	public void setBoundaryThickness(int thickness) {
-		if (thickness == 0) {
-			canDrawBox = false;
-		} else {
-			canDrawBox = true;
-			paint.setStrokeWidth(thickness);
-		}
+		paint.setStrokeWidth(thickness);
 	}
 
 	public void clear() {
-		points = null;
+		rectCoord = null;
 	}
 
 	public void setCanvasDegree(int degree) {
