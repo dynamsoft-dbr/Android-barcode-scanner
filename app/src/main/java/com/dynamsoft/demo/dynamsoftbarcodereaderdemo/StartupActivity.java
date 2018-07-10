@@ -2,18 +2,14 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.test.SyncBaseInstrumentation;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -21,10 +17,8 @@ import android.widget.TextView;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.TextResult;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +33,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 /**
  * Created by Elemen on 2018/7/2.
  */
-public class StartupActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
+public class StartupActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	@BindView(R.id.imageButton)
 	ImageButton imageButton;
 	@BindView(R.id.imageButton2)
@@ -51,6 +45,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
 	private static final String TAG = "StartupActivity";
+	private ArrayList<String> filePath;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
@@ -134,6 +129,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 									+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
 									+ "}\n\n";
 
+
 						}
 					}
 					builder.setMessage(resultMessage);
@@ -144,6 +140,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 			}
 		}
 	};
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -152,7 +149,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	}
 
 
-	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3,R.id.textView})
+	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3, R.id.textView})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.imageButton:
@@ -170,6 +167,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 				break;
 		}
 	}
+
 	@AfterPermissionGranted(PRC_PHOTO_PICKER)
 	private void choicePhotoWrapper() {
 		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
@@ -191,6 +189,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 			EasyPermissions.requestPermissions(this, "Need permissions!", PRC_PHOTO_PICKER, perms);
 		}
 	}
+
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -206,31 +205,33 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
 	}
+
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		if(requestCode == RC_CHOOSE_PHOTO && resultCode == RESULT_OK){
-			ArrayList<String> filePath = BGAPhotoPickerActivity.getSelectedPhotos(data);
-			try {
-				BarcodeReader reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/go" +
-						"xYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
-				InputStream inputStream = new FileInputStream(filePath.get(0));
-				byte[] bytes = new byte[inputStream.available()];
-				inputStream.read(bytes);
-				inputStream.close();
-				long startT = System.currentTimeMillis();
-				TextResult[] results = reader.decodeFileInMemory(bytes,"");
-				long spent = System.currentTimeMillis() - startT;
-
-
-				Message message = handler.obtainMessage();
-				message.obj = results;
-				message.what = 0;
-				handler.sendMessage(message);
-			}
-			catch (Exception ex){
-				Log.e(TAG, ex.getMessage());
-			}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RC_CHOOSE_PHOTO && resultCode == RESULT_OK) {
+			filePath = BGAPhotoPickerActivity.getSelectedPhotos(data);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						BarcodeReader reader = new BarcodeReader("f0068MgAAAB1lHa1TS73f6hvSsyG9UkU+EITa8w0074QekQD7/go" +
+								"xYCguWUiLgYMKRg4ta39gsM08V5J5F3H0l6puHcJ0Yso=");
+						InputStream inputStream = new FileInputStream(filePath.get(0));
+						byte[] bytes = new byte[inputStream.available()];
+						inputStream.read(bytes);
+						inputStream.close();
+						TextResult[] results = reader.decodeFileInMemory(bytes, "");
+						Message message = handler.obtainMessage();
+						message.obj = results;
+						message.what = 0;
+						handler.sendMessage(message);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
-
 }
+
+
