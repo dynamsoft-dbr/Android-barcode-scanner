@@ -41,6 +41,7 @@
 		android:text="Flash"
 		android:textColor="#ffffff"
 		android:textSize="20sp"/>
+	]
 
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
@@ -69,10 +70,12 @@
 			android:layout_height="match_parent"
 			android:background="@android:color/white">
 
-			<android.support.v7.widget.RecyclerView
+			<ListView
 				android:id="@+id/rl_barcode_list"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"/>
+				android:layout_height="match_parent"
+				android:layout_marginTop="40dp"
+				android:layoutAnimation="@anim/listview_layout_anim"/>
 
 			<TextView
 				android:id="@+id/drag_view"

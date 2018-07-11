@@ -3,9 +3,6 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +11,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -22,10 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
+import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
@@ -44,15 +43,11 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
-import java.io.ByteArrayOutputStream;
-
-import java.io.File;
-import java.lang.reflect.Array;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,18 +80,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	@BindView(R.id.sliding_drawer)
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.rl_barcode_list)
-	RecyclerView rlBarcodeList;
+	ListView lvBarcodeList;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
+	private boolean isCameraStarted = false;
+	private boolean isDrawerExpand=false;
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
-	private boolean isCameraStarted = false;
 	private ArrayList<String> allResultText = new ArrayList<String>();
 	private float previewScale;
 	private Size previewSize = null;
 	private FrameUtil frameUtil;
+	private List<Map<String, String>> recentCodeList = new ArrayList<>();
+	private SimpleAdapter simpleAdapter;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			switch (msg.what) {
 				case DETECT_BARCODE:
 					TextResult[] result = (TextResult[]) msg.obj;
-					dragView.setText(result[0].barcodeText);
+					fulFillRecentList(result);
 	/*					String barcodeFormat = "";
 						switch (result[0].barcodeFormat) {
 							case 234882047:
@@ -196,7 +194,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"      \"QR_CODE\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
-					"    \"AntiDamageLevel\": 3,\n" +
+					"    \"AntiDamageLevel\": 7,\n" +
+					"    \"DeblurLevel\":5,\n" +
 					"    \"ScaleDownThreshold\": 1000\n" +
 					"  }\n" +
 					"}");
@@ -242,6 +241,25 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			}
 		});
 		cameraView.addFrameProcessor(new CodeFrameProcesser());
+		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
+				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
+		lvBarcodeList.setAdapter(simpleAdapter);
+		slidingDrawer.addSlideListener(new SlidingDrawer.OnSlideListener() {
+			@Override
+			public void onSlide(SlidingDrawer slidingDrawer, float currentSlide) {
+				if (slidingDrawer.getState() == SlidingDrawer.COLLAPSED) {
+					Logger.d("sliding drawer 0");
+					isDrawerExpand = false;
+					recentCodeList.clear();
+					simpleAdapter.notifyDataSetChanged();
+				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
+					Logger.d("sliding drawer 1");
+					isDrawerExpand = true;
+					lvBarcodeList.startLayoutAnimation();
+					simpleAdapter.notifyDataSetChanged();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -292,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				jsonArray.put("DATAMATRIX");
 			}
 			Log.d("code type", "type : " + object.toString());
-			reader.appendParameterTemplate(object.toString());
+			//reader.appendParameterTemplate(object.toString());
 			name = "linear";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -359,41 +377,41 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		isDetected = true;
 	}
 
+	private void fulFillRecentList(TextResult[] result) {
+		recentCodeList.clear();
+		dragView.setText(result[0].barcodeText);
+
+		for (TextResult aResult1 : result) {
+			Map<String, String> recentCodeItem = new HashMap<>();
+			recentCodeItem.put("format", aResult1.barcodeFormat + "");
+			recentCodeItem.put("text", aResult1.barcodeText);
+			recentCodeList.add(recentCodeItem);
+		}
+	}
+
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && isCameraStarted) {
+				if (isDetected && isCameraStarted&&!isDrawerExpand) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
 						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
 						handler.sendMessage(obtainPreviewMsg);
 					}
-					long beginHandle = System.currentTimeMillis();
 					YuvImage yuvImage = new YuvImage(frame.getData(), frame.getFormat(),
 							frame.getSize().getWidth(), frame.getSize().getHeight(), null);
 					int wid = frame.getSize().getWidth();
 					int hgt = frame.getSize().getHeight();
-					long endFormatYuv = System.currentTimeMillis();
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					yuvImage.compressToJpeg(new Rect(0, 0, wid, hgt), 100, os);
-					byte[] jpegByteArray = os.toByteArray();
-					Bitmap srcBitmap = FrameUtil.rotateBitmap(BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length));
-					long endCon2BmpRot = System.currentTimeMillis();
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					srcBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-					byte[] bmpByte = baos.toByteArray();
-					long endHandle = System.currentTimeMillis();
-					Logger.d("time : format yuv: " + (endFormatYuv - beginHandle) + " convert to bmp&rotate :" +
-							(endCon2BmpRot - endFormatYuv) + " compress byte[] : " + (endHandle - endCon2BmpRot));
-					//result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_ARGB_8888, name);
-					result = reader.decodeFileInMemory(bmpByte, "Custom_100947_777");
-					long endDetect = System.currentTimeMillis();
-					Logger.d("detect code time : " + (endDetect - endHandle));
+					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
+							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
+					//result = reader.decodeFileInMemory(bmpByte, "Custom_100947_777");
+
+					//Logger.d("detect code time : " + (endDetect - endHandle));
 					Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
 					if (result != null && result.length > 0) {
-						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, srcBitmap.getHeight(), srcBitmap.getWidth());
+						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
 						Message message = handler.obtainMessage();
 						message.obj = result;
 						message.what = DETECT_BARCODE;
