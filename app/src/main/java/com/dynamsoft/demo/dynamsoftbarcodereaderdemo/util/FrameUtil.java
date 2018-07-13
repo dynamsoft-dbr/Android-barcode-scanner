@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class FrameUtil {
 	private int viewWidth;
 	private int viewHeight;
+	private boolean dependOnWid;
 
 	public static Bitmap rotateBitmap(Bitmap origin) {
 		if (origin == null) {
@@ -79,7 +80,6 @@ public class FrameUtil {
 		this.viewWidth = viewWidth;
 		this.viewHeight = viewHeight;
 		float previewScale;
-		boolean dependOnWid;
 		if (size.getHeight() > size.getWidth()) {
 			if (((float) viewWidth / (float) size.getWidth()) > ((float) viewHeight / (float) size.getHeight())) {
 				previewScale = (float) viewWidth / (float) size.getWidth();
@@ -122,19 +122,36 @@ public class FrameUtil {
 			point1 = new RectPoint();
 			point2 = new RectPoint();
 			point3 = new RectPoint();
-			point0.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[0].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
-			point0.y = textResults[i].localizationResult.resultPoints[0].x * previewScale;
-			point1.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[1].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
-			point1.y = textResults[i].localizationResult.resultPoints[1].x * previewScale;
-			point2.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[2].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
-			point2.y = textResults[i].localizationResult.resultPoints[2].x * previewScale;
-			point3.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[3].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
-			point3.y = textResults[i].localizationResult.resultPoints[3].x * previewScale;
-			points[0] = point0;
-			points[1] = point1;
-			points[2] = point2;
-			points[3] = point3;
-			rectCoord.add(points);
+			if(dependOnWid){
+				point0.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[0].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point0.y = textResults[i].localizationResult.resultPoints[0].x * previewScale - (srcBitmapWidth * previewScale - viewHeight) / 2;
+				point1.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[1].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point1.y = textResults[i].localizationResult.resultPoints[1].x * previewScale - (srcBitmapWidth * previewScale - viewHeight) / 2 ;
+				point2.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[2].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point2.y = textResults[i].localizationResult.resultPoints[2].x * previewScale - (srcBitmapWidth * previewScale - viewHeight) / 2 ;
+				point3.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[3].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point3.y = textResults[i].localizationResult.resultPoints[3].x * previewScale - (srcBitmapWidth * previewScale - viewHeight) / 2 ;
+				points[0] = point0;
+				points[1] = point1;
+				points[2] = point2;
+				points[3] = point3;
+				rectCoord.add(points);
+			}
+			else {
+				point0.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[0].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point0.y = textResults[i].localizationResult.resultPoints[0].x * previewScale;
+				point1.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[1].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point1.y = textResults[i].localizationResult.resultPoints[1].x * previewScale;
+				point2.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[2].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point2.y = textResults[i].localizationResult.resultPoints[2].x * previewScale;
+				point3.x = (srcBitmapHeight - textResults[i].localizationResult.resultPoints[3].y) * previewScale - (srcBitmapHeight * previewScale - viewWidth) / 2;
+				point3.y = textResults[i].localizationResult.resultPoints[3].x * previewScale;
+				points[0] = point0;
+				points[1] = point1;
+				points[2] = point2;
+				points[3] = point3;
+				rectCoord.add(points);
+			}
 		}
 		return rectCoord;
 	}
