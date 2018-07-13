@@ -20,12 +20,13 @@ public class HistoryListAdapter extends BGARecyclerViewAdapter<HistoryItemBean> 
 	@Override
 	protected void setItemChildListener(BGAViewHolderHelper helper, int viewType) {
 		super.setItemChildListener(helper, viewType);
+		helper.setItemChildClickListener(R.id.iv_codeimg);
 	}
 
 	@Override
 	protected void fillData(BGAViewHolderHelper helper, int position, HistoryItemBean model) {
-		Glide.with(mContext).load(model.codeImgPath).into(helper.getImageView(R.id.iv_codeimg));
-		helper.setText(R.id.tv_codeformat, model.codeFormat);
-		helper.setText(R.id.tv_codetext, model.codeText);
+		Glide.with(mContext).load(model.getCodeImgPath()).into(helper.getImageView(R.id.iv_codeimg));
+		helper.setText(R.id.tv_codeformat, model.getCodeFormat().get(0));
+		helper.setText(R.id.tv_codetext, model.getCodeText().get(0));
 	}
 }

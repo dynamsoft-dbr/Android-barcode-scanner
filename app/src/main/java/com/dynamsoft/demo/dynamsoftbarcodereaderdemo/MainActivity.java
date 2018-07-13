@@ -3,9 +3,12 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -16,17 +19,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
 import com.orhanobut.logger.AndroidLogAdapter;
@@ -43,11 +47,15 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,12 +79,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	HUDCanvasView hudView;
 	@BindView(R.id.toolbar)
 	Toolbar toolbar;
-	@BindView(R.id.non_slidable_view)
-	LinearLayout nonSlidableView;
 	@BindView(R.id.drag_view)
 	TextView dragView;
-	@BindView(R.id.slidable_view)
-	FrameLayout slidableView;
 	@BindView(R.id.sliding_drawer)
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.rl_barcode_list)
@@ -85,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private TextResult[] result;
 	private boolean isDetected = true;
 	private boolean isCameraStarted = false;
-	private boolean isDrawerExpand=false;
+	private boolean isDrawerExpand = false;
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
@@ -95,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private FrameUtil frameUtil;
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
 	private SimpleAdapter simpleAdapter;
+	private long startDetectTime = 0;
+	private long endDetectTime = 0;
+	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
+	private ExecutorService threadManager = Executors.newCachedThreadPool();
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -105,64 +113,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				case DETECT_BARCODE:
 					TextResult[] result = (TextResult[]) msg.obj;
 					fulFillRecentList(result);
-	/*					String barcodeFormat = "";
-						switch (result[0].barcodeFormat) {
-							case 234882047:
-								barcodeFormat = "all";
-								break;
-							case 1023:
-								barcodeFormat = "OneD";
-								break;
-							case 1:
-								barcodeFormat = "CODE_39";
-								break;
-							case 2:
-								barcodeFormat = "CODE_128";
-								break;
-							case 4:
-								barcodeFormat = "CODE_93";
-								break;
-							case 8:
-								barcodeFormat = "CODABAR";
-								break;
-							case 16:
-								barcodeFormat = "ITF";
-								break;
-							case 32:
-								barcodeFormat = "EAN_13";
-								break;
-							case 64:
-								barcodeFormat = "EAN_8";
-								break;
-							case 128:
-								barcodeFormat = "UPC_A";
-								break;
-							case 256:
-								barcodeFormat = "UPC_E";
-								break;
-							case 512:
-								barcodeFormat = "INDUSTRIAL_25";
-								break;
-							case 33554432:
-								barcodeFormat = "PDF417";
-								break;
-							case 67108864:
-								barcodeFormat = "QR_CODE";
-								break;
-							case 134217728:
-								barcodeFormat = "DATAMATAIX";
-								break;
-							default:
-								break;
-						}*/
 					for (TextResult aResult : result) {
 						if (!allResultText.contains(aResult.barcodeText)) {
 							allResultText.add(aResult.barcodeText);
-							int count = allResultText.size();
-							mScanCount.setText(count + " Scanned");
 						}
 					}
-
+					int count = allResultText.size();
+					mScanCount.setText(count + " Scanned");
 					break;
 				case BARCODE_RECT_COORD:
 					drawDocumentBox((ArrayList<RectPoint[]>) msg.obj);
@@ -227,11 +184,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				builder.show();
 			}
 		});
-		mCache = DBRCache.get(this);
-		mCache.put("linear", "1");
-		mCache.put("qrcode", "1");
-		mCache.put("pdf417", "1");
-		mCache.put("matrix", "1");
+		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 
 		cameraView.addCameraListener(new CameraListener() {
 			@Override
@@ -393,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && isCameraStarted&&!isDrawerExpand) {
+				if (isDetected && isCameraStarted && !isDrawerExpand) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
@@ -404,12 +357,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							frame.getSize().getWidth(), frame.getSize().getHeight(), null);
 					int wid = frame.getSize().getWidth();
 					int hgt = frame.getSize().getHeight();
+					long startTime = System.currentTimeMillis();
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
-					//result = reader.decodeFileInMemory(bmpByte, "Custom_100947_777");
-
-					//Logger.d("detect code time : " + (endDetect - endHandle));
-					Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
+					long endTime = System.currentTimeMillis();
+					Logger.d("detect code time : " + (endTime - startTime));
+					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
 					if (result != null && result.length > 0) {
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
 						Message message = handler.obtainMessage();
@@ -421,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						coordMessage.obj = rectCoord;
 						coordMessage.what = BARCODE_RECT_COORD;
 						handler.sendMessage(coordMessage);
+						checkTimeAndSaveImg(yuvImage, result);
 					} else {
 						isDetected = true;
 					}
@@ -429,6 +383,56 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				e.printStackTrace();
 			}
 		}
+
+		private void checkTimeAndSaveImg(final YuvImage yuvImage, final TextResult[] results) {
+			if (startDetectTime != 0) {
+				endDetectTime = System.currentTimeMillis();
+				if (endDetectTime - startDetectTime > 1000) {
+					threadManager.execute(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								long startSaveFile = System.currentTimeMillis();
+								YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
+										yuvImage.getWidth(), yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
+								String name = System.currentTimeMillis() + "";
+								File previewFile = new File(path + "/" + name + ".jpg");
+								if (!previewFile.exists()) {
+									previewFile.getParentFile().mkdirs();
+									previewFile.createNewFile();
+								}
+								FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
+								newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
+								fileOutputStream.flush();
+								fileOutputStream.close();
+								HistoryItemBean itemBean = new HistoryItemBean();
+								ArrayList<String> codeFormatList = new ArrayList<>();
+								ArrayList<String> codeTextList = new ArrayList<>();
+								ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(results, yuvImage.getHeight(), yuvImage.getWidth());
+								for (int i = 0; i < results.length; i++) {
+									codeFormatList.add(results[i].barcodeFormat + "");
+									codeTextList.add(results[i].barcodeText);
+								}
+								itemBean.setCodeFormat(codeFormatList);
+								itemBean.setCodeText(codeTextList);
+								itemBean.setCodeImgPath(path + "/" + name + ".jpg");
+								itemBean.setRectCoord(pointList);
+								String jsonResult = LoganSquare.serialize(itemBean);
+								mCache.put(name, jsonResult);
+								long endSaveFile = System.currentTimeMillis();
+								Logger.d("save file time : " + (endSaveFile - startSaveFile));
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			} else {
+				startDetectTime = System.currentTimeMillis();
+			}
+		}
+
+
 	}
 }
 

@@ -1,4 +1,4 @@
-package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
+package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -141,6 +141,38 @@ public class DBRCache {
 		}
 	}
 
+	public String getAsStringWithFileName(String name) {
+		File file = mCache.getWithFileName(name);
+		if (!file.exists())
+			return null;
+		boolean removeFile = false;
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(file));
+			String readString = "";
+			String currentLine;
+			while ((currentLine = in.readLine()) != null) {
+				readString += currentLine;
+			}
+			if (!Utils.isDue(readString)) {
+				return Utils.clearDateInfo(readString);
+			} else {
+				removeFile = true;
+				return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	public void put(String key, JSONObject value) {
 		put(key, value.toString());
@@ -560,11 +592,9 @@ public class DBRCache {
 			while (curCacheCount + 1 > countLimit) {
 				long freedSize = removeNext();
 				cacheSize.addAndGet(-freedSize);
-
 				curCacheCount = cacheCount.addAndGet(-1);
 			}
 			cacheCount.addAndGet(1);
-
 			long valueSize = calculateSize(file);
 			long curCacheSize = cacheSize.get();
 			while (curCacheSize + valueSize > sizeLimit) {
@@ -583,12 +613,23 @@ public class DBRCache {
 			Long currentTime = System.currentTimeMillis();
 			file.setLastModified(currentTime);
 			lastUsageDates.put(file, currentTime);
+			return file;
+		}
 
+		private File getWithFileName(String name){
+			File file = newFileWithoutHashcode(name);
+			Long currentTime = System.currentTimeMillis();
+			file.setLastModified(currentTime);
+			lastUsageDates.put(file, currentTime);
 			return file;
 		}
 
 		private File newFile(String key) {
 			return new File(cacheDir, key.hashCode() + "");
+		}
+
+		private File newFileWithoutHashcode(String key){
+			return new File(cacheDir, key);
 		}
 
 		private boolean remove(String key) {

@@ -7,6 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

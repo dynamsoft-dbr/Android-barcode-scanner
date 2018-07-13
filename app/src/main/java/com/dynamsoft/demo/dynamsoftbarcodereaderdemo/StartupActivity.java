@@ -34,17 +34,18 @@ import pub.devrel.easypermissions.EasyPermissions;
  * Created by Elemen on 2018/7/2.
  */
 public class StartupActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+	private static final int PRC_PHOTO_PICKER = 1;
+	private static final int RC_CHOOSE_PHOTO = 1;
+	private static final String TAG = "StartupActivity";
 	@BindView(R.id.imageButton)
 	ImageButton imageButton;
 	@BindView(R.id.imageButton2)
 	ImageButton imageButton2;
 	@BindView(R.id.imageButton3)
 	ImageButton imageButton3;
-	@BindView(R.id.textView)
-	TextView textView;
-	private static final int PRC_PHOTO_PICKER = 1;
-	private static final int RC_CHOOSE_PHOTO = 1;
-	private static final String TAG = "StartupActivity";
+	@BindView(R.id.tv_history)
+	TextView tvHistory;
+
 	private ArrayList<String> filePath;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -128,8 +129,6 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 							resultMessage += "Barcode : " + String.valueOf(i + 1) + "\nType : " + barcodeFormat + "\nResult : " + results[i].barcodeText + "\nRegion : {Left : " + xAarray[0]
 									+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
 									+ "}\n\n";
-
-
 						}
 					}
 					builder.setMessage(resultMessage);
@@ -149,7 +148,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	}
 
 
-	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3, R.id.textView})
+	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3, R.id.tv_history})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.imageButton:
@@ -160,8 +159,8 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 			case R.id.imageButton3:
 				choicePhotoWrapper();
 				break;
-			case R.id.textView:
-
+			case R.id.tv_history:
+				startActivity(new Intent(StartupActivity.this,HistoryActivity.class));
 				break;
 			default:
 				break;
