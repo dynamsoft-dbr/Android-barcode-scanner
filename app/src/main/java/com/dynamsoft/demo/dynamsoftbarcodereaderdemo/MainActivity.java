@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -139,6 +140,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setContentView(R.layout.activity_main);
 
 		ButterKnife.bind(this);
+		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		if (!EasyPermissions.hasPermissions(this, perms)) {
+			EasyPermissions.requestPermissions(this, "", 0, perms);
+		}
 		slidingDrawer.setDragView(dragView);
 		Logger.addLogAdapter(new AndroidLogAdapter());
 		try {
@@ -225,9 +230,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-	/*		Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-			intent.putExtra("type", barcodeType);
-			startActivityForResult(intent, 0);*/
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

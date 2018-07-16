@@ -78,7 +78,8 @@ public class HistoryActivity extends AppCompatActivity implements BGAOnItemChild
 		switch (childView.getId()) {
 			case R.id.iv_codeimg:
 				Intent intent = new Intent(this, HistoryItemDetailActivity.class);
-				intent.putExtra("imgdetail_file",fileNames[position]);
+				intent.putExtra("imgdetail_file",fileNames);
+				intent.putExtra("position",position);
 				startActivity(intent);
 				break;
 			default:
