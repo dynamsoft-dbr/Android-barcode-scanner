@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
@@ -21,6 +22,10 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.CanvasImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+
+import cn.bingoogolapple.photopicker.util.BGABrowserPhotoViewAttacher;
+import cn.bingoogolapple.photopicker.util.BGAPhotoPickerUtil;
+import cn.bingoogolapple.photopicker.widget.BGAImageView;
 
 /**
  * Created by Elemen on 2018/7/16.
@@ -40,9 +45,23 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 	@Override
 	public Object instantiateItem(@NonNull ViewGroup container, int position) {
 		if(ifDrawOnPicture){
-			ImageView imageView = new ImageView(context);
+			BGAImageView imageView = new BGAImageView(context);
 			drawRectOnImg(imageView, position);
 			container.addView(imageView);
+			final BGABrowserPhotoViewAttacher photoViewAttacher = new BGABrowserPhotoViewAttacher(imageView);
+			//imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+			imageView.setDelegate(new BGAImageView.Delegate() {
+				@Override
+				public void onDrawableChanged(Drawable drawable) {
+					if (drawable != null && drawable.getIntrinsicHeight() > drawable.getIntrinsicWidth()
+							&& drawable.getIntrinsicHeight() > BGAPhotoPickerUtil.getScreenHeight()) {
+						photoViewAttacher.setIsSetTopCrop(true);
+						photoViewAttacher.setUpdateBaseMatrix();
+					} else {
+						photoViewAttacher.update();
+					}
+				}
+			});
 			return imageView;
 		}else {
 			HistoryItemBean historyItemBean;

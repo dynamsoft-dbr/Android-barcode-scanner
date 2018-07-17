@@ -63,7 +63,7 @@ public class HistoryItemDetailActivity extends AppCompatActivity {
 				e.printStackTrace();
 			}
 		}
-		adapter = new HistoryDetailViewPagerAdapter(this, listItem, false);
+		adapter = new HistoryDetailViewPagerAdapter(this, listItem, true);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(position);
 	}
