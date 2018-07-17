@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.CanvasImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -25,19 +26,31 @@ import java.util.ArrayList;
 public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 	private ArrayList<HistoryItemBean> picPathList;
 	private Context context;
+	private Boolean ifDrawOnPicture;
 
-	public HistoryDetailViewPagerAdapter(Context context, ArrayList<HistoryItemBean> picPathList) {
+	public HistoryDetailViewPagerAdapter(Context context, ArrayList<HistoryItemBean> picPathList, Boolean ifDrawOnPicture) {
 		this.picPathList = picPathList;
 		this.context = context;
+		this.ifDrawOnPicture = ifDrawOnPicture;
 	}
 
 	@NonNull
 	@Override
 	public Object instantiateItem(@NonNull ViewGroup container, int position) {
-		ImageView imageView = new ImageView(context);
-		drawRectOnImg(imageView, position);
-		container.addView(imageView);
-		return imageView;
+		if(ifDrawOnPicture){
+			ImageView imageView = new ImageView(context);
+			drawRectOnImg(imageView, position);
+			container.addView(imageView);
+			return imageView;
+		}else {
+			HistoryItemBean historyItemBean;
+			historyItemBean = picPathList.get(position);
+			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
+			CanvasImageView imageView = new CanvasImageView(context, oriBitmap.getWidth(), oriBitmap.getHeight());
+			drawRectOnView(imageView, position);
+			container.addView(imageView);
+			return imageView;
+		}
 	}
 
 	@Override
@@ -63,7 +76,6 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 		paint.setAntiAlias(true);
 		Path path = new Path();
 		HistoryItemBean historyItemBean;
-
 		historyItemBean = picPathList.get(position);
 		if (historyItemBean != null) {
 			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
@@ -84,6 +96,20 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 			Glide.with(context)
 					.load(bytes)
 					.into(imageView);
+		}
+	}
+	private void drawRectOnView(CanvasImageView imageView, int position){
+		HistoryItemBean historyItemBean;
+		historyItemBean = picPathList.get(position);
+		if (historyItemBean != null) {
+			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			oriBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+			byte[] bytes = baos.toByteArray();
+			Glide.with(context)
+					.load(bytes)
+					.into(imageView);
+			imageView.setBoundaryPoints(historyItemBean.getRectCoord());
 		}
 	}
 }
