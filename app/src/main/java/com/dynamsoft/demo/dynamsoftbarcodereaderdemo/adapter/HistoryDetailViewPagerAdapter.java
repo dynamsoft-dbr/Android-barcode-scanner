@@ -8,9 +8,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
@@ -33,10 +35,10 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 
 	@NonNull
 	@Override
-	public Object instantiateItem(@NonNull ViewGroup container, int position) {
+	public View instantiateItem(@NonNull ViewGroup container, int position) {
 		ImageView imageView = new ImageView(context);
-		drawRectOnImg(imageView, position);
 		container.addView(imageView);
+		drawRectOnImg(imageView, position);
 		return imageView;
 	}
 
@@ -47,12 +49,12 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 
 	@Override
 	public int getCount() {
-		return picPathList == null ? 0 :picPathList.size();
+		return picPathList == null ? 0 : picPathList.size();
 	}
 
 	@Override
 	public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-		return view==object;
+		return view == object;
 	}
 
 	private void drawRectOnImg(ImageView imageView, int position) {

@@ -27,5 +27,4 @@
 		<activity android:name=".HistoryActivity"/>
 		<activity android:name=".HistoryItemDetailActivity"/>
 	</application>
-
 </manifest>
