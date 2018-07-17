@@ -10,3 +10,6 @@
 .externalNativeBuild
 *.scc
 /.idea
+*.apk
+app/release/license.txt
+app/release/output.json

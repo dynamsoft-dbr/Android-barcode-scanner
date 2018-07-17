@@ -8,5 +8,10 @@
 		android:id="@+id/vp_history_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
+	<com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.CanvasImageView
+		android:id="@+id/canvasImageView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#00000000"/>
 
 </RelativeLayout>
