@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import cn.bingoogolapple.photopicker.util.BGABrowserPhotoViewAttacher;
 import cn.bingoogolapple.photopicker.util.BGAPhotoPickerUtil;
 import cn.bingoogolapple.photopicker.widget.BGAImageView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by Elemen on 2018/7/16.
@@ -68,8 +69,11 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 			historyItemBean = picPathList.get(position);
 			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
 			CanvasImageView imageView = new CanvasImageView(context, oriBitmap.getWidth(), oriBitmap.getHeight());
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			drawRectOnView(imageView, position);
 			container.addView(imageView);
+			PhotoViewAttacher attacher=new PhotoViewAttacher(imageView);
+			attacher.update();
 			return imageView;
 		}
 

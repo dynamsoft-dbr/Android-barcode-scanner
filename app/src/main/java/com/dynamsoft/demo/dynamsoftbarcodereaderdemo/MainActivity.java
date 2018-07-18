@@ -48,9 +48,12 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,12 +159,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"      \"QR_CODE\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
-					"    \"AntiDamageLevel\": 7,\n" +
+					"    \"AntiDamageLevel\": 5,\n" +
 					"    \"DeblurLevel\":5,\n" +
 					"    \"ScaleDownThreshold\": 1000\n" +
 					"  }\n" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
+/*			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					for (int i = 0; i < 10; i++) {
+						long startFile=System.currentTimeMillis();
+						try {
+							reader.decodeFileInMemory(input2byte(), "Custom_100947_777");
+						} catch (BarcodeReaderException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						long endFile=System.currentTimeMillis();
+						Logger.d("decode file time : "+(endFile-startFile));
+					}
+				}
+			}).start();*/
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -218,6 +239,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				}
 			}
 		});
+	}
+
+	public final byte[] input2byte()
+			throws IOException {
+		InputStream ims = getAssets().open("1531816782728.jpg");
+		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+		byte[] buff = new byte[100];
+		int rc = 0;
+		while ((rc = ims.read(buff, 0, 100)) > 0) {
+			swapStream.write(buff, 0, rc);
+		}
+		return swapStream.toByteArray();
 	}
 
 	@Override
@@ -363,7 +396,27 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
 					long endTime = System.currentTimeMillis();
-					Logger.d("detect code time : " + (endTime - startTime));
+					long duringTime = endTime - startTime;
+					Logger.d("detect code time : " + duringTime);
+					if (duringTime > 1000) {
+						File file = new File(Environment.getExternalStorageDirectory() + "/dbr-preview/");
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+							file.createNewFile();
+						}
+						FileOutputStream outputStream;
+						try {
+							outputStream = new FileOutputStream(file + "/" + System.currentTimeMillis() + ".jpg");
+							yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 100, outputStream);
+							outputStream.flush();
+							outputStream.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+
+					}
 					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
 					if (result != null && result.length > 0) {
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
@@ -382,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					}
 				}
 			} catch (BarcodeReaderException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
