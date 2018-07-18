@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,23 +23,29 @@ import android.widget.TextView;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
-import com.otaliastudios.cameraview.CameraListener;
-import com.otaliastudios.cameraview.CameraOptions;
-import com.otaliastudios.cameraview.CameraView;
-import com.otaliastudios.cameraview.Flash;
-import com.otaliastudios.cameraview.Frame;
-import com.otaliastudios.cameraview.FrameProcessor;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fotoapparat.Fotoapparat;
+import io.fotoapparat.configuration.UpdateConfiguration;
+import io.fotoapparat.parameter.ScaleType;
+import io.fotoapparat.preview.Frame;
+import io.fotoapparat.preview.FrameProcessor;
+import io.fotoapparat.view.CameraView;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity {
+import static io.fotoapparat.selector.FlashSelectorsKt.off;
+import static io.fotoapparat.selector.FlashSelectorsKt.torch;
+import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
+
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
 	@BindView(R.id.qr_view)
@@ -55,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
 	private String name = "";
 	private boolean isFlashOn = false;
 	private boolean isCameraOpen = false;
+	private Fotoapparat fotoapparat;
+	private boolean hasCameraPermission;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -157,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
+		askForPermissions();
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 		} catch (Exception e) {
@@ -194,68 +204,41 @@ public class MainActivity extends AppCompatActivity {
 		mCache.put("qrcode", "1");
 		mCache.put("pdf417", "1");
 		mCache.put("matrix", "1");
+		setupFotoapparat();
+	}
 
-		cameraView.addCameraListener(new CameraListener() {
-			@Override
-			public void onCameraOpened(CameraOptions options) {
-				super.onCameraOpened(options);
-				isCameraOpen = true;
-			}
-		});
-		cameraView.addFrameProcessor(new FrameProcessor() {
-			@SuppressLint("NewApi")
-			@Override
-			public void process(@NonNull Frame frame) {
-				try {
-					if (isDetected && isCameraOpen) {
-						isDetected = false;
-						YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
-								frame.getSize().getWidth(), frame.getSize().getHeight(), null);
-						int hgt = frame.getSize().getHeight();
-						int wid = frame.getSize().getWidth();
-						int[] stride = yuvImage.getStrides();
-						result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, stride[0], EnumImagePixelFormat.IPF_NV21, name);
-						Log.d("barcode result", "result" + result);
-						if (result != null && result.length > 0) {
-							isDetected = false;
-							Log.d("barcode result", "process: " + result);
-							Message message = handler.obtainMessage();
-							message.obj = result[0];
-							message.what = 0;
-							handler.sendMessage(message);
-						} else {
-							isDetected = true;
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	private void askForPermissions() {
+		String[] perms = {Manifest.permission.CAMERA};
+		if (!EasyPermissions.hasPermissions(this, perms)) {
+			hasCameraPermission = false;
+			EasyPermissions.requestPermissions(this, "We need camera permission to provide service.", 0, perms);
+		} else {
+			hasCameraPermission = true;
+			cameraView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 			Intent intent = new Intent(MainActivity.this, SettingActivity.class);
 			intent.putExtra("type", barcodeType);
 			startActivityForResult(intent, 0);
 			return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -296,32 +279,88 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		cameraView.start();
+	protected void onStart() {
+		super.onStart();
+		if (hasCameraPermission) {
+			fotoapparat.start();
+		}
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-		cameraView.stop();
+	protected void onStop() {
+		super.onStop();
+		if (hasCameraPermission) {
+			fotoapparat.stop();
+		}
 	}
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		cameraView.destroy();
+	private void setupFotoapparat() {
+		fotoapparat = Fotoapparat
+				.with(this)
+				.into(cameraView)
+				.previewScaleType(ScaleType.CenterCrop)
+				.lensPosition(back())
+				.frameProcessor(new FrameProcessor() {
+					@Override
+					public void process(Frame frame) {
+						try {
+							if (isDetected) {
+								isDetected = false;
+								YuvImage yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
+										frame.getSize().width, frame.getSize().height, null);
+								int wid = frame.getSize().width;
+								int hgt = frame.getSize().height;
+								int[] stride = yuvImage.getStrides();
+								result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt, stride[0], EnumImagePixelFormat.IPF_NV21, name);
+								Log.d("barcode result", "result" + result);
+								if (result != null && result.length > 0) {
+									isDetected = false;
+									Log.d("barcode result", "process: " + result);
+									Message message = handler.obtainMessage();
+									message.obj = result[0];
+									message.what = 0;
+									handler.sendMessage(message);
+								} else {
+									isDetected = true;
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				})
+				.build();
 	}
 
 	@OnClick(R.id.tv_flash)
 	public void onFlashClick() {
 		if (isFlashOn) {
 			isFlashOn = false;
-			cameraView.setFlash(Flash.OFF);
+			fotoapparat.updateConfiguration(
+					UpdateConfiguration.builder()
+							.flash(off())
+							.build()
+			);
 		} else {
 			isFlashOn = true;
-			cameraView.setFlash(Flash.TORCH);
+			fotoapparat.updateConfiguration(
+					UpdateConfiguration.builder()
+							.flash(torch())
+							.build()
+			);
 		}
+	}
+
+	@Override
+	public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+		hasCameraPermission = true;
+		fotoapparat.start();
+		cameraView.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
 	}
 }
 
