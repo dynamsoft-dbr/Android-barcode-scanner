@@ -36,13 +36,6 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-import com.otaliastudios.cameraview.CameraListener;
-import com.otaliastudios.cameraview.CameraOptions;
-import com.otaliastudios.cameraview.CameraView;
-import com.otaliastudios.cameraview.Flash;
-import com.otaliastudios.cameraview.Frame;
-import com.otaliastudios.cameraview.FrameProcessor;
-import com.otaliastudios.cameraview.Size;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.json.JSONArray;
@@ -64,7 +57,21 @@ import java.util.concurrent.Executors;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fotoapparat.Fotoapparat;
+import io.fotoapparat.configuration.UpdateConfiguration;
+import io.fotoapparat.parameter.Resolution;
+import io.fotoapparat.parameter.ScaleType;
+import io.fotoapparat.parameter.camera.CameraParameters;
+import io.fotoapparat.preview.Frame;
+import io.fotoapparat.preview.FrameProcessor;
+import io.fotoapparat.view.CameraView;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static io.fotoapparat.selector.FlashSelectorsKt.off;
+import static io.fotoapparat.selector.FlashSelectorsKt.torch;
+import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
@@ -99,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private boolean isFlashOn = false;
 	private ArrayList<String> allResultText = new ArrayList<String>();
 	private float previewScale;
-	private Size previewSize = null;
+	private Resolution previewSize = null;
 	private FrameUtil frameUtil;
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
 	private SimpleAdapter simpleAdapter;
@@ -107,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private long endDetectTime = 0;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 	private ExecutorService threadManager = Executors.newCachedThreadPool();
+	private boolean hasCameraPermission;
+	private Fotoapparat fotoapparat;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -143,10 +152,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setContentView(R.layout.activity_main);
 
 		ButterKnife.bind(this);
-		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-		if (!EasyPermissions.hasPermissions(this, perms)) {
-			EasyPermissions.requestPermissions(this, "", 0, perms);
-		}
+		askForPermissions();
 		slidingDrawer.setDragView(dragView);
 		Logger.addLogAdapter(new AndroidLogAdapter());
 		try {
@@ -196,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Uri uri = Uri.parse("https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx");
+						Uri uri = Uri.parse(getString(R.string.dynamsoft_website_url));
 						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 						startActivity(intent);
 					}
@@ -211,18 +217,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			}
 		});
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
-
-		cameraView.addCameraListener(new CameraListener() {
-			@Override
-			public void onCameraOpened(CameraOptions options) {
-				super.onCameraOpened(options);
-				isCameraStarted = true;
-			}
-		});
-		cameraView.addFrameProcessor(new CodeFrameProcesser());
+		setupFotoapparat();
 		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
 				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
 		lvBarcodeList.setAdapter(simpleAdapter);
+		setupSlidingDrawer();
+	}
+
+	private void setupSlidingDrawer() {
 		slidingDrawer.addSlideListener(new SlidingDrawer.OnSlideListener() {
 			@Override
 			public void onSlide(SlidingDrawer slidingDrawer, float currentSlide) {
@@ -239,6 +241,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				}
 			}
 		});
+	}
+
+	private void askForPermissions() {
+		String[] perms = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		if (!EasyPermissions.hasPermissions(this, perms)) {
+			hasCameraPermission = false;
+			EasyPermissions.requestPermissions(this, "We need camera permission to provide service.", 0, perms);
+		} else {
+			hasCameraPermission = true;
+			cameraView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public final byte[] input2byte()
@@ -306,31 +319,37 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		cameraView.start();
+	protected void onStart() {
+		super.onStart();
+		if (hasCameraPermission) {
+			fotoapparat.start();
+		}
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-		cameraView.stop();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		cameraView.destroy();
+	protected void onStop() {
+		super.onStop();
+		if (hasCameraPermission) {
+			fotoapparat.stop();
+		}
 	}
 
 	@OnClick(R.id.tv_flash)
 	public void onFlashClick() {
 		if (isFlashOn) {
 			isFlashOn = false;
-			cameraView.setFlash(Flash.OFF);
+			fotoapparat.updateConfiguration(
+					UpdateConfiguration.builder()
+							.flash(off())
+							.build()
+			);
 		} else {
 			isFlashOn = true;
-			cameraView.setFlash(Flash.TORCH);
+			fotoapparat.updateConfiguration(
+					UpdateConfiguration.builder()
+							.flash(torch())
+							.build()
+			);
 		}
 	}
 
@@ -342,7 +361,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 	@Override
 	public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
+		hasCameraPermission = true;
+		fotoapparat.start();
+		cameraView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -354,8 +375,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		if (hudView.getWidth() == 0 || hudView.getHeight() == 0) {
 			return;
 		}
-		previewSize = cameraView.getPreviewSize();
-		previewScale = frameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
+		fotoapparat.getCurrentParameters().whenAvailable(new Function1<CameraParameters, Unit>() {
+			@Override
+			public Unit invoke(CameraParameters cameraParameters) {
+				previewSize=cameraParameters.getPreviewResolution();
+				previewScale = frameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
+				return Unit.INSTANCE;
+			}
+		});
+
 	}
 
 	private void drawDocumentBox(ArrayList<RectPoint[]> rectCoord) {
@@ -376,22 +404,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			recentCodeList.add(recentCodeItem);
 		}
 	}
-
+	private void setupFotoapparat() {
+		fotoapparat = Fotoapparat
+				.with(this)
+				.into(cameraView)
+				.previewScaleType(ScaleType.CenterCrop)
+				.lensPosition(back())
+				.frameProcessor(new CodeFrameProcesser())
+				.build();
+	}
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && isCameraStarted && !isDrawerExpand) {
+				if (isDetected  && !isDrawerExpand) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
 						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
 						handler.sendMessage(obtainPreviewMsg);
 					}
-					YuvImage yuvImage = new YuvImage(frame.getData(), frame.getFormat(),
-							frame.getSize().getWidth(), frame.getSize().getHeight(), null);
-					int wid = frame.getSize().getWidth();
-					int hgt = frame.getSize().getHeight();
+					YuvImage yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
+							frame.getSize().width, frame.getSize().height, null);
+					int wid = frame.getSize().width;
+					int hgt = frame.getSize().height;
 					long startTime = System.currentTimeMillis();
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
@@ -415,7 +451,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-
 					}
 					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
 					if (result != null && result.length > 0) {
@@ -488,8 +523,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				startDetectTime = System.currentTimeMillis();
 			}
 		}
-
-
 	}
 }
 

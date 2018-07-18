@@ -6,9 +6,10 @@ import android.util.Log;
 
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
-import com.otaliastudios.cameraview.Size;
 
 import java.util.ArrayList;
+
+import io.fotoapparat.parameter.Resolution;
 
 /**
  * Created by Elemen on 2018/7/4.
@@ -73,39 +74,39 @@ public class FrameUtil {
 		return yuv;
 	}
 
-	public float calculatePreviewScale(Size size, int viewWidth, int viewHeight) {
+	public float calculatePreviewScale(Resolution size, int viewWidth, int viewHeight) {
 		if (size == null) {
 			return 0;
 		}
 		this.viewWidth = viewWidth;
 		this.viewHeight = viewHeight;
 		float previewScale;
-		if (size.getHeight() > size.getWidth()) {
-			if (((float) viewWidth / (float) size.getWidth()) > ((float) viewHeight / (float) size.getHeight())) {
-				previewScale = (float) viewWidth / (float) size.getWidth();
+		if (size.height > size.width) {
+			if (((float) viewWidth / (float) size.width) > ((float) viewHeight / (float) size.height)) {
+				previewScale = (float) viewWidth / (float) size.width;
 				dependOnWid = true;
 				Log.d("scaletype", "0");
 			} else {
-				previewScale = (float) (viewHeight) / (float) size.getHeight();
+				previewScale = (float) (viewHeight) / (float) size.height;
 				dependOnWid = false;
 				Log.d("scaletype", "1");
 
 			}
 		} else {
-			if (((float) viewWidth / (float) size.getHeight()) > ((float) viewHeight / (float) size.getWidth())) {
-				previewScale = (float) viewWidth / (float) size.getHeight();
+			if (((float) viewWidth / (float) size.height) > ((float) viewHeight / (float) size.height)) {
+				previewScale = (float) viewWidth / (float) size.height;
 				dependOnWid = true;
 				Log.d("scaletype", "2");
 
 			} else {
-				previewScale = (float) (viewHeight) / (float) size.getWidth();
+				previewScale = (float) (viewHeight) / (float) size.width;
 				dependOnWid = false;
 				Log.d("scaletype", "3");
 
 			}
 		}
-		Log.d("PreviewFrameHelper", " previewSize: " + size.getWidth() + " * "
-				+ size.getHeight() + "previewscale: " + previewScale + "hudwidth" + viewWidth + " hudheight" + viewHeight);
+		Log.d("PreviewFrameHelper", " previewSize: " + size.width + " * "
+				+ size.height + "previewscale: " + previewScale + "hudwidth" + viewWidth + " hudheight" + viewHeight);
 		return previewScale;
 	}
 

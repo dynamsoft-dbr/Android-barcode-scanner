@@ -23,4 +23,5 @@
 	<string name="qrcode">QRCode</string>
 	<string name="pdf417">PDF417</string>
 	<string name="datamatrix">DataMatrix</string>
+	<string name="dynamsoft_website_url">https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx</string>
 </resources>
