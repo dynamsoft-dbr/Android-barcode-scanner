@@ -93,7 +93,7 @@ public class FrameUtil {
 
 			}
 		} else {
-			if (((float) viewWidth / (float) size.height) > ((float) viewHeight / (float) size.height)) {
+			if (((float) viewWidth / (float) size.height) > ((float) viewHeight / (float) size.width)) {
 				previewScale = (float) viewWidth / (float) size.height;
 				dependOnWid = true;
 				Log.d("scaletype", "2");
