@@ -15,11 +15,14 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -38,6 +41,7 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -64,14 +68,19 @@ import io.fotoapparat.parameter.ScaleType;
 import io.fotoapparat.parameter.camera.CameraParameters;
 import io.fotoapparat.preview.Frame;
 import io.fotoapparat.preview.FrameProcessor;
+import io.fotoapparat.result.PhotoResult;
+import io.fotoapparat.result.WhenDoneListener;
 import io.fotoapparat.view.CameraView;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static io.fotoapparat.selector.AspectRatioSelectorsKt.standardRatio;
 import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
+import static io.fotoapparat.selector.ResolutionSelectorsKt.highestResolution;
+import static io.fotoapparat.selector.ResolutionSelectorsKt.lowestResolution;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
@@ -96,15 +105,20 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.rl_barcode_list)
 	ListView lvBarcodeList;
+	@BindView(R.id.sc_switch_mode)
+	SwitchCompat scSwitchMode;
+	@BindView(R.id.btn_capture)
+	Button btnCapture;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
 	private boolean isCameraStarted = false;
 	private boolean isDrawerExpand = false;
+	private boolean isSingleMode = false;
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
-	private ArrayList<String> allResultText = new ArrayList<String>();
+	private ArrayList<String> allResultText = new ArrayList<>();
 	private float previewScale;
 	private Resolution previewSize = null;
 	private FrameUtil frameUtil;
@@ -150,14 +164,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
 		ButterKnife.bind(this);
 		askForPermissions();
-		slidingDrawer.setDragView(dragView);
 		Logger.addLogAdapter(new AndroidLogAdapter());
 		try {
-			reader = new BarcodeReader("t0068MgAAAA70elzyXYmS7moRx7im7XPCr58/2f7IyvaQfe2y0go" +
-					"R2REXg7tfQ8Mv48LhyuiCPwaCnuPb7CKFYrg9B/Yc30k=");
+			reader = new BarcodeReader(getString(R.string.dbr_license));
 			JSONObject jsonObject = new JSONObject("{\n" +
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
@@ -192,36 +203,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		setSupportActionBar(toolbar);
+		initUI();
 		frameUtil = new FrameUtil();
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage(R.string.about);
-				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Uri uri = Uri.parse(getString(R.string.dynamsoft_website_url));
-						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-						startActivity(intent);
-					}
-				});
-				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.show();
-			}
-		});
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
-		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
-				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
-		lvBarcodeList.setAdapter(simpleAdapter);
-		setupSlidingDrawer();
 	}
 
 	private void setupSlidingDrawer() {
@@ -244,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	}
 
 	private void askForPermissions() {
-		String[] perms = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 		if (!EasyPermissions.hasPermissions(this, perms)) {
 			hasCameraPermission = false;
 			EasyPermissions.requestPermissions(this, "We need camera permission to provide service.", 0, perms);
@@ -286,8 +271,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		try {
-			reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
-					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");
+		/*	reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
+					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");*/
 			JSONObject object = new JSONObject("{\n" +
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"linear\",\n" +
@@ -378,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		fotoapparat.getCurrentParameters().whenAvailable(new Function1<CameraParameters, Unit>() {
 			@Override
 			public Unit invoke(CameraParameters cameraParameters) {
-				previewSize=cameraParameters.getPreviewResolution();
+				previewSize = cameraParameters.getPreviewResolution();
 				previewScale = frameUtil.calculatePreviewScale(previewSize, hudView.getWidth(), hudView.getHeight());
 				return Unit.INSTANCE;
 			}
@@ -404,20 +389,99 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			recentCodeList.add(recentCodeItem);
 		}
 	}
+
 	private void setupFotoapparat() {
 		fotoapparat = Fotoapparat
 				.with(this)
 				.into(cameraView)
+				.photoResolution(standardRatio(
+						lowestResolution()
+				))
 				.previewScaleType(ScaleType.CenterCrop)
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
 				.build();
 	}
+
+	private void initUI() {
+		slidingDrawer.setDragView(dragView);
+		setSupportActionBar(toolbar);
+		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
+				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
+		lvBarcodeList.setAdapter(simpleAdapter);
+		btnCapture.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				PhotoResult photoResult = fotoapparat.takePicture();
+				final String photoName = System.currentTimeMillis() + "";
+				photoResult.saveToFile(new File(getExternalFilesDir("photos"), photoName + ".jpg"
+				)).whenDone(new WhenDoneListener<Unit>() {
+					@Override
+					public void whenDone(@Nullable Unit it) {
+						Logger.d("save img done~!");
+						Intent intent = new Intent(MainActivity.this, PhotoPreviewActivity.class);
+						intent.putExtra("photoname", photoName);
+						startActivity(intent);
+					}
+				});
+			}
+		});
+		scSwitchMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Logger.d("switch" + isChecked);
+				isSingleMode = isChecked;
+				if (isSingleMode) {
+					switchToSingle();
+				} else {
+					switchToMulti();
+				}
+			}
+		});
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+				builder.setMessage(R.string.about);
+				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Uri uri = Uri.parse(getString(R.string.dynamsoft_website_url));
+						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+						startActivity(intent);
+					}
+				});
+				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				builder.show();
+			}
+		});
+		setupSlidingDrawer();
+	}
+
+	private void switchToMulti() {
+		scSwitchMode.setText("multi");
+		slidingDrawer.setVisibility(View.VISIBLE);
+		mScanCount.setVisibility(View.VISIBLE);
+		btnCapture.setVisibility(View.GONE);
+	}
+
+	private void switchToSingle() {
+		scSwitchMode.setText("single");
+		slidingDrawer.setVisibility(View.GONE);
+		mScanCount.setVisibility(View.GONE);
+		btnCapture.setVisibility(View.VISIBLE);
+	}
+
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected  && !isDrawerExpand) {
+				if (isDetected && !isDrawerExpand && !isSingleMode) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();

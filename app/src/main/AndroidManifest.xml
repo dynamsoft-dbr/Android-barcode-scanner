@@ -26,5 +26,6 @@
 		</activity>
 		<activity android:name=".HistoryActivity"/>
 		<activity android:name=".HistoryItemDetailActivity"/>
+		<activity android:name=".PhotoPreviewActivity"/>
 	</application>
 </manifest>
