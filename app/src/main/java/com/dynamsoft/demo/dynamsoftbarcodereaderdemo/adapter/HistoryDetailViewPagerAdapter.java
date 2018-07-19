@@ -9,16 +9,13 @@ import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.CanvasImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import cn.bingoogolapple.photopicker.util.BGABrowserPhotoViewAttacher;
 import cn.bingoogolapple.photopicker.util.BGAPhotoPickerUtil;
 import cn.bingoogolapple.photopicker.widget.BGAImageView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by Elemen on 2018/7/16.
@@ -34,49 +30,33 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 	private ArrayList<HistoryItemBean> picPathList;
 	private Context context;
-	private Boolean ifDrawOnPicture;
 
-	public HistoryDetailViewPagerAdapter(Context context, ArrayList<HistoryItemBean> picPathList, Boolean ifDrawOnPicture) {
+	public HistoryDetailViewPagerAdapter(Context context, ArrayList<HistoryItemBean> picPathList) {
 		this.picPathList = picPathList;
 		this.context = context;
-		this.ifDrawOnPicture = ifDrawOnPicture;
 	}
 
 	@NonNull
 	@Override
 	public Object instantiateItem(@NonNull ViewGroup container, int position) {
-		if(ifDrawOnPicture){
-			BGAImageView imageView = new BGAImageView(context);
-			drawRectOnImg(imageView, position);
-			container.addView(imageView);
-			final BGABrowserPhotoViewAttacher photoViewAttacher = new BGABrowserPhotoViewAttacher(imageView);
-			//imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-			imageView.setDelegate(new BGAImageView.Delegate() {
-				@Override
-				public void onDrawableChanged(Drawable drawable) {
-					if (drawable != null && drawable.getIntrinsicHeight() > drawable.getIntrinsicWidth()
-							&& drawable.getIntrinsicHeight() > BGAPhotoPickerUtil.getScreenHeight()) {
-						photoViewAttacher.setIsSetTopCrop(true);
-						photoViewAttacher.setUpdateBaseMatrix();
-					} else {
-						photoViewAttacher.update();
-					}
+		BGAImageView imageView = new BGAImageView(context);
+		drawRectOnImg(imageView, position);
+		container.addView(imageView);
+		final BGABrowserPhotoViewAttacher photoViewAttacher = new BGABrowserPhotoViewAttacher(imageView);
+		//imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		imageView.setDelegate(new BGAImageView.Delegate() {
+			@Override
+			public void onDrawableChanged(Drawable drawable) {
+				if (drawable != null && drawable.getIntrinsicHeight() > drawable.getIntrinsicWidth()
+						&& drawable.getIntrinsicHeight() > BGAPhotoPickerUtil.getScreenHeight()) {
+					photoViewAttacher.setIsSetTopCrop(true);
+					photoViewAttacher.setUpdateBaseMatrix();
+				} else {
+					photoViewAttacher.update();
 				}
-			});
-			return imageView;
-		}else {
-			HistoryItemBean historyItemBean;
-			historyItemBean = picPathList.get(position);
-			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
-			CanvasImageView imageView = new CanvasImageView(context, oriBitmap.getWidth(), oriBitmap.getHeight());
-			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-			drawRectOnView(imageView, position);
-			container.addView(imageView);
-			PhotoViewAttacher attacher=new PhotoViewAttacher(imageView);
-			attacher.update();
-			return imageView;
-		}
-
+			}
+		});
+		return imageView;
 	}
 
 	@Override
@@ -122,20 +102,6 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 			Glide.with(context)
 					.load(bytes)
 					.into(imageView);
-		}
-	}
-	private void drawRectOnView(CanvasImageView imageView, int position){
-		HistoryItemBean historyItemBean;
-		historyItemBean = picPathList.get(position);
-		if (historyItemBean != null) {
-			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			oriBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-			byte[] bytes = baos.toByteArray();
-			Glide.with(context)
-					.load(bytes)
-					.into(imageView);
-			imageView.setBoundaryPoints(historyItemBean.getRectCoord());
 		}
 	}
 }
