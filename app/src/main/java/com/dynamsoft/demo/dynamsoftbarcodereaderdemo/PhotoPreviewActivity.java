@@ -45,7 +45,6 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case DECODE_FINISHI:
-
 					Glide.with(PhotoPreviewActivity.this)
 							.load((byte[]) msg.obj)
 							.into(ivPhotoPreview);
@@ -115,14 +114,14 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 							path.close();
 							canvas.drawPath(path, paint);
 						}
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						rectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-						byte[] bytes = baos.toByteArray();
-						Message message = mHandler.obtainMessage();
-						message.what = DECODE_FINISHI;
-						message.obj = bytes;
-						mHandler.sendMessage(message);
 					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					rectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+					byte[] bytes = baos.toByteArray();
+					Message message = mHandler.obtainMessage();
+					message.what = DECODE_FINISHI;
+					message.obj = bytes;
+					mHandler.sendMessage(message);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (BarcodeReaderException e) {
