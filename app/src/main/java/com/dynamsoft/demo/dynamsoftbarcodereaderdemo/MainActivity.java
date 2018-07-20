@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 								+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
 								+ "}");
 					} else {
-						builder.setMessage("type : " + result.barcodeFormat + "\n\n result : " + result.barcodeText);
+						builder.setMessage("Type : " + result.barcodeFormat + "\n\n result : " + result.barcodeText);
 					}
 					builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 						@Override
@@ -178,18 +178,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			@Override
 			public void onClick(View v) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage("Dynamsoft Barcode Reader Mobile App Demo(Dynamsoft Barcode Reader" +
-						" SDK v6.2)\n\n© 2018 Dynamsoft. All rights reserved. " +
-						"\n\nIntegrate Barcode Reader Functionality into Your own Mobile App? " +
-						"\n\nClick 'Overview' button for further info.\n\n");
-				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
+				builder.setMessage(R.string.about);
+/*				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Uri uri = Uri.parse("https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx");
 						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 						startActivity(intent);
 					}
-				});
+				});*/
 				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

@@ -25,7 +25,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="bottom|center_horizontal"
 		android:layout_marginBottom="100dp"
-		android:text="Flash"
+		android:text="@string/flash"
 		android:textColor="#ffffff"
 		android:textSize="20sp"/>
 
