@@ -25,4 +25,6 @@
 	<string name="dbr_license">f0068MgAAAFByFtSM14pR5k8J1Z6pSovM/gbqxXzFSJSyA9Pm3Xdb2BGr60jDCjVpAgDxVgG1QxhkHAmPXfiyVvr8puGOjr8=</string>
 	<string name="barcode_type">Type ></string>
 	<string name="flash">Flash</string>
+	<string name="result_type">Type :</string>
+	<string name="result_result">Result :</string>
 </resources>

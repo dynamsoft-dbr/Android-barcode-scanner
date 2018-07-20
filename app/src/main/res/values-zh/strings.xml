@@ -25,4 +25,6 @@
 	<string name="datamatrix">DataMatrix</string>
 	<string name="barcode_type">配置 ></string>
 	<string name="flash">闪光灯</string>
+	<string name="result_type">种类 :</string>
+	<string name="result_result">结果 :</string>
 </resources>

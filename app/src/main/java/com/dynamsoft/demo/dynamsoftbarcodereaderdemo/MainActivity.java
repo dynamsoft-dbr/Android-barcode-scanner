@@ -138,11 +138,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							default:
 								break;
 						}
-						builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result.barcodeText + "\n\nRegion : {Left : " + xAarray[0]
+		/*				builder.setMessage("Type : " + barcodeFormat + "\n\nResult : " + result.barcodeText + "\n\nRegion : {Left : " + xAarray[0]
 								+ " Top : " + yAarray[0] + " Right : " + xAarray[3] + " Bottom : " + yAarray[3]
-								+ "}");
+								+ "}");*/
+						builder.setMessage(getString(R.string.result_type) + barcodeFormat + "\n\n"+getString(R.string.result_result) + result.barcodeText);
 					} else {
-						builder.setMessage("Type : " + result.barcodeFormat + "\n\n result : " + result.barcodeText);
+						builder.setMessage("Type : " + result.barcodeFormat + "\n\n Result : " + result.barcodeText);
 					}
 					builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 						@Override
@@ -174,19 +175,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		}
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+/*		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 				builder.setMessage(R.string.about);
-/*				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
+*//*				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Uri uri = Uri.parse("https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx");
 						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 						startActivity(intent);
 					}
-				});*/
+				});*//*
 				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				});
 				builder.show();
 			}
-		});
+		});*/
 		mCache = DBRCache.get(this);
 		mCache.put("linear", "1");
 		mCache.put("qrcode", "1");
