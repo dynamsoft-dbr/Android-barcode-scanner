@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -47,11 +48,13 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +64,8 @@ import java.util.concurrent.Executors;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
+import cn.bingoogolapple.photopicker.util.BGAPhotoHelper;
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.configuration.UpdateConfiguration;
 import io.fotoapparat.parameter.Resolution;
@@ -85,9 +90,11 @@ import static io.fotoapparat.selector.ResolutionSelectorsKt.lowestResolution;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
+	private static final int RC_PREVIEW = 2;
 	private final int DETECT_BARCODE = 0x0001;
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
 	private final int BARCODE_RECT_COORD = 0x0003;
+	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -109,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	SwitchCompat scSwitchMode;
 	@BindView(R.id.btn_capture)
 	Button btnCapture;
+	@BindView(R.id.photoGallery)
+	ImageView ivPhotoGallery;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -159,6 +168,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			}
 		}
 	};
+	@OnClick({R.id.photoGallery})
+	public void onClick(View view){
+		switch (view.getId()){
+			case R.id.photoGallery:
+				choicePhotoWrapper();
+			default:
+				break;
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -270,9 +288,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		try {
-		/*	reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
-					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");*/
+		/*try {
+			reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
+					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");
 			JSONObject object = new JSONObject("{\n" +
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"linear\",\n" +
@@ -300,6 +318,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			name = "linear";
 		} catch (Exception e) {
 			e.printStackTrace();
+		}*/
+		if (requestCode == REQUEST_CHOOSE_PHOTO && resultCode == RESULT_OK) {
+			String filePath = BGAPhotoHelper.getFilePathFromUri(data.getData());
+			Intent intent = new Intent(MainActivity.this, DecodeLocalPictureActivity.class);
+			intent.putExtra("FilePath", filePath);
+			startActivity(intent);
 		}
 	}
 
@@ -394,9 +418,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		fotoapparat = Fotoapparat
 				.with(this)
 				.into(cameraView)
-				.photoResolution(standardRatio(
+				/*.photoResolution(standardRatio(
 						lowestResolution()
-				))
+				))*/
 				.previewScaleType(ScaleType.CenterCrop)
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
@@ -587,6 +611,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				startDetectTime = System.currentTimeMillis();
 			}
 		}
+	}
+	private void choicePhotoWrapper() {
+		BGAPhotoHelper photoHelper = new BGAPhotoHelper(new File(Environment.getExternalStorageDirectory(), "DBRDemo"));
+		startActivityForResult(photoHelper.getChooseSystemGalleryIntent(), REQUEST_CHOOSE_PHOTO);
 	}
 }
 
