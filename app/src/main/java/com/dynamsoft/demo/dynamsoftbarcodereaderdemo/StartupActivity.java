@@ -39,10 +39,6 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	private static final String TAG = "StartupActivity";
 	@BindView(R.id.imageButton)
 	ImageButton imageButton;
-	@BindView(R.id.imageButton2)
-	ImageButton imageButton2;
-	@BindView(R.id.imageButton3)
-	ImageButton imageButton3;
 	@BindView(R.id.tv_history)
 	TextView tvHistory;
 
@@ -148,16 +144,11 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	}
 
 
-	@OnClick({R.id.imageButton, R.id.imageButton2, R.id.imageButton3, R.id.tv_history})
+	@OnClick({R.id.imageButton, R.id.tv_history})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.imageButton:
-
-			case R.id.imageButton2:
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
-				break;
-			case R.id.imageButton3:
-				choicePhotoWrapper();
 				break;
 			case R.id.tv_history:
 				startActivity(new Intent(StartupActivity.this,HistoryActivity.class));

@@ -2,27 +2,20 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -41,16 +34,12 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,19 +57,15 @@ import io.fotoapparat.parameter.ScaleType;
 import io.fotoapparat.parameter.camera.CameraParameters;
 import io.fotoapparat.preview.Frame;
 import io.fotoapparat.preview.FrameProcessor;
-import io.fotoapparat.result.PhotoResult;
-import io.fotoapparat.result.WhenDoneListener;
 import io.fotoapparat.view.CameraView;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static io.fotoapparat.selector.AspectRatioSelectorsKt.standardRatio;
 import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
-import static io.fotoapparat.selector.ResolutionSelectorsKt.highestResolution;
-import static io.fotoapparat.selector.ResolutionSelectorsKt.lowestResolution;
+import static io.fotoapparat.selector.PreviewFpsRangeSelectorsKt.highestFps;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
@@ -105,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.rl_barcode_list)
 	ListView lvBarcodeList;
-	@BindView(R.id.sc_switch_mode)
-	SwitchCompat scSwitchMode;
 	@BindView(R.id.btn_capture)
 	Button btnCapture;
 	private BarcodeReader reader;
@@ -127,9 +110,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private long startDetectTime = 0;
 	private long endDetectTime = 0;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
-	private ExecutorService threadManager = Executors.newCachedThreadPool();
+	private ExecutorService threadManager = Executors.newSingleThreadExecutor();
 	private boolean hasCameraPermission;
 	private Fotoapparat fotoapparat;
+	private int frameTime = 0;
+	private ArrayList<YuvImage> yuvList = new ArrayList<>();
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -182,24 +167,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"  }\n" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
-/*			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					for (int i = 0; i < 10; i++) {
-						long startFile=System.currentTimeMillis();
-						try {
-							reader.decodeFileInMemory(input2byte(), "Custom_100947_777");
-						} catch (BarcodeReaderException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						long endFile=System.currentTimeMillis();
-						Logger.d("decode file time : "+(endFile-startFile));
-					}
-				}
-			}).start();*/
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -237,33 +204,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			hasCameraPermission = true;
 			cameraView.setVisibility(View.VISIBLE);
 		}
-	}
-
-	public final byte[] input2byte()
-			throws IOException {
-		InputStream ims = getAssets().open("1531816782728.jpg");
-		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-		byte[] buff = new byte[100];
-		int rc = 0;
-		while ((rc = ims.read(buff, 0, 100)) > 0) {
-			swapStream.write(buff, 0, rc);
-		}
-		return swapStream.toByteArray();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	@SuppressLint("NewApi")
@@ -394,10 +334,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		fotoapparat = Fotoapparat
 				.with(this)
 				.into(cameraView)
-				.photoResolution(standardRatio(
-						lowestResolution()
-				))
 				.previewScaleType(ScaleType.CenterCrop)
+				.previewFpsRange(highestFps())
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
 				.build();
@@ -409,79 +347,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
 				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
 		lvBarcodeList.setAdapter(simpleAdapter);
-		btnCapture.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PhotoResult photoResult = fotoapparat.takePicture();
-				final String photoName = System.currentTimeMillis() + "";
-				photoResult.saveToFile(new File(getExternalFilesDir("photos"), photoName + ".jpg"
-				)).whenDone(new WhenDoneListener<Unit>() {
-					@Override
-					public void whenDone(@Nullable Unit it) {
-						Logger.d("save img done~!");
-						Intent intent = new Intent(MainActivity.this, PhotoPreviewActivity.class);
-						intent.putExtra("photoname", photoName);
-						startActivity(intent);
-					}
-				});
-			}
-		});
-		scSwitchMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				Logger.d("switch" + isChecked);
-				isSingleMode = isChecked;
-				if (isSingleMode) {
-					switchToSingle();
-				} else {
-					switchToMulti();
-				}
-			}
-		});
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage(R.string.about);
-				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Uri uri = Uri.parse(getString(R.string.dynamsoft_website_url));
-						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-						startActivity(intent);
-					}
-				});
-				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.show();
-			}
-		});
 		setupSlidingDrawer();
-	}
-
-	private void switchToMulti() {
-		scSwitchMode.setText("multi");
-		slidingDrawer.setVisibility(View.VISIBLE);
-		mScanCount.setVisibility(View.VISIBLE);
-		btnCapture.setVisibility(View.GONE);
-	}
-
-	private void switchToSingle() {
-		scSwitchMode.setText("single");
-		slidingDrawer.setVisibility(View.GONE);
-		mScanCount.setVisibility(View.GONE);
-		btnCapture.setVisibility(View.VISIBLE);
 	}
 
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && !isDrawerExpand && !isSingleMode) {
+				if (isDetected && !isDrawerExpand) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
@@ -497,27 +370,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
 					long endTime = System.currentTimeMillis();
 					long duringTime = endTime - startTime;
+
 					Logger.d("detect code time : " + duringTime);
-					if (duringTime > 1000) {
-						File file = new File(Environment.getExternalStorageDirectory() + "/dbr-preview/");
-						if (!file.exists()) {
-							file.getParentFile().mkdirs();
-							file.createNewFile();
-						}
-						FileOutputStream outputStream;
-						try {
-							outputStream = new FileOutputStream(file + "/" + System.currentTimeMillis() + ".jpg");
-							yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 100, outputStream);
-							outputStream.flush();
-							outputStream.close();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
+
 					if (result != null && result.length > 0) {
+						if (frameTime > 1) {
+							yuvList.clear();
+							frameTime = 0;
+						}
+						yuvList.add(yuvImage);
+						frameTime++;
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
 						Message message = handler.obtainMessage();
 						message.obj = result;
@@ -534,8 +396,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					}
 				}
 			} catch (BarcodeReaderException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}

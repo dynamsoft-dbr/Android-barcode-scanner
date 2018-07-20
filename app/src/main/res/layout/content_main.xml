@@ -43,21 +43,21 @@
 		android:textSize="20sp"/>
 
 	<Button
-		android:visibility="gone"
 		android:id="@+id/btn_capture"
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
 		android:layout_alignParentBottom="true"
-		android:text="capture"/>
+		android:text="capture"
+		android:visibility="gone"/>
 
-	<android.support.v7.widget.SwitchCompat
-		android:id="@+id/sc_switch_mode"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="16dp"
-		android:text="multi"
-		android:textColor="@android:color/white"
-		/>
+	<!--	<android.support.v7.widget.SwitchCompat
+			android:id="@+id/sc_switch_mode"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="16dp"
+			android:text="multi"
+			android:textColor="@android:color/white"
+			/>-->
 
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
