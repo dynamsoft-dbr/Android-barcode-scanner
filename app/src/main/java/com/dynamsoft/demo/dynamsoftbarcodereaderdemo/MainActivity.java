@@ -2,7 +2,6 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -13,7 +12,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -34,7 +32,6 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -65,11 +62,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
-import static io.fotoapparat.selector.PreviewFpsRangeSelectorsKt.highestFps;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
-	private static final int PRC_PHOTO_PICKER = 1;
-	private static final int RC_CHOOSE_PHOTO = 1;
 	private final int DETECT_BARCODE = 0x0001;
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
 	private final int BARCODE_RECT_COORD = 0x0003;
@@ -95,9 +89,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
-	private boolean isCameraStarted = false;
 	private boolean isDrawerExpand = false;
-	private boolean isSingleMode = false;
 	private DBRCache mCache;
 	private String name = "";
 	private boolean isFlashOn = false;
@@ -158,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
 					"    \"BarcodeFormatIds\": [\n" +
-					"      \"QR_CODE\"\n" +
+					"      \"OneD\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
@@ -203,43 +195,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		} else {
 			hasCameraPermission = true;
 			cameraView.setVisibility(View.VISIBLE);
-		}
-	}
-
-	@SuppressLint("NewApi")
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		try {
-		/*	reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
-					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");*/
-			JSONObject object = new JSONObject("{\n" +
-					"  \"ImageParameters\": {\n" +
-					"    \"Name\": \"linear\",\n" +
-					"    \"BarcodeFormatIds\": [],\n" +
-					"    \"DeblurLevel\": 9,\n" +
-					"    \"AntiDamageLevel\": 9,\n" +
-					"    \"TextFilterMode\": \"Enable\"\n" +
-					"  }\n" +
-					"}");
-			JSONArray jsonArray = object.getJSONObject("ImageParameters").getJSONArray("BarcodeFormatIds");
-			if (mCache.getAsString("linear").equals("1")) {
-				jsonArray.put("OneD");
-			}
-			if (mCache.getAsString("qrcode").equals("1")) {
-				jsonArray.put("QR_CODE");
-			}
-			if (mCache.getAsString("pdf417").equals("1")) {
-				jsonArray.put("PDF417");
-			}
-			if (mCache.getAsString("matrix").equals("1")) {
-				jsonArray.put("DATAMATRIX");
-			}
-			Log.d("code type", "type : " + object.toString());
-			//reader.appendParameterTemplate(object.toString());
-			name = "linear";
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -335,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				.with(this)
 				.into(cameraView)
 				.previewScaleType(ScaleType.CenterCrop)
-				.previewFpsRange(highestFps())
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
 				.build();
