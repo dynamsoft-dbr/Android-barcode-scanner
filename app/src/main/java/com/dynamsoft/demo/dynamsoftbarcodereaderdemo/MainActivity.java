@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private long startDetectTime = 0;
 	private long endDetectTime = 0;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
-	private ExecutorService threadManager = Executors.newCachedThreadPool();
+	private ExecutorService threadManager = Executors.newSingleThreadExecutor();
 	private boolean hasCameraPermission;
 	private Fotoapparat fotoapparat;
 
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
 					"    \"BarcodeFormatIds\": [\n" +
-					"      \"QR_CODE\"\n" +
+					"      \"OneD\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
@@ -394,9 +394,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		fotoapparat = Fotoapparat
 				.with(this)
 				.into(cameraView)
-				.photoResolution(standardRatio(
-						lowestResolution()
-				))
 				.previewScaleType(ScaleType.CenterCrop)
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
@@ -543,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		private void checkTimeAndSaveImg(final YuvImage yuvImage, final TextResult[] results) {
 			if (startDetectTime != 0) {
 				endDetectTime = System.currentTimeMillis();
-				if (endDetectTime - startDetectTime > 1000) {
+				if (endDetectTime - startDetectTime > 500) {
 					threadManager.execute(new Runnable() {
 						@Override
 						public void run() {
