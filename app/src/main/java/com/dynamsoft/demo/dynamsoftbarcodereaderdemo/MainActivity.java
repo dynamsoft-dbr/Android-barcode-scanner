@@ -32,6 +32,7 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
+import com.dynamsoft.barcode.jni.ExtendedResult;
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					TextResult[] result = (TextResult[]) msg.obj;
 					fulFillRecentList(result);
 					for (TextResult aResult : result) {
-						if (!allResultText.contains(aResult.barcodeText)) {
+						if (!allResultText.contains(aResult.barcodeText) && aResult.localizationResult.extendedResultArray[0].confidence > 50) {
 							allResultText.add(aResult.barcodeText);
 						}
 					}
