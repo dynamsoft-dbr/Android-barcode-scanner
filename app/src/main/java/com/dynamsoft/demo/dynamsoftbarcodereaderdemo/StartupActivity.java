@@ -60,9 +60,9 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 			case R.id.imageButton:
 
 			case R.id.imageButton2:
-				startActivity(new Intent(StartupActivity.this, MainActivity.class));
-				break;
+
 			case R.id.imageButton3:
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.tv_history:
 				startActivity(new Intent(StartupActivity.this,HistoryActivity.class));

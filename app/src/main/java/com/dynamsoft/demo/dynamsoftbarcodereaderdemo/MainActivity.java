@@ -541,21 +541,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						}
 					}
 					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
+
+					Message coordMessage = handler.obtainMessage();
+					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
-						Message message = handler.obtainMessage();
 						message.obj = result;
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
-
-						Message coordMessage = handler.obtainMessage();
 						coordMessage.obj = rectCoord;
-						coordMessage.what = BARCODE_RECT_COORD;
-						handler.sendMessage(coordMessage);
 						checkTimeAndSaveImg(yuvImage, result);
 					} else {
 						isDetected = true;
 					}
+					coordMessage.what = BARCODE_RECT_COORD;
+					handler.sendMessage(coordMessage);
 				}
 			} catch (BarcodeReaderException e) {
 				e.printStackTrace();
