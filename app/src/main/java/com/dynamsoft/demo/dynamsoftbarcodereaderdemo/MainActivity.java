@@ -86,13 +86,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	ListView lvBarcodeList;
 	@BindView(R.id.btn_capture)
 	Button btnCapture;
+	@BindView(R.id.btn_start)
+	Button btnStart;
+	@BindView(R.id.btn_finish)
+	Button btnFinish;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
 	private boolean isDrawerExpand = false;
+	private boolean isFlashOn = false;
+	private boolean hasCameraPermission;
+	private boolean detectStart = false;
 	private DBRCache mCache;
 	private String name = "";
-	private boolean isFlashOn = false;
 	private ArrayList<String> allResultText = new ArrayList<>();
 	private float previewScale;
 	private Resolution previewSize = null;
@@ -103,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private long endDetectTime = 0;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 	private ExecutorService threadManager = Executors.newSingleThreadExecutor();
-	private boolean hasCameraPermission;
 	private Fotoapparat fotoapparat;
 	private int frameTime = 0;
 	private ArrayList<YuvImage> yuvList = new ArrayList<>();
@@ -150,7 +155,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
 					"    \"BarcodeFormatIds\": [\n" +
-					"      \"OneD\"\n" +
+					"      \"CODE_39\",\n" +
+					"      \"CODE_128\",\n" +
+					"      \"CODE_93\",\n" +
+					"      \"CODABAR\",\n" +
+					"      \"ITF\",\n" +
+					"      \"EAN_13\",\n" +
+					"      \"EAN_8\",\n" +
+					"      \"UPC_A\",\n" +
+					"      \"UPC_E\""+
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
@@ -304,11 +317,25 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setupSlidingDrawer();
 	}
 
+	@OnClick({R.id.btn_start, R.id.btn_finish})
+	public void onViewClicked(View view) {
+		switch (view.getId()) {
+			case R.id.btn_start:
+				detectStart = true;
+				break;
+			case R.id.btn_finish:
+				detectStart = false;
+				break;
+			default:
+				break;
+		}
+	}
+
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && !isDrawerExpand) {
+				if (isDetected && !isDrawerExpand && detectStart) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
@@ -339,7 +366,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						message.obj = result;
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
-
 						Message coordMessage = handler.obtainMessage();
 						coordMessage.obj = rectCoord;
 						coordMessage.what = BARCODE_RECT_COORD;

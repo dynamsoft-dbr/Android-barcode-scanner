@@ -50,14 +50,20 @@
 		android:text="capture"
 		android:visibility="gone"/>
 
-	<!--	<android.support.v7.widget.SwitchCompat
-			android:id="@+id/sc_switch_mode"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="16dp"
-			android:text="multi"
-			android:textColor="@android:color/white"
-			/>-->
+	<Button
+		android:id="@+id/btn_start"
+		android:text="Start"
+		android:padding="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+	<Button
+		android:layout_alignParentRight="true"
+		android:id="@+id/btn_finish"
+		android:text="finish"
+		android:padding="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
 
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
