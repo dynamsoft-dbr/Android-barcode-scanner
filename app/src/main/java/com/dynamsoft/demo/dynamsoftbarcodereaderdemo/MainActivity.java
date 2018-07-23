@@ -17,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +31,6 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
-import com.dynamsoft.barcode.jni.ExtendedResult;
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
@@ -44,18 +42,14 @@ import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +59,6 @@ import java.util.concurrent.Executors;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
 import cn.bingoogolapple.photopicker.util.BGAPhotoHelper;
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.configuration.UpdateConfiguration;
@@ -81,12 +74,9 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static io.fotoapparat.selector.AspectRatioSelectorsKt.standardRatio;
 import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
-import static io.fotoapparat.selector.ResolutionSelectorsKt.highestResolution;
-import static io.fotoapparat.selector.ResolutionSelectorsKt.lowestResolution;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
@@ -169,9 +159,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			}
 		}
 	};
+
 	@OnClick({R.id.photoGallery})
-	public void onClick(View view){
-		switch (view.getId()){
+	public void onClick(View view) {
+		switch (view.getId()) {
 			case R.id.photoGallery:
 				choicePhotoWrapper();
 			default:
@@ -499,6 +490,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		btnCapture.setVisibility(View.VISIBLE);
 	}
 
+	private void choicePhotoWrapper() {
+		BGAPhotoHelper photoHelper = new BGAPhotoHelper(new File(Environment.getExternalStorageDirectory(), "DBRDemo"));
+		startActivityForResult(photoHelper.getChooseSystemGalleryIntent(), REQUEST_CHOOSE_PHOTO);
+	}
+
 	class CodeFrameProcesser implements FrameProcessor {
 		@Override
 		public void process(@NonNull Frame frame) {
@@ -520,26 +516,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					long endTime = System.currentTimeMillis();
 					long duringTime = endTime - startTime;
 					Logger.d("detect code time : " + duringTime);
-					if (duringTime > 1000) {
-						File file = new File(Environment.getExternalStorageDirectory() + "/dbr-preview/");
-						if (!file.exists()) {
-							file.getParentFile().mkdirs();
-							file.createNewFile();
-						}
-						FileOutputStream outputStream;
-						try {
-							outputStream = new FileOutputStream(file + "/" + System.currentTimeMillis() + ".jpg");
-							yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 100, outputStream);
-							outputStream.flush();
-							outputStream.close();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					//Logger.d("barcode result" + Arrays.toString(result) + " src width : " + wid + "src height : " + hgt);
-
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -556,8 +532,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					handler.sendMessage(coordMessage);
 				}
 			} catch (BarcodeReaderException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -609,10 +583,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				startDetectTime = System.currentTimeMillis();
 			}
 		}
-	}
-	private void choicePhotoWrapper() {
-		BGAPhotoHelper photoHelper = new BGAPhotoHelper(new File(Environment.getExternalStorageDirectory(), "DBRDemo"));
-		startActivityForResult(photoHelper.getChooseSystemGalleryIntent(), REQUEST_CHOOSE_PHOTO);
 	}
 }
 
