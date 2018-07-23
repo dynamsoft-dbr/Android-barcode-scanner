@@ -59,6 +59,16 @@
 		android:textColor="@android:color/white"
 		/>
 
+	<ImageView
+		android:id="@+id/photoGallery"
+		android:layout_width="35dp"
+		android:layout_height="35dp"
+		android:layout_alignBottom="@+id/sc_switch_mode"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="16dp"
+		android:onClick="onClick"
+		app:srcCompat="@drawable/album" />
+
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
 		xmlns:android="http://schemas.android.com/apk/res/android"
