@@ -19,6 +19,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.dynamsoft.barcode.coordsmap.jni.CoordsMapResult;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	private Fotoapparat fotoapparat;
 	private int frameTime = 0;
 	private ArrayList<YuvImage> yuvList = new ArrayList<>();
+	private ArrayList<TextResult[]> textResultList = new ArrayList<>();
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -163,13 +165,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"      \"EAN_13\",\n" +
 					"      \"EAN_8\",\n" +
 					"      \"UPC_A\",\n" +
-					"      \"UPC_E\""+
+					"      \"UPC_E\"" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
 					"    \"DeblurLevel\":5,\n" +
 					"    \"ScaleDownThreshold\": 1000\n" +
-					"  }\n" +
+					"  },\n" +
+					"\"version\":\"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
 		} catch (Exception e) {
@@ -351,16 +354,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
 					long endTime = System.currentTimeMillis();
 					long duringTime = endTime - startTime;
-
 					Logger.d("detect code time : " + duringTime);
-
 					if (result != null && result.length > 0) {
-						if (frameTime > 1) {
-							yuvList.clear();
-							frameTime = 0;
-						}
-						yuvList.add(yuvImage);
-						frameTime++;
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
 						Message message = handler.obtainMessage();
 						message.obj = result;
@@ -370,7 +365,45 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						coordMessage.obj = rectCoord;
 						coordMessage.what = BARCODE_RECT_COORD;
 						handler.sendMessage(coordMessage);
-						checkTimeAndSaveImg(yuvImage, result);
+						if (frameTime==1){
+							yuvList.add(frameTime,yuvImage);
+							textResultList.add(frameTime,result);
+							CoordsMapResult coordsMapResult = CoordsMapResult.coordsMap(textResultList.get(0), textResultList.get(1), wid, hgt);
+							if (coordsMapResult != null) {
+								switch (coordsMapResult.basedImg) {
+									case 0:
+										checkTimeAndSaveImg(yuvList.get(0), textResultList.get(0));
+										checkTimeAndSaveImg(yuvList.get(1), textResultList.get(1));
+										break;
+									case 1:
+										TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
+										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+											newResultBase1[i].localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											newResultBase1[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
+										}
+										checkTimeAndSaveImg(yuvList.get(0), newResultBase1);
+										break;
+									case 2:
+										TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
+										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+											newResultBase2[i].localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											newResultBase2[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
+										}
+										checkTimeAndSaveImg(yuvList.get(1), newResultBase2);
+										break;
+									case -1:
+										checkTimeAndSaveImg(yuvList.get(1), textResultList.get(1));
+										break;
+									default:
+										break;
+								}
+							}
+							frameTime=0;
+						}else {
+							yuvList.add(frameTime,yuvImage);
+							textResultList.add(frameTime,result);
+							frameTime++;
+						}
 					} else {
 						isDetected = true;
 					}
@@ -381,51 +414,45 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		}
 
 		private void checkTimeAndSaveImg(final YuvImage yuvImage, final TextResult[] results) {
-			if (startDetectTime != 0) {
-				endDetectTime = System.currentTimeMillis();
-				if (endDetectTime - startDetectTime > 1000) {
-					threadManager.execute(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								long startSaveFile = System.currentTimeMillis();
-								YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
-										yuvImage.getWidth(), yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
-								String name = System.currentTimeMillis() + "";
-								File previewFile = new File(path + "/" + name + ".jpg");
-								if (!previewFile.exists()) {
-									previewFile.getParentFile().mkdirs();
-									previewFile.createNewFile();
-								}
-								FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
-								newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
-								fileOutputStream.flush();
-								fileOutputStream.close();
-								HistoryItemBean itemBean = new HistoryItemBean();
-								ArrayList<String> codeFormatList = new ArrayList<>();
-								ArrayList<String> codeTextList = new ArrayList<>();
-								ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(results, yuvImage.getHeight(), yuvImage.getWidth());
-								for (int i = 0; i < results.length; i++) {
-									codeFormatList.add(results[i].barcodeFormat + "");
-									codeTextList.add(results[i].barcodeText);
-								}
-								itemBean.setCodeFormat(codeFormatList);
-								itemBean.setCodeText(codeTextList);
-								itemBean.setCodeImgPath(path + "/" + name + ".jpg");
-								itemBean.setRectCoord(pointList);
-								String jsonResult = LoganSquare.serialize(itemBean);
-								mCache.put(name, jsonResult);
-								long endSaveFile = System.currentTimeMillis();
-								Logger.d("save file time : " + (endSaveFile - startSaveFile));
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+			endDetectTime = System.currentTimeMillis();
+			threadManager.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						long startSaveFile = System.currentTimeMillis();
+						YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
+								yuvImage.getWidth(), yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
+						String name = System.currentTimeMillis() + "";
+						File previewFile = new File(path + "/" + name + ".jpg");
+						if (!previewFile.exists()) {
+							previewFile.getParentFile().mkdirs();
+							previewFile.createNewFile();
 						}
-					});
+						FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
+						newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
+						fileOutputStream.flush();
+						fileOutputStream.close();
+						HistoryItemBean itemBean = new HistoryItemBean();
+						ArrayList<String> codeFormatList = new ArrayList<>();
+						ArrayList<String> codeTextList = new ArrayList<>();
+						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(results, yuvImage.getHeight(), yuvImage.getWidth());
+						for (TextResult result1 : results) {
+							codeFormatList.add(result1.barcodeFormat + "");
+							codeTextList.add(result1.barcodeText);
+						}
+						itemBean.setCodeFormat(codeFormatList);
+						itemBean.setCodeText(codeTextList);
+						itemBean.setCodeImgPath(path + "/" + name + ".jpg");
+						itemBean.setRectCoord(pointList);
+						String jsonResult = LoganSquare.serialize(itemBean);
+						mCache.put(name, jsonResult);
+						long endSaveFile = System.currentTimeMillis();
+						Logger.d("save file time : " + (endSaveFile - startSaveFile));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			} else {
-				startDetectTime = System.currentTimeMillis();
-			}
+			});
 		}
 	}
 }
