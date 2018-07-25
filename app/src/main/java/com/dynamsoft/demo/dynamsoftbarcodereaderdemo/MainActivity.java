@@ -78,7 +78,7 @@ import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
 	private static final int RC_PREVIEW = 2;
@@ -95,8 +95,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	TextView mScanCount;
 	@BindView(R.id.hud_view)
 	HUDCanvasView hudView;
-	@BindView(R.id.toolbar)
-	Toolbar toolbar;
 	@BindView(R.id.drag_view)
 	TextView dragView;
 	@BindView(R.id.sliding_drawer)
@@ -176,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
 		askForPermissions();
-		Logger.addLogAdapter(new AndroidLogAdapter());
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			JSONObject jsonObject = new JSONObject("{\n" +
@@ -219,6 +216,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		setupFotoapparat();
 	}
 
+	@Override
+	protected int getLayoutId() {
+		return 0;
+	}
+
 	private void setupSlidingDrawer() {
 		slidingDrawer.addSlideListener(new SlidingDrawer.OnSlideListener() {
 			@Override
@@ -249,8 +251,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		}
 	}
 
-	public final byte[] input2byte()
-			throws IOException {
+	public final byte[] input2byte() throws IOException {
 		InputStream ims = getAssets().open("1531816782728.jpg");
 		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
 		byte[] buff = new byte[100];
@@ -418,7 +419,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 	private void initUI() {
 		slidingDrawer.setDragView(dragView);
-		setSupportActionBar(toolbar);
 		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
 				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});
 		lvBarcodeList.setAdapter(simpleAdapter);
@@ -449,28 +449,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				} else {
 					switchToMulti();
 				}
-			}
-		});
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage(R.string.about);
-				builder.setPositiveButton("Overview", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Uri uri = Uri.parse(getString(R.string.dynamsoft_website_url));
-						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-						startActivity(intent);
-					}
-				});
-				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.show();
 			}
 		});
 		setupSlidingDrawer();
