@@ -169,9 +169,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+	protected int getLayoutId() {
+		return R.layout.activity_main;
+	}
+
+	@Override
+	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
 		askForPermissions();
 		try {
@@ -214,11 +217,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
-	}
-
-	@Override
-	protected int getLayoutId() {
-		return R.layout.activity_main;
 	}
 
 	private void setupSlidingDrawer() {
@@ -385,7 +383,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				return Unit.INSTANCE;
 			}
 		});
-
 	}
 
 	private void drawDocumentBox(ArrayList<RectPoint[]> rectCoord) {
