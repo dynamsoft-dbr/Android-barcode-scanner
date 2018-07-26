@@ -218,7 +218,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	@Override
 	protected int getLayoutId() {
-		return 0;
+		return R.layout.activity_main;
 	}
 
 	private void setupSlidingDrawer() {
