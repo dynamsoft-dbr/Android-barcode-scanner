@@ -35,9 +35,11 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"\"version\":\"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
+/*			TextResult[] results=reader.decodeFileInMemory(input2byte(),"");
+			CoordsMapResult coordsMapResult=CoordsMapResult.coordsMap(results,results,1080,1440);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -182,6 +186,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
+	}
+
+	public byte[] input2byte() throws IOException {
+		InputStream ims = getAssets().open("123.jpg");
+		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+		byte[] buff = new byte[100];
+		int rc = 0;
+		while ((rc = ims.read(buff, 0, 100)) > 0) {
+			swapStream.write(buff, 0, rc);
+		}
+		return swapStream.toByteArray();
 	}
 
 	private void setupSlidingDrawer() {
