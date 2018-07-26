@@ -23,6 +23,7 @@ import com.dynamsoft.barcode.coordsmap.jni.CoordsMapResult;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
+import com.dynamsoft.barcode.jni.LocalizationResult;
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
@@ -177,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"\"version\":\"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
-/*			TextResult[] results=reader.decodeFileInMemory(input2byte(),"");
-			CoordsMapResult coordsMapResult=CoordsMapResult.coordsMap(results,results,1080,1440);*/
+			TextResult[] results=reader.decodeFileInMemory(input2byte(),"");
+			CoordsMapResult coordsMapResult=CoordsMapResult.coordsMap(results,results,1080,1440);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -385,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							textResultList.add(frameTime,result);
 							CoordsMapResult coordsMapResult = CoordsMapResult.coordsMap(textResultList.get(0), textResultList.get(1), wid, hgt);
 							if (coordsMapResult != null) {
+								LocalizationResult localizationResult;
 								switch (coordsMapResult.basedImg) {
 									case 0:
 										checkTimeAndSaveImg(yuvList.get(0), textResultList.get(0));
@@ -393,7 +395,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 									case 1:
 										TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
 										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-											newResultBase1[i].localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											localizationResult=new LocalizationResult();
+											localizationResult.resultPoints=coordsMapResult.resultArr[i].pts;
+											newResultBase1[i].localizationResult=localizationResult;
 											newResultBase1[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
 										}
 										checkTimeAndSaveImg(yuvList.get(0), newResultBase1);
@@ -401,7 +405,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 									case 2:
 										TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
 										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-											newResultBase2[i].localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											localizationResult=new LocalizationResult();
+											localizationResult.resultPoints=coordsMapResult.resultArr[i].pts;
+											newResultBase2[i].localizationResult=localizationResult;
 											newResultBase2[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
 										}
 										checkTimeAndSaveImg(yuvList.get(1), newResultBase2);
