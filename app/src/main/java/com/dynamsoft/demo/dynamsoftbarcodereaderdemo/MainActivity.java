@@ -178,8 +178,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 					"\"version\":\"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
-			TextResult[] results=reader.decodeFileInMemory(input2byte(),"");
-			CoordsMapResult coordsMapResult=CoordsMapResult.coordsMap(results,results,1080,1440);
+			//TextResult[] results = reader.decodeFileInMemory(input2byte(), "");
+
+			//CoordsMapResult coordsMapResult = CoordsMapResult.coordsMap(results, results, 1080, 1440);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -381,34 +382,47 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 						coordMessage.obj = rectCoord;
 						coordMessage.what = BARCODE_RECT_COORD;
 						handler.sendMessage(coordMessage);
-						if (frameTime==1){
-							yuvList.add(frameTime,yuvImage);
-							textResultList.add(frameTime,result);
+						if (frameTime == 1) {
+							yuvList.add(frameTime, yuvImage);
+							textResultList.add(frameTime, result);
 							CoordsMapResult coordsMapResult = CoordsMapResult.coordsMap(textResultList.get(0), textResultList.get(1), wid, hgt);
 							if (coordsMapResult != null) {
 								LocalizationResult localizationResult;
+								TextResult textResult;
 								switch (coordsMapResult.basedImg) {
 									case 0:
 										checkTimeAndSaveImg(yuvList.get(0), textResultList.get(0));
 										checkTimeAndSaveImg(yuvList.get(1), textResultList.get(1));
 										break;
 									case 1:
-										TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
-										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-											localizationResult=new LocalizationResult();
-											localizationResult.resultPoints=coordsMapResult.resultArr[i].pts;
-											newResultBase1[i].localizationResult=localizationResult;
-											newResultBase1[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
+										TextResult[] newResultBase1 = new TextResult[result.length+coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length+coordsMapResult.resultArr.length; i++) {
+											if (i<result.length){
+												newResultBase1[i]=result[i];
+											}else {
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i-result.length].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i-result.length].barcodeText;
+												newResultBase1[i] = textResult;
+											}
 										}
 										checkTimeAndSaveImg(yuvList.get(0), newResultBase1);
 										break;
 									case 2:
-										TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
-										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-											localizationResult=new LocalizationResult();
-											localizationResult.resultPoints=coordsMapResult.resultArr[i].pts;
-											newResultBase2[i].localizationResult=localizationResult;
-											newResultBase2[i].barcodeText = coordsMapResult.resultArr[i].barcodeText;
+										TextResult[] newResultBase2 = new TextResult[result.length+coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length+coordsMapResult.resultArr.length; i++) {
+											if (i<result.length){
+												newResultBase2[i]=result[i];
+											}else {
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i-result.length].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i-result.length].barcodeText;
+												newResultBase2[i] = textResult;
+											}
 										}
 										checkTimeAndSaveImg(yuvList.get(1), newResultBase2);
 										break;
@@ -419,11 +433,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 										break;
 								}
 							}
-							frameTime=0;
-						}else {
-							yuvList.add(frameTime,yuvImage);
-							textResultList.add(frameTime,result);
-							frameTime++;
+							frameTime = 0;
+						} else {
+							yuvList.clear();
+							textResultList.clear();
+							yuvList.add(frameTime, yuvImage);
+							textResultList.add(frameTime, result);
+									frameTime++;
 						}
 					} else {
 						isDetected = true;
