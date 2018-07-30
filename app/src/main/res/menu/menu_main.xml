@@ -3,8 +3,19 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.dynamsoft.demo.dynamsoftbarcodereaderdemo.MainActivity">
 	<item
-		android:id="@+id/action_settings"
+		android:id="@+id/menu_Single"
 		android:orderInCategory="100"
-		android:title="Type > "
-		app:showAsAction="never"/>
+		android:title="Single > "
+		app:showAsAction="always"/>
+	<item
+		android:id="@+id/menu_Multi"
+		android:orderInCategory="100"
+		android:title="Video > "
+		app:showAsAction="always"/>
+	<item
+		android:id="@+id/menu_History"
+		android:orderInCategory="100"
+		android:title="History > "
+		app:showAsAction="always"/>
+
 </menu>

@@ -9,6 +9,13 @@
 		<item name="android:textColorPrimary">@color/encode_view</item>
 	</style>
 
+	<style name="AppTheme.NoActionBar">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+	</style>
+
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
 
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
 
@@ -40,5 +47,11 @@
 		<item name="android:singleLine">true</item>
 		<item name="android:ellipsize">end</item>
 		<item name="android:text">@string/label_code_value</item>
+	</style>
+	<style name="ToolbarPopupTheme" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+		<item name="android:textColorPrimary">@android:color/white</item>
+		<item name="android:textColorSecondary">#ffffff</item>
+		<item name="android:colorBackground">#000000</item>
+		<item name="overlapAnchor">false</item>
 	</style>
 </resources>

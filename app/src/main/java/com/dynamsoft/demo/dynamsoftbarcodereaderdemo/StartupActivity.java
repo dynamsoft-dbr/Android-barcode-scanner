@@ -46,7 +46,7 @@ public class StartupActivity extends AppCompatActivity {
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.tv_history:
-				startActivity(new Intent(StartupActivity.this,HistoryActivity.class));
+				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
 			default:
 				break;

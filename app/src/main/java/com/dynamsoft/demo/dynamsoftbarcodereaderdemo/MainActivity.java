@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -101,12 +102,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.rl_barcode_list)
 	ListView lvBarcodeList;
-	@BindView(R.id.sc_switch_mode)
-	SwitchCompat scSwitchMode;
 	@BindView(R.id.btn_capture)
 	Button btnCapture;
-	@BindView(R.id.photoGallery)
-	ImageView ivPhotoGallery;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	private boolean isDetected = true;
@@ -144,7 +141,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						}
 					}
 					int count = allResultText.size();
-					mScanCount.setText(count + " Scanned");
+					if (count > 1) {
+						mScanCount.setText(count + "Barcodes Scanned");
+					}
+					else{
+						mScanCount.setText(count + "Barcode Scanned");
+					}
 					break;
 				case BARCODE_RECT_COORD:
 					drawDocumentBox((ArrayList<RectPoint[]>) msg.obj);
@@ -158,15 +160,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 	};
 
-	@OnClick({R.id.photoGallery})
-	public void onClick(View view) {
-		switch (view.getId()) {
-			case R.id.photoGallery:
-				choicePhotoWrapper();
-			default:
-				break;
-		}
-	}
 
 	@Override
 	protected int getLayoutId() {
@@ -183,13 +176,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
 					"    \"BarcodeFormatIds\": [\n" +
-					"      \"QR_CODE\"\n" +
+					"      \"OneD\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
 					"    \"DeblurLevel\":5,\n" +
 					"    \"ScaleDownThreshold\": 1000\n" +
-					"  }\n" +
+					"  },\n" +
+					"\"version\": \"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
 /*			new Thread(new Runnable() {
@@ -260,17 +254,21 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		return swapStream.toByteArray();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		switch (item.getItemId()){
+			case R.id.menu_Single:
+				switchToSingle();
+				break;
+			case R.id.menu_Multi:
+				switchToMulti();
+				break;
+			case R.id.menu_Gallery:
+				choicePhotoWrapper();
+				break;
+			default:
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -387,7 +385,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	private void drawDocumentBox(ArrayList<RectPoint[]> rectCoord) {
 		hudView.clear();
-		hudView.setBoundaryPoints(rectCoord);
+		if(!isSingleMode) {
+			hudView.setBoundaryPoints(rectCoord);
+		}
 		hudView.invalidate();
 		isDetected = true;
 	}
@@ -436,30 +436,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				});
 			}
 		});
-		scSwitchMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				Logger.d("switch" + isChecked);
-				isSingleMode = isChecked;
-				if (isSingleMode) {
-					switchToSingle();
-				} else {
-					switchToMulti();
-				}
-			}
-		});
 		setupSlidingDrawer();
 	}
 
 	private void switchToMulti() {
-		scSwitchMode.setText("multi");
+		isSingleMode = false;
 		slidingDrawer.setVisibility(View.VISIBLE);
 		mScanCount.setVisibility(View.VISIBLE);
 		btnCapture.setVisibility(View.GONE);
 	}
 
 	private void switchToSingle() {
-		scSwitchMode.setText("single");
+		isSingleMode = true;
 		slidingDrawer.setVisibility(View.GONE);
 		mScanCount.setVisibility(View.GONE);
 		btnCapture.setVisibility(View.VISIBLE);

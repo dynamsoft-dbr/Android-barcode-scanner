@@ -22,18 +22,19 @@
 
 	<TextView
 		android:id="@+id/scanCountText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
+		android:layout_width="match_parent"
+		android:layout_height="29dp"
+		android:layout_below="@+id/btn_capture"
 		android:layout_centerHorizontal="true"
-		android:layout_marginTop="62dp"
-		android:text="0 Scanned"
+		android:text="0 Barcode Scanned"
+		android:gravity="center"
+		android:background="#cd7fd645"
 		android:textColor="#ffffff"
-		android:textSize="20sp"/>
+		android:textSize="16sp" />
 
 	<TextView
 		android:id="@+id/tv_flash"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"
@@ -50,24 +51,6 @@
 		android:layout_alignParentBottom="true"
 		android:text="capture"/>
 
-	<android.support.v7.widget.SwitchCompat
-		android:id="@+id/sc_switch_mode"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="16dp"
-		android:text="multi"
-		android:textColor="@android:color/white"
-		/>
-
-	<ImageView
-		android:id="@+id/photoGallery"
-		android:layout_width="35dp"
-		android:layout_height="35dp"
-		android:layout_alignBottom="@+id/sc_switch_mode"
-		android:layout_alignParentRight="true"
-		android:layout_marginRight="16dp"
-		android:onClick="onClick"
-		app:srcCompat="@drawable/album" />
 
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
