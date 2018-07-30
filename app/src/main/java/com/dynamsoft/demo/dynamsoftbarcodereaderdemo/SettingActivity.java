@@ -32,15 +32,6 @@ public class SettingActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_barcode_type);
 		ButterKnife.bind(this);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.settoolbar);
-		setSupportActionBar(toolbar);
-
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
 
 		mCache = DBRCache.get(this);
 		if ("1".equals(mCache.getAsString("linear"))) {
