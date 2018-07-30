@@ -28,6 +28,7 @@
 		android:layout_centerHorizontal="true"
 		android:text="0 Barcode Scanned"
 		android:gravity="center"
+		android:background="#cd7fd645"
 		android:textColor="#ffffff"
 		android:textSize="16sp" />
 

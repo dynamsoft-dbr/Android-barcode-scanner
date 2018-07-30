@@ -169,7 +169,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
-		mScanCount.setBackgroundColor(Color.argb(205, 127, 214, 69));
 		askForPermissions();
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
