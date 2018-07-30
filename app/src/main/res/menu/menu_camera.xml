@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_Setting"
+        android:orderInCategory="100"
+        android:title="Gallery"
+        android:icon="@mipmap/setting"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_Single"
+        android:orderInCategory="100"
+        android:title="Single"
+        android:icon="@mipmap/help"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_Multi"
+        android:orderInCategory="100"
+        android:title="Video"
+        android:icon="@mipmap/bga_pp_ic_download"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_Gallery"
+        android:orderInCategory="100"
+        android:title="Gallery"
+        android:icon="@mipmap/setting"
+        app:showAsAction="never"/>
+
+</menu>
