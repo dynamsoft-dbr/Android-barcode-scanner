@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 		tvToolbarTitle= findViewById(R.id.tv_toolbar_title);
 		setSupportActionBar(toolbar);
 		LayoutInflater.from(this).inflate(getLayoutId(), viewContent);
-		toolbar.setOverflowIcon(getResources().getDrawable(R.mipmap.clock));
 		init(savedInstanceState);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
@@ -53,6 +53,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 		return toolbar;
 	}
 
+	protected void setToolbarBackgroud(String color){
+		toolbar.setBackgroundColor(Color.parseColor(color));
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

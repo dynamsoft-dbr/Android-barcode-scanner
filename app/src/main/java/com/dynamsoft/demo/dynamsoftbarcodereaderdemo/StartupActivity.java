@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -19,14 +19,17 @@ public class StartupActivity extends AppCompatActivity {
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
 	private static final String TAG = "StartupActivity";
-	@BindView(R.id.imageButton)
-	ImageButton imageButton;
-	@BindView(R.id.ib_balance_multi)
-	ImageButton imageButton2;
-	@BindView(R.id.ib_single)
-	ImageButton imageButton3;
-	@BindView(R.id.tv_history)
 	TextView tvHistory;
+	@BindView(R.id.btn_history)
+	Button btnHistory;
+	@BindView(R.id.tv_startup_title)
+	TextView tvStartupTitle;
+	@BindView(R.id.btn_general)
+	Button btnGeneral;
+	@BindView(R.id.btn_multi_best)
+	Button btnMultiBest;
+	@BindView(R.id.btn_multi_bal)
+	Button btnMultiBal;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,18 +38,20 @@ public class StartupActivity extends AppCompatActivity {
 		ButterKnife.bind(this);
 	}
 
-	@OnClick({R.id.imageButton, R.id.ib_balance_multi, R.id.ib_single, R.id.tv_history,R.id.ib_fast_multi})
+	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
-			case R.id.imageButton:
-
-			case R.id.ib_balance_multi:
-
-			case R.id.ib_single:
+			case R.id.btn_history:
+				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
+				break;
+			case R.id.btn_general:
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
-			case R.id.tv_history:
-				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
+			case R.id.btn_multi_best:
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				break;
+			case R.id.btn_multi_bal:
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			default:
 				break;
