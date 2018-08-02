@@ -29,8 +29,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
-import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
@@ -94,7 +92,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
 	@BindView(R.id.tv_flash)
-	TextView mFlash;
+	Button mFlash;
 	@BindView(R.id.scanCountText)
 	TextView mScanCount;
 	@BindView(R.id.hud_view)
@@ -114,7 +112,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private boolean isDrawerExpand = false;
 	private boolean isSingleMode = false;
 	private DBRCache mCache;
-	private String name = "";
 	private boolean isFlashOn = false;
 	private ArrayList<String> allResultText = new ArrayList<>();
 	private float previewScale;
@@ -173,6 +170,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
 		askForPermissions();
+		setToolbarBackgroud("#000000");
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			JSONObject jsonObject = new JSONObject("{\n" +
@@ -189,24 +187,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					"\"version\": \"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
-/*			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					for (int i = 0; i < 10; i++) {
-						long startFile=System.currentTimeMillis();
-						try {
-							reader.decodeFileInMemory(input2byte(), "Custom_100947_777");
-						} catch (BarcodeReaderException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						long endFile=System.currentTimeMillis();
-						Logger.d("decode file time : "+(endFile-startFile));
-					}
-				}
-			}).start();*/
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

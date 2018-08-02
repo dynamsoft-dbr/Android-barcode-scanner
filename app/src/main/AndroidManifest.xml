@@ -32,12 +32,7 @@
             android:name=".DecodeLocalPictureActivity"
             android:label="@string/title_activity_decode_local_picture"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".weight.BarcodeType"
-            android:label="@string/title_activity_barcode_type"
-            android:theme="@style/AppTheme" />
         <activity android:name=".BarcodeTypeActivity" />
         <activity android:name=".AlgorithmSettingActivity"></activity>
     </application>
-
 </manifest>

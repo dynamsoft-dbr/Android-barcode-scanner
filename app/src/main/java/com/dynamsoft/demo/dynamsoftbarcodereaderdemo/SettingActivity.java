@@ -37,10 +37,10 @@ public class SettingActivity extends AppCompatActivity {
 			}
 		});
 	}
-	public void onViewClicked(View view){
+	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.setoned:
-				OneDCache(mOned.isChecked());
+				oneDCache(mOned.isChecked());
 				startActivity(new Intent(SettingActivity.this, BarcodeTypeActivity.class));
 				break;
 			case R.id.setalgorithm:
@@ -50,7 +50,7 @@ public class SettingActivity extends AppCompatActivity {
 				break;
 		}
 	}
-	private void OneDCache(boolean oneDisChecked){
+	private void oneDCache(boolean oneDisChecked){
 		if(oneDisChecked){
 			mCache.put("CODE_39", "true");
 			mCache.put("CODE_128", "true");
@@ -64,7 +64,7 @@ public class SettingActivity extends AppCompatActivity {
 			mCache.put("INDUSTRIAL_25", "true");
 		}
 	}
-	private void OnedCheck(){
+	private void onedCheck(){
 		if (("true".equals(mCache.getAsString("CODE_39"))) && ("true".equals(mCache.getAsString("CODE_128"))) &&
 		  	("true".equals(mCache.getAsString("CODE_93"))) && ("true".equals(mCache.getAsString("CODABAR"))) &&
 			("true".equals(mCache.getAsString("ITF"))) && ("true".equals(mCache.getAsString("EAN_13"))) &&
@@ -78,7 +78,7 @@ public class SettingActivity extends AppCompatActivity {
 	}
 	@Override
 	public void onResume(){
-		OnedCheck();
+		onedCheck();
 		super.onResume();
 	}
 }
