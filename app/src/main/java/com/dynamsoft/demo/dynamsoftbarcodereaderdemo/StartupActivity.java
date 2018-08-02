@@ -41,6 +41,7 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	ImageButton imageButton;
 	@BindView(R.id.tv_history)
 	TextView tvHistory;
+	private BarcodeReader reader;
 
 	private ArrayList<String> filePath;
 	@SuppressLint("HandlerLeak")
@@ -144,14 +145,17 @@ public class StartupActivity extends AppCompatActivity implements EasyPermission
 	}
 
 
-	@OnClick({R.id.imageButton, R.id.tv_history})
+	@OnClick({R.id.imageButton, R.id.tv_history, R.id.btn_test})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.imageButton:
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
+			case R.id.btn_test:
+				startActivity(new Intent(StartupActivity.this, TestActivity.class));
+				break;
 			case R.id.tv_history:
-				startActivity(new Intent(StartupActivity.this,HistoryActivity.class));
+				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
 			default:
 				break;

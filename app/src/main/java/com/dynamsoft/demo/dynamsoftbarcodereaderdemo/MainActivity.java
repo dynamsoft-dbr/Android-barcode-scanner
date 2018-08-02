@@ -19,7 +19,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.dynamsoft.barcode.coordsmap.jni.CoordsMapResult;
+import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
+import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.crypto.Mac;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -188,11 +191,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 		initUI();
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
+
+
 		setupFotoapparat();
 	}
 
 	public byte[] input2byte() throws IOException {
-		InputStream ims = getAssets().open("123.jpg");
+		InputStream ims = getAssets().open("11111.jpg");
 		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
 		byte[] buff = new byte[100];
 		int rc = 0;
@@ -353,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 	}
 
 	private void deleteErroCache(String name) {
-		if (name==null){
+		if (name == null) {
 			return;
 		}
 		mCache.remove(name);
@@ -400,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							yuvInfo.yuvImage = yuvImage;
 							yuvInfo.textResult = result;
 							yuvInfoList.add(yuvInfo);
-							handleImage(yuvInfo,null);
+							handleImage(yuvInfo, null);
 							frameTime++;
 						} else if (frameTime == 1) {
 							yuvInfo = new YuvInfo();
@@ -412,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 							} else {
 								yuvInfoList.set(1, yuvInfo);
 							}
-							CoordsMapResult coordsMapResult = CoordsMapResult.coordsMap
+							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 							if (coordsMapResult != null) {
 								LocalizationResult localizationResult;
@@ -420,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 								Logger.d("maptype : " + coordsMapResult.basedImg);
 								switch (coordsMapResult.basedImg) {
 									case 0:
-										handleImage(yuvInfoList.get(1),null);
+										handleImage(yuvInfoList.get(1), null);
 										yuvInfoList.set(0, yuvInfoList.get(1));
 										break;
 									case 1:
@@ -440,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 										}
 										yuvInfo.textResult = newResultBase1;
 										yuvInfoList.set(0, yuvInfo);
-										handleImage(yuvInfoList.get(0),yuvInfoList.get(1).cacheName);
+										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
 										break;
 									case 2:
 										TextResult[] newResultBase2 = new TextResult[result.length + coordsMapResult.resultArr.length];
@@ -459,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 										}
 										yuvInfo.textResult = newResultBase2;
 										yuvInfoList.set(0, yuvInfo);
-										handleImage(yuvInfoList.get(1),yuvInfoList.get(0).cacheName);
+										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
 										break;
 									case -1:
 										break;
@@ -477,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 			}
 		}
 
-		private void handleImage(final YuvInfo yuvInfo,final String deleCacheName) {
+		private void handleImage(final YuvInfo yuvInfo, final String deleCacheName) {
 			endDetectTime = System.currentTimeMillis();
 			threadManager.execute(new Runnable() {
 				@Override
