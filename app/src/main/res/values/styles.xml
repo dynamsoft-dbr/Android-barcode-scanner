@@ -56,8 +56,8 @@
 	<style name="ToolbarPopupTheme" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
 		<item name="android:textColorPrimary">@android:color/white</item>
 		<item name="android:textColorSecondary">#ffffff</item>
-		<item name="android:colorBackground">#000000</item>
-		<item name="android:background"></item>
+		<item name="android:dropDownVerticalOffset">20dp</item>
+		<item name="android:dropDownHorizontalOffset">20dp</item>
 		<item name="overlapAnchor">false</item>
 	</style>
 </resources>
