@@ -1,11 +1,15 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 
@@ -13,73 +17,68 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SettingActivity extends AppCompatActivity {
-
-	@BindView(R.id.ckbLinear)
-	CheckBox mLinear;
-	@BindView(R.id.ckbQR)
-	CheckBox mQRCode;
-	@BindView(R.id.ckbPDF417)
-	CheckBox mPDF417;
-	@BindView(R.id.ckbDataMatrix)
-	CheckBox mDataMatrix;
-
-	private int mBarcodeFormat;
 	private DBRCache mCache;
-
-
+	@BindView(R.id.setoned)
+	ImageView ivSetOned;
+	@BindView(R.id.ckboned)
+	CheckBox mOned;
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_barcode_type);
+		setContentView(R.layout.activity_setting);
 		ButterKnife.bind(this);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.settoolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.settingtoolbar);
 		setSupportActionBar(toolbar);
-
+		mCache = DBRCache.get(this, "SettingCache");
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onBackPressed();
 			}
 		});
-
-		mCache = DBRCache.get(this);
-		if ("1".equals(mCache.getAsString("linear"))) {
-			mLinear.setChecked(true);
-		}
-		if ("1".equals(mCache.getAsString("qrcode"))) {
-			mQRCode.setChecked(true);
-		}
-		if ("1".equals(mCache.getAsString("pdf417"))) {
-			mPDF417.setChecked(true);
-		}
-		if ("1".equals(mCache.getAsString("matrix"))) {
-			mDataMatrix.setChecked(true);
+	}
+	public void onViewClicked(View view){
+		switch (view.getId()) {
+			case R.id.setoned:
+				OneDCache(mOned.isChecked());
+				startActivity(new Intent(SettingActivity.this, BarcodeTypeActivity.class));
+				break;
+			case R.id.setalgorithm:
+				startActivity(new Intent(SettingActivity.this, AlgorithmSettingActivity.class));
+				break;
+			default:
+				break;
 		}
 	}
-
+	private void OneDCache(boolean oneDisChecked){
+		if(oneDisChecked){
+			mCache.put("CODE_39", "true");
+			mCache.put("CODE_128", "true");
+			mCache.put("CODE_93", "true");
+			mCache.put("CODABAR", "true");
+			mCache.put("ITF", "true");
+			mCache.put("EAN_13", "true");
+			mCache.put("EAN_8", "true");
+			mCache.put("UPC_A", "true");
+			mCache.put("UPC_E", "true");
+			mCache.put("INDUSTRIAL_25", "true");
+		}
+	}
+	private void OnedCheck(){
+		if (("true".equals(mCache.getAsString("CODE_39"))) && ("true".equals(mCache.getAsString("CODE_128"))) &&
+		  	("true".equals(mCache.getAsString("CODE_93"))) && ("true".equals(mCache.getAsString("CODABAR"))) &&
+			("true".equals(mCache.getAsString("ITF"))) && ("true".equals(mCache.getAsString("EAN_13"))) &&
+			("true".equals(mCache.getAsString("EAN_8"))) &&  ("true".equals(mCache.getAsString("UPC_A"))) &&
+			("true".equals(mCache.getAsString("UPC_E"))) && ("true".equals(mCache.getAsString("INDUSTRIAL_25")))){
+				mOned.setChecked(true);
+		}
+		else{
+			mOned.setChecked(false);
+		}
+	}
 	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		if (mLinear.isChecked()) {
-			mCache.put("linear", "1");
-		} else {
-			mCache.put("linear", "0");
-		}
-		if (mQRCode.isChecked()) {
-			mCache.put("qrcode", "1");
-		} else {
-			mCache.put("qrcode", "0");
-		}
-		if (mPDF417.isChecked()) {
-			mCache.put("pdf417", "1");
-		} else {
-			mCache.put("pdf417", "0");
-		}
-		if (mDataMatrix.isChecked()) {
-			mCache.put("matrix", "1");
-		} else {
-			mCache.put("matrix", "0");
-		}
-		setResult(0);
+	public void onResume(){
+		OnedCheck();
+		super.onResume();
 	}
 }
