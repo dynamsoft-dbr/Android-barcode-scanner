@@ -3,14 +3,13 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
@@ -23,6 +22,7 @@ import java.lang.reflect.Method;
 public abstract class BaseActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private FrameLayout viewContent;
+	private TextView tvToolbarTitle;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,6 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		Logger.addLogAdapter(new AndroidLogAdapter());
 		toolbar = findViewById(R.id.toolbar);
 		viewContent = findViewById(R.id.fl_view_content);
+		tvToolbarTitle= findViewById(R.id.tv_toolbar_title);
 		setSupportActionBar(toolbar);
 		LayoutInflater.from(this).inflate(getLayoutId(), viewContent);
 		toolbar.setOverflowIcon(getResources().getDrawable(R.mipmap.clock));
@@ -41,11 +42,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 				onBackPressed();
 			}
 		});
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
 	}
 
 	protected abstract int getLayoutId();
 
 	protected abstract void init(Bundle savedInstanceState);
+
+	protected Toolbar getToolbar() {
+		return toolbar;
+	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,10 +60,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 		getMenuInflater().inflate(R.menu.menu_camera, menu);
 		return true;
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return super.onOptionsItemSelected(item);
 	}
+
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		if (menu != null) {

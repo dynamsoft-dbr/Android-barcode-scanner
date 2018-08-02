@@ -11,7 +11,16 @@
 		android:layout_height="56dp"
 		android:background="?attr/colorPrimary"
 		app:navigationIcon="@drawable/ic_action_back"
-		app:popupTheme="@style/ToolbarPopupTheme"/>
+		app:popupTheme="@style/ToolbarPopupTheme">
+		<TextView
+			android:id="@+id/tv_toolbar_title"
+			android:layout_gravity="center"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Scan Barcode"
+			android:textSize="16sp"
+			android:textColor="@color/encode_view"/>
+	</android.support.v7.widget.Toolbar>
 
 	<FrameLayout
 		android:id="@+id/fl_view_content"
