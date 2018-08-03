@@ -2,11 +2,18 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:background="#4F5156">
 
 	<com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager
 		android:id="@+id/vp_history_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
+	<ListView
+		android:background="#ffffff"
+		android:layout_alignParentBottom="true"
+		android:id="@+id/lv_code_list"
+		android:layout_width="match_parent"
+		android:layout_height="200dp"/>
 </RelativeLayout>

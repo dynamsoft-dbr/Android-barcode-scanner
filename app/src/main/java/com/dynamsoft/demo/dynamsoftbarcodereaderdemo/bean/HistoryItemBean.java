@@ -13,11 +13,22 @@ public class HistoryItemBean {
 	@JsonField
 	private String codeImgPath = "";
 	@JsonField
+
+	private String fileName = "";
+	@JsonField
 	private ArrayList<String> codeFormat = new ArrayList<>();
 	@JsonField
 	private ArrayList<String> codeText = new ArrayList<>();
 	@JsonField
 	private ArrayList<RectPoint[]> rectCoord = new ArrayList<>();
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
 	public ArrayList<RectPoint[]> getRectCoord() {
 		return rectCoord;

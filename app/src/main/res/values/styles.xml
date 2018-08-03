@@ -53,11 +53,12 @@
 		<item name="android:ellipsize">end</item>
 		<item name="android:text">@string/label_code_value</item>
 	</style>
-	<style name="ToolbarPopupTheme" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+
+	<style name="ToolbarPopupTheme" parent="Widget.AppCompat.PopupMenu.Overflow">
 		<item name="android:textColorPrimary">@android:color/white</item>
 		<item name="android:textColorSecondary">#ffffff</item>
-		<item name="android:dropDownVerticalOffset">20dp</item>
-		<item name="android:dropDownHorizontalOffset">20dp</item>
 		<item name="overlapAnchor">false</item>
+		<item name="android:dropDownWidth">50dp</item>
+		<item name="android:popupBackground">@drawable/bg_popmenu_black</item>
 	</style>
 </resources>
