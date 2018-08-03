@@ -1,7 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -91,7 +90,7 @@ public class TestActivity extends AppCompatActivity {
 			StitchImageResult result = AfterProcess.stitchImage(input2byte(123), input2byte(456),
 					EnumImagePixelFormat.IPF_ARGB_8888, 688 * 4, 688 * 4, results1, results2,
 					688, 449, 688, 591);
-			Bitmap bitmap = BitmapFactory.decodeByteArray(result.imageBytes, 0, result.imageBytes.length);
+			Bitmap bitmap = result.image;
 /*			Bitmap bm = Bitmap.createBitmap(result.basedImgWidth, result.basedImgHeight, Bitmap.Config.RGB_565);
 			ByteBuffer byteBuffer=ByteBuffer.wrap(result.imageBytes);
 			byteBuffer.rewind();
