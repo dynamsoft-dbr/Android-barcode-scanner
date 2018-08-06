@@ -391,6 +391,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					public void whenDone(@Nullable Unit it) {
 						Logger.d("save img done~!");
 						Intent intent = new Intent(MainActivity.this, PhotoPreviewActivity.class);
+						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
 						startActivity(intent);
 					}

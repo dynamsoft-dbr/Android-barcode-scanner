@@ -83,6 +83,7 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 		switch (childView.getId()) {
 			case R.id.cl_item_history:
 				Intent intent = new Intent(this, HistoryItemDetailActivity.class);
+				intent.putExtra("page_type",1);
 				intent.putExtra("imgdetail_file", fileNames);
 				intent.putExtra("position", position);
 				startActivity(intent);

@@ -80,7 +80,8 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 					"    \"AntiDamageLevel\": 5,\n" +
 					"    \"DeblurLevel\":5,\n" +
 					"    \"ScaleDownThreshold\": 1000\n" +
-					"  }\n" +
+					"  },\n" +
+					"\"version\": \"1.0\"" +
 					"}");
 			reader.appendParameterTemplate(jsonObject.toString());
 		} catch (Exception e) {
@@ -100,7 +101,7 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 				Path path = new Path();
 				Bitmap oriBitmap = BitmapFactory.decodeFile(new File(getExternalFilesDir("photos"),
 						getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath());
-				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.ARGB_8888, true);
+				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {
 					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom_100947_777");
 					if (textResults != null && textResults.length > 0) {

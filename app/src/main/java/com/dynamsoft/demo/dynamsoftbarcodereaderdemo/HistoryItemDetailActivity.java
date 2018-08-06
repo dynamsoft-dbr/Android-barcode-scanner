@@ -1,16 +1,31 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bumptech.glide.Glide;
+import com.dynamsoft.barcode.jni.BarcodeReaderException;
+import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +39,7 @@ import butterknife.ButterKnife;
  * Created by Elemen on 2018/7/13.
  */
 public class HistoryItemDetailActivity extends BaseActivity {
+	private final int DECODE_FINISHI = 0x0001;
 	@BindView(R.id.vp_history_detail)
 	HistoryPreviewViewPager vpHistoryDetail;
 	@BindView(R.id.lv_code_list)
@@ -35,7 +51,23 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private HistoryDetailViewPagerAdapter adapter;
 	private SimpleAdapter simpleAdapter;
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
-
+	@SuppressLint("HandlerLeak")
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case DECODE_FINISHI:
+					Glide.with(HistoryItemDetailActivity.this)
+							.load((byte[]) msg.obj)
+							.into(ivPhotoPreview);
+					ivPhotoPreview.setRotation(90);
+					pbProgress.setVisibility(View.GONE);
+					break;
+				default:
+					break;
+			}
+		}
+	};
 
 	@Override
 	protected void init(Bundle savedInstanceState) {
@@ -44,6 +76,22 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		setToolbarBackgroud("#ffffff");
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
+		switch (getIntent().getIntExtra("page_type", 0)) {
+			case 0:
+				break;
+			case 1:
+				fromHistoryList();
+				break;
+			default:
+		}
+
+	}
+
+	private void fromCamera(){
+
+	}
+
+	private void fromHistoryList(){
 		fileNames = getIntent().getStringArrayExtra("imgdetail_file");
 		intentPosition = getIntent().getIntExtra("position", 0);
 		fillHistoryList();
@@ -105,5 +153,49 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		}
 		simpleAdapter.notifyDataSetChanged();
 		lvCodeList.startLayoutAnimation();
+	}
+
+	private void drawRectOnImg(ImageView imageView) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Paint paint = new Paint();
+				paint.setStyle(Paint.Style.STROKE);
+				paint.setStrokeWidth(9f);
+				paint.setColor(getResources().getColor(R.color.aboutOK));
+				paint.setAntiAlias(true);
+				Path path = new Path();
+				Bitmap oriBitmap = BitmapFactory.decodeFile(new File(getExternalFilesDir("photos"),
+						getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath());
+				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
+				try {
+					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom_100947_777");
+					if (textResults != null && textResults.length > 0) {
+						Canvas canvas = new Canvas(rectBitmap);
+						for (int i = 0; i < textResults.length; i++) {
+							path.reset();
+							path.moveTo(textResults[i].localizationResult.resultPoints[0].x, textResults[i].localizationResult.resultPoints[0].y);
+							path.lineTo(textResults[i].localizationResult.resultPoints[1].x, textResults[i].localizationResult.resultPoints[1].y);
+							path.lineTo(textResults[i].localizationResult.resultPoints[2].x, textResults[i].localizationResult.resultPoints[2].y);
+							path.lineTo(textResults[i].localizationResult.resultPoints[3].x, textResults[i].localizationResult.resultPoints[3].y);
+							path.close();
+							canvas.drawPath(path, paint);
+						}
+					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					rectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+					byte[] bytes = baos.toByteArray();
+					Message message = mHandler.obtainMessage();
+					message.what = DECODE_FINISHI;
+					message.obj = bytes;
+					mHandler.sendMessage(message);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BarcodeReaderException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
 	}
 }
