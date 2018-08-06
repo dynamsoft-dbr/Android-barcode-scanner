@@ -1,6 +1,8 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -11,6 +13,9 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPa
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,12 +26,15 @@ import butterknife.ButterKnife;
 public class HistoryItemDetailActivity extends BaseActivity {
 	@BindView(R.id.vp_history_detail)
 	HistoryPreviewViewPager vpHistoryDetail;
+	@BindView(R.id.lv_code_list)
+	ListView lvCodeList;
 	private DBRCache mCache;
 	private String[] fileNames;
-	private int position;
+	private int intentPosition;
 	private ArrayList<HistoryItemBean> listItem;
 	private HistoryDetailViewPagerAdapter adapter;
 	private SimpleAdapter simpleAdapter;
+	private List<Map<String, String>> recentCodeList = new ArrayList<>();
 
 
 	@Override
@@ -37,8 +45,24 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
 		fileNames = getIntent().getStringArrayExtra("imgdetail_file");
-		position = getIntent().getIntExtra("position", 0);
+		intentPosition = getIntent().getIntExtra("position", 0);
 		fillHistoryList();
+		vpHistoryDetail.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				fillCodeList(position);
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 	}
 
 	@Override
@@ -62,8 +86,24 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		}
 		adapter = new HistoryDetailViewPagerAdapter(this, listItem);
 		vpHistoryDetail.setAdapter(adapter);
-		vpHistoryDetail.setCurrentItem(position);
-		/*simpleAdapter = new SimpleAdapter(this, recentCodeList,
-				R.layout.item_listview_recent_code, new String[]{"format", "text"}, new int[]{R.id.tv_code_format, R.id.tv_code_text});*/
+		vpHistoryDetail.setCurrentItem(intentPosition);
+		simpleAdapter = new SimpleAdapter(this, recentCodeList,
+				R.layout.item_listview_detail_code_list, new String[]{"index", "format", "text"},
+				new int[]{R.id.tv_index, R.id.tv_code_format_content, R.id.tv_code_text_content});
+		lvCodeList.setAdapter(simpleAdapter);
+		fillCodeList(intentPosition);
+	}
+
+	private void fillCodeList(int position) {
+		recentCodeList.clear();
+		for (int i = 0; i < listItem.get(position).getCodeFormat().size(); i++) {
+			Map<String, String> item = new HashMap<>();
+			item.put("index", i + "");
+			item.put("format", listItem.get(position).getCodeFormat().get(i));
+			item.put("text", listItem.get(position).getCodeText().get(i));
+			recentCodeList.add(item);
+		}
+		simpleAdapter.notifyDataSetChanged();
+		lvCodeList.startLayoutAnimation();
 	}
 }
