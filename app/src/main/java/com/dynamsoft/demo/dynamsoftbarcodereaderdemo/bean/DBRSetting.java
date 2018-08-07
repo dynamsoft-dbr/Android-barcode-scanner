@@ -3,6 +3,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.xml.transform.Templates;
@@ -11,11 +12,24 @@ import javax.xml.transform.Templates;
  * Created by Martin on 8/1/2018.
  */
 @JsonObject
-public class DBRSetting {
+public class DBRSetting implements Serializable{
     @JsonField
     private String templateName = "Custom";
     @JsonField
-    private ArrayList<String> barcodeFormat = new ArrayList<>();
+    private ArrayList<String> barcodeFormatIds = new ArrayList<String>(){{
+    add("PDF417");
+    add("QR_CODE");
+    add("DATAMATRIX");
+    add("CODE_39");
+    add("CODE_93");
+    add("CODE_128");
+    add("CODABAR");
+    add("ITF");
+    add("EAN_13");
+    add("EAN_8");
+    add("UPC_A");
+    add("UPC_E");
+    add("INDUSTRIAL_25");}};
     @JsonField
     private int expectedBarcodesCount = 0;
     @JsonField
@@ -41,11 +55,9 @@ public class DBRSetting {
     @JsonField
     private int binarizationBlockSize = 0;
     @JsonField
-    private String localizationAlgorithmPriority = null;
+    private ArrayList<String> localizationAlgorithmPriority = new ArrayList<>();
     @JsonField
     private int maxDimOfFullImageAsBarcodeZone = 262144;
-    @JsonField
-    private int minImageDimensionToPredetectRegion = 262144;
     @JsonField
     private long maxBarcodesCount = 22147483647L;
     @JsonField
@@ -61,12 +73,12 @@ public class DBRSetting {
         this.templateName = templateName;
     }
 
-    public ArrayList<String> getBarcodeFormat() {
-        return barcodeFormat;
+    public ArrayList<String> getBarcodeFormatIds() {
+        return barcodeFormatIds;
     }
 
-    public void setBarcodeFormat(ArrayList<String> barcodeFormat) {
-        this.barcodeFormat = barcodeFormat;
+    public void setBarcodeFormatIds(ArrayList<String> barcodeFormat) {
+        this.barcodeFormatIds = barcodeFormat;
     }
 
     public int getExpectedBarcodesCount() {
@@ -165,11 +177,11 @@ public class DBRSetting {
         this.binarizationBlockSize = binarizationBlockSize;
     }
 
-    public String getLocalizationAlgorithmPriority() {
+    public ArrayList<String> getLocalizationAlgorithmPriority() {
         return localizationAlgorithmPriority;
     }
 
-    public void setLocalizationAlgorithmPriority(String localizationAlgorithmPriority) {
+    public void setLocalizationAlgorithmPriority(ArrayList<String> localizationAlgorithmPriority) {
         this.localizationAlgorithmPriority = localizationAlgorithmPriority;
     }
 
@@ -179,14 +191,6 @@ public class DBRSetting {
 
     public void setMaxDimOfFullImageAsBarcodeZone(int maxDimOfFullImageAsBarcodeZone) {
         this.maxDimOfFullImageAsBarcodeZone = maxDimOfFullImageAsBarcodeZone;
-    }
-
-    public int getMinImageDimensionToPredetectRegion() {
-        return minImageDimensionToPredetectRegion;
-    }
-
-    public void setMinImageDimensionToPredetectRegion(int minImageDimensionToPredetectRegion) {
-        this.minImageDimensionToPredetectRegion = minImageDimensionToPredetectRegion;
     }
 
     public long getMaxBarcodesCount() {
