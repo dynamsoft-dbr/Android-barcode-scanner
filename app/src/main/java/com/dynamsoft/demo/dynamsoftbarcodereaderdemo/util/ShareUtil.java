@@ -1,13 +1,16 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util;
 
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
@@ -203,7 +206,6 @@ public class ShareUtil {
 			Toast.makeText(context, "file not exist", Toast.LENGTH_LONG).show();
 		}
 
-
 	}
 
 	/**
@@ -220,6 +222,15 @@ public class ShareUtil {
 			Toast.makeText(context, "please install the app first", Toast.LENGTH_SHORT).show();
 			return false;
 		}
+	}
+
+	public Bitmap getScreenShot(Activity context){
+		View dView = context.getWindow().getDecorView();
+		dView.setDrawingCacheEnabled(true);
+		dView.buildDrawingCache();
+		Bitmap bitmap = Bitmap.createBitmap(dView.getDrawingCache());
+
+		return bitmap;
 	}
 
 	/**
