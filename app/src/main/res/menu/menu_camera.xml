@@ -2,11 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
+		android:id="@+id/menu_share"
+		android:icon="@drawable/icon_upload"
+		android:title="Share"
+		android:orderInCategory="100"
+		android:visible="false"
+		app:showAsAction="always"/>
+	<item
 		android:id="@+id/menu_Setting"
 		android:icon="@mipmap/setting"
 		android:orderInCategory="100"
 		android:title="Gallery"
 		app:showAsAction="always"/>
+
 	<item
 		android:id="@+id/menu_scanning"
 		android:icon="@drawable/icon_scanning_selected"

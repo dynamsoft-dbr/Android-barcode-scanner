@@ -26,7 +26,6 @@
 		</activity>
 		<activity android:name=".HistoryActivity"/>
 		<activity android:name=".HistoryItemDetailActivity"/>
-		<activity android:name=".PhotoPreviewActivity"/>
 		<activity
 			android:name=".DecodeLocalPictureActivity"
 			android:label="@string/title_activity_decode_local_picture"

@@ -20,6 +20,7 @@
 			android:layout_height="wrap_content"
 			android:text="Scan Barcode"
 			android:textSize="20sp"
+			android:textStyle="bold"
 			android:textColor="@color/encode_view"/>
 	</android.support.v7.widget.Toolbar>
 

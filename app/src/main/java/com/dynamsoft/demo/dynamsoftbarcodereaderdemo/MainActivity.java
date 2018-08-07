@@ -2,10 +2,15 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.media.AudioManager;
+import android.media.MediaActionSound;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -271,7 +276,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}*/
 		if (requestCode == REQUEST_CHOOSE_PHOTO && resultCode == RESULT_OK) {
 			String filePath = BGAPhotoHelper.getFilePathFromUri(data.getData());
-			Intent intent = new Intent(MainActivity.this, DecodeLocalPictureActivity.class);
+			Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
+			intent.putExtra("page_type", 2);
 			intent.putExtra("FilePath", filePath);
 			startActivity(intent);
 		}
@@ -375,6 +381,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				.build();
 	}
 
+	public void shootSound() {
+		MediaActionSound sound = new MediaActionSound();
+		sound.play(MediaActionSound.SHUTTER_CLICK);
+	}
+
 	private void initUI() {
 		slidingDrawer.setDragView(dragView);
 		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
@@ -383,6 +394,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnCapture.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				shootSound();
 				PhotoResult photoResult = fotoapparat.takePicture();
 				final String photoName = System.currentTimeMillis() + "";
 				photoResult.saveToFile(new File(getExternalFilesDir("photos"), photoName + ".jpg"
@@ -390,7 +402,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					@Override
 					public void whenDone(@Nullable Unit it) {
 						Logger.d("save img done~!");
-						Intent intent = new Intent(MainActivity.this, PhotoPreviewActivity.class);
+						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
 						startActivity(intent);

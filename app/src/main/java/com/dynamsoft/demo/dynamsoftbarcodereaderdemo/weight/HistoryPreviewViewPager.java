@@ -11,7 +11,6 @@ import android.view.MotionEvent;
  * Created by Elemen on 2018/7/16.
  */
 public class HistoryPreviewViewPager extends ViewPager {
-	private boolean isSlide = false;
 
 	public HistoryPreviewViewPager(@NonNull Context context) {
 		super(context);
@@ -21,14 +20,10 @@ public class HistoryPreviewViewPager extends ViewPager {
 		super(context, attrs);
 	}
 
-	public void setSlide(boolean slide) {
-		isSlide = slide;
-	}
-
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		try {
-			return isSlide;
+			return super.onInterceptTouchEvent(ev);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			return false;
