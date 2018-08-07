@@ -32,7 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		Logger.addLogAdapter(new AndroidLogAdapter());
 		toolbar = findViewById(R.id.toolbar);
 		viewContent = findViewById(R.id.fl_view_content);
-		tvToolbarTitle= findViewById(R.id.tv_toolbar_title);
+		tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
 		setSupportActionBar(toolbar);
 		LayoutInflater.from(this).inflate(getLayoutId(), viewContent);
 		init(savedInstanceState);
@@ -53,8 +53,22 @@ public abstract class BaseActivity extends AppCompatActivity {
 		return toolbar;
 	}
 
-	protected void setToolbarBackgroud(String color){
+	protected void setToolbarBackgroud(String color) {
 		toolbar.setBackgroundColor(Color.parseColor(color));
+	}
+
+	protected void setToolbarNavIcon(int drawable) {
+		toolbar.setNavigationIcon(drawable);
+	}
+
+	protected void setToolbarTitle(String title) {
+		if (title != null && !"".equals(title)) {
+			tvToolbarTitle.setText(title);
+		}
+	}
+
+	protected void setToolbarTitleColor(String color) {
+		tvToolbarTitle.setTextColor(Color.parseColor(color));
 	}
 
 	@Override

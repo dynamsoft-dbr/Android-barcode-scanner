@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dynamsoft.demo.dynamsoftbarcodereaderdemo">
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     \
     <uses-permission android:name="android.permission.CAMERA" />
@@ -26,8 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".HistoryActivity" />
-        <activity android:name=".HistoryItemDetailActivity" />
-        <activity android:name=".PhotoPreviewActivity" />
+	<activity android:name=".HistoryItemDetailActivity" />
         <activity
             android:name=".DecodeLocalPictureActivity"
             android:label="@string/title_activity_decode_local_picture"
@@ -35,4 +33,5 @@
         <activity android:name=".BarcodeTypeActivity" />
         <activity android:name=".AlgorithmSettingActivity"></activity>
     </application>
+
 </manifest>

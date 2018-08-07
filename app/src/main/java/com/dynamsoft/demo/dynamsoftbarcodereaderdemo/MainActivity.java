@@ -2,28 +2,23 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.media.AudioManager;
+import android.media.MediaActionSound;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -39,18 +34,15 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
-import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,8 +137,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					int count = allResultText.size();
 					if (count > 1) {
 						mScanCount.setText(count + "Barcodes Scanned");
-					}
-					else{
+					} else {
 						mScanCount.setText(count + "Barcode Scanned");
 					}
 					break;
@@ -173,13 +164,16 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		ButterKnife.bind(this);
 		askForPermissions();
 		setToolbarBackgroud("#000000");
+		setToolbarNavIcon(R.drawable.ic_action_back_dark);
+		setToolbarTitle("Scan Barcode");
+		setToolbarTitleColor("#ffffff");
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			JSONObject jsonObject = new JSONObject("{\n" +
 					"  \"ImageParameters\": {\n" +
 					"    \"Name\": \"Custom_100947_777\",\n" +
 					"    \"BarcodeFormatIds\": [\n" +
-					"      \"OneD\"\n" +
+					"      \"QR_CODE\"\n" +
 					"    ],\n" +
 					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
 					"    \"AntiDamageLevel\": 5,\n" +
@@ -228,28 +222,17 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 	}
 
-	public final byte[] input2byte() throws IOException {
-		InputStream ims = getAssets().open("1531816782728.jpg");
-		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-		byte[] buff = new byte[100];
-		int rc = 0;
-		while ((rc = ims.read(buff, 0, 100)) > 0) {
-			swapStream.write(buff, 0, rc);
-		}
-		return swapStream.toByteArray();
-	}
-
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()){
-			case R.id.menu_Single:
-				switchToSingle();
-				break;
-			case R.id.menu_Multi:
+		switch (item.getItemId()) {
+			case R.id.menu_scanning:
 				switchToMulti();
 				break;
-			case R.id.menu_Gallery:
+			case R.id.menu_capture:
+				switchToSingle();
+				break;
+			case R.id.menu_file:
 				choicePhotoWrapper();
 				break;
 			case R.id.menu_Setting:
@@ -299,7 +282,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}*/
 		if (requestCode == REQUEST_CHOOSE_PHOTO && resultCode == RESULT_OK) {
 			String filePath = BGAPhotoHelper.getFilePathFromUri(data.getData());
-			Intent intent = new Intent(MainActivity.this, DecodeLocalPictureActivity.class);
+			Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
+			intent.putExtra("page_type", 2);
 			intent.putExtra("FilePath", filePath);
 			startActivity(intent);
 		}
@@ -374,7 +358,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	private void drawDocumentBox(ArrayList<RectPoint[]> rectCoord) {
 		hudView.clear();
-		if(!isSingleMode) {
+		if (!isSingleMode) {
 			hudView.setBoundaryPoints(rectCoord);
 		}
 		hudView.invalidate();
@@ -403,6 +387,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				.build();
 	}
 
+	public void shootSound() {
+		MediaActionSound sound = new MediaActionSound();
+		sound.play(MediaActionSound.SHUTTER_CLICK);
+	}
+
 	private void initUI() {
 		slidingDrawer.setDragView(dragView);
 		simpleAdapter = new SimpleAdapter(MainActivity.this, recentCodeList,
@@ -411,6 +400,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnCapture.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				shootSound();
 				PhotoResult photoResult = fotoapparat.takePicture();
 				final String photoName = System.currentTimeMillis() + "";
 				photoResult.saveToFile(new File(getExternalFilesDir("photos"), photoName + ".jpg"
@@ -418,7 +408,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					@Override
 					public void whenDone(@Nullable Unit it) {
 						Logger.d("save img done~!");
-						Intent intent = new Intent(MainActivity.this, PhotoPreviewActivity.class);
+						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
+						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
 						startActivity(intent);
 					}
@@ -532,6 +523,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									codeFormatList.add(results[i].barcodeFormat + "");
 									codeTextList.add(results[i].barcodeText);
 								}
+								itemBean.setFileName(name);
 								itemBean.setCodeFormat(codeFormatList);
 								itemBean.setCodeText(codeTextList);
 								itemBean.setCodeImgPath(path + "/" + name + ".jpg");

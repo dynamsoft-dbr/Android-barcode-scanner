@@ -2,8 +2,6 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,7 +24,7 @@ import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 /**
  * Created by Elemen on 2018/7/3.
  */
-public class HistoryActivity extends AppCompatActivity implements BGAOnItemChildClickListener {
+public class HistoryActivity extends BaseActivity implements BGAOnItemChildClickListener {
 	@BindView(R.id.rlv_history)
 	RecyclerView rlvHistory;
 	private DBRCache mCache;
@@ -35,11 +33,18 @@ public class HistoryActivity extends AppCompatActivity implements BGAOnItemChild
 	private String[] fileNames;
 
 	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_history);
+	protected int getLayoutId() {
+		return R.layout.activity_history;
+	}
+
+	@Override
+	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
 		mCache = DBRCache.get(this);
+		setToolbarBackgroud("#ffffff");
+		setToolbarTitle("History");
+		setToolbarTitleColor("#000000");
+		setToolbarNavIcon(R.drawable.ic_action_back);
 		historyListAdapter = new HistoryListAdapter(rlvHistory);
 		historyListAdapter.setOnItemChildClickListener(this);
 		fillHistoryList();
@@ -63,7 +68,7 @@ public class HistoryActivity extends AppCompatActivity implements BGAOnItemChild
 				}
 			}
 			historyListAdapter.setData(listItem);
-			rlvHistory.addItemDecoration(BGADivider.newBitmapDivider());
+			rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
 			rlvHistory.setLayoutManager(getLinearLayoutManager());
 			rlvHistory.setAdapter(historyListAdapter);
 		}
@@ -76,10 +81,11 @@ public class HistoryActivity extends AppCompatActivity implements BGAOnItemChild
 	@Override
 	public void onItemChildClick(ViewGroup parent, View childView, int position) {
 		switch (childView.getId()) {
-			case R.id.iv_codeimg:
+			case R.id.cl_item_history:
 				Intent intent = new Intent(this, HistoryItemDetailActivity.class);
-				intent.putExtra("imgdetail_file",fileNames);
-				intent.putExtra("position",position);
+				intent.putExtra("page_type",1);
+				intent.putExtra("imgdetail_file", fileNames);
+				intent.putExtra("position", position);
 				startActivity(intent);
 				break;
 			default:

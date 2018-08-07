@@ -11,6 +11,7 @@ import android.view.MotionEvent;
  * Created by Elemen on 2018/7/16.
  */
 public class HistoryPreviewViewPager extends ViewPager {
+
 	public HistoryPreviewViewPager(@NonNull Context context) {
 		super(context);
 	}
