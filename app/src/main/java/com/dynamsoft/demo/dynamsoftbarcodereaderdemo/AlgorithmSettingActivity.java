@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
@@ -8,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -19,9 +20,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AlgorithmSettingActivity extends AppCompatActivity {
-    private List<String> algorithmSetting = new ArrayList<>();
-    private DBRCache mCache;
-    private String localizationAlgorithmPriority = "";
+    private ArrayList<String> algorithmSetting = new ArrayList<>();
+    private DBRSetting mSetting;
+    private final int REQUEST_ALGORITHM_SETTING = 0x0002;
+    private final int RESPONSE_ALGORITHM_SETTING = 0x0002;
     @BindView(R.id.ckbconnectedblock)
     CheckBox ckbConnectedBlock;
     @BindView(R.id.tvconnectedblock)
@@ -45,13 +47,13 @@ public class AlgorithmSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_algorithm_setting);
         ButterKnife.bind(this);
-        mCache = DBRCache.get(this, "SettingCache");
         ckbConnectedBlock.setOnCheckedChangeListener(checkedChangeListener);
         ckbLines.setOnCheckedChangeListener(checkedChangeListener);
         ckbStatistics.setOnCheckedChangeListener(checkedChangeListener);
         ckbFullImageAsBarcodeZone.setOnCheckedChangeListener(checkedChangeListener);
-        if (mCache.getAsString("LocalizationAlgorithmPriority") != null) {
-            List<String> localSetting = Arrays.asList( mCache.getAsString("LocalizationAlgorithmPriority").split(","));
+        mSetting = (DBRSetting) getIntent().getSerializableExtra("DBRSetting");
+        if (mSetting.getLocalizationAlgorithmPriority() != null) {
+            ArrayList<String> localSetting = mSetting.getLocalizationAlgorithmPriority();
             for (int i = 0; i < localSetting.size(); i++){
                 if(localSetting.get(i).equals(getResources().getString(R.string.connectedblock))){
                     ckbConnectedBlock.setChecked(true);
@@ -141,10 +143,10 @@ public class AlgorithmSettingActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed(){
-        for(String t : algorithmSetting){
-            localizationAlgorithmPriority = localizationAlgorithmPriority + t + ",";
-        }
-        mCache.put("LocalizationAlgorithmPriority", localizationAlgorithmPriority);
+        mSetting.setLocalizationAlgorithmPriority(algorithmSetting);
+        Intent intent = new Intent();
+        intent.putExtra("AlgorithmSetting", mSetting);
+        setResult(RESPONSE_ALGORITHM_SETTING, intent);
         super.onBackPressed();
     }
 }

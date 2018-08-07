@@ -29,10 +29,10 @@
     <string name="title_activity_barcode_type">BarcodeType</string>
     <string name="template_name">Template Name:</string>>
     <string name="barcode_format">&#160;&#160;&#160;&#160;&#160;&#160;Barcode Format:</string>
-    <string name="oned">ONED</string>
+    <string name="oned">OneD</string>
     <string name="expected_barcode_count">Expected Barcodes Count:</string>
     <string name="timeout">Timeout:</string>
-    <string name="debularlevel">DebularLevel:</string>
+    <string name="deblurlevel">DeblurLevel:</string>
     <string name="anti_damage_level">Anti-Damage Level:</string>
     <string name="text_filter_mode">Text Filter Mode:</string>
     <string name="region_predetection_mode">Region Predetection Mode:</string>
@@ -43,8 +43,7 @@
     <string name="texture_detection_sensitivity">Texture Detection Sensitivity:</string>
     <string name="binarization_block_size">Binarization Block Size:</string>
     <string name="localization_algorithm_priority">Localization Algorithm Priority:</string>
-    <string name="max_dimof_full_image_as_barcode_zone">Max Dimof Full Image As Barcode Zone:</string>
-    <string name="minImage_dimension_to_predetect_region">MinImage Dimension To Predetect Region:</string>
+    <string name="max_dimof_full_image_as_barcode_zone">Max Dimof Full Image As Barcode \nZone:</string>
     <string name="max_barcode_count">Max Barcode Count:</string>
     <string name="enable_fill_binary_vacancy">Enable Fill Binary Vacancy:</string>
     <string name="code_39">CODE_39</string>
