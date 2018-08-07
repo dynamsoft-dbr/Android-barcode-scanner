@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.dynamsoft.demo.dynamsoftbarcodereaderdemo.BarcodeTypeActivity"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/settingtoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="@drawable/ic_action_back"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1">
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/template_name" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="#fff3f3f3"
+                    android:textColor="#ff7c7c7c"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/barcode_format"/>
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/oned" />
+
+                    <CheckBox
+                        android:id="@+id/ckboned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:id="@+id/setoned"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="20dp"
+                        android:clickable="true"
+                        android:onClick="onViewClicked"
+                        android:src="@drawable/arrowright" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/pdf417" />
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/textview_width"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/qrcode" />
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/textview_width"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/datamatrix" />
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/textview_width"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="9dp"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/expected_barcode_count" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:text="512"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/timeout" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:text="xxx"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/debularlevel" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/anti_damage_level" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/text_filter_mode" />
+                    <android.support.v7.widget.SwitchCompat/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/region_predetection_mode" />
+                    <android.support.v7.widget.SwitchCompat/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/scale_down_Threshold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:text="2300"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/colour_image_convert_mode" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/barcode_invert_mode" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/gray_equalization_sensitivity" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                            android:text="@string/binarization_block_size" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/localization_algorithm_priority" />
+                    <TextView />
+                    <ImageView
+                        android:id="@+id/setalgorithm"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/arrowright"
+                        android:gravity="center_horizontal"
+                        android:clickable="true"
+                        android:onClick="onViewClicked"/>
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/max_dimof_full_image_as_barcode_zone" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/textview_width"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="start|center_vertical"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp"
+                    android:text="@string/minImage_dimension_to_predetect_region" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/max_barcode_count" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/enable_fill_binary_vacancy" />
+                </TableRow>
+            </TableLayout>
+        </ScrollView>
+    </LinearLayout>
+

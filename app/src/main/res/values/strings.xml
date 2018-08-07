@@ -14,7 +14,7 @@
 	<string name="title_home">Home</string>
 	<string name="title_dashboard">Dashboard</string>
 	<string name="title_notifications">Notifications</string>
-
+	<string name="dbr_license">t0068MgAAADuuWTaSI4PKw4hHkirFMNFByO4QkFq0HBIdlGOO7z0/35MSYC3YHWe20ShapB6uoYWm85j201cqgJ4vyUEEgHE=</string>
 	<string name="scan_hint">Align the barcode within the square</string>
 	<string name="flash_off">Flash off</string>
 	<string name="about">Dynamsoft Barcode Reader Mobile App Demo (Dynamsoft Barcode Reader SDK v6.2.0) \r\n © 2018 Dynamsoft All rights reserved. \r\n\r\n Integrate Barcode Reader Functionality into your own Mobile App? \r\n</string>
@@ -24,8 +24,42 @@
 	<string name="pdf417">PDF417</string>
 	<string name="datamatrix">DataMatrix</string>
 	<string name="dynamsoft_website_url">https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx</string>
-	<string name="dbr_license">t0068MgAAADuuWTaSI4PKw4hHkirFMNFByO4QkFq0HBIdlGOO7z0/35MSYC3YHWe20ShapB6uoYWm85j201cqgJ4vyUEEgHE=</string>
-    <string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
+	<string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
+	<string name="title_activity_barcode_type">BarcodeType</string>
+	<string name="template_name">Template Name:</string>>
+	<string name="barcode_format">&#160;&#160;&#160;&#160;&#160;&#160;Barcode Format:</string>
+	<string name="oned">ONED</string>
+	<string name="expected_barcode_count">Expected Barcodes Count:</string>
+	<string name="timeout">Timeout:</string>
+	<string name="debularlevel">DebularLevel:</string>
+	<string name="anti_damage_level">Anti-Damage Level:</string>
+	<string name="text_filter_mode">Text Filter Mode:</string>
+	<string name="region_predetection_mode">Region Predetection Mode:</string>
+	<string name="scale_down_Threshold">Scale Down Threshold:</string>
+	<string name="colour_image_convert_mode">Colour Image Convert Mode:</string>
+	<string name="barcode_invert_mode">Barcode Invert Mode:</string>
+	<string name="gray_equalization_sensitivity">Gray Equalization Sensitivity:</string>
+	<string name="texture_detection_sensitivity">Texture Detection Sensitivity:</string>
+	<string name="binarization_block_size">Binarization Block Size:</string>
+	<string name="localization_algorithm_priority">Localization Algorithm Priority:</string>
+	<string name="max_dimof_full_image_as_barcode_zone">Max Dimof Full Image As Barcode Zone:</string>
+	<string name="minImage_dimension_to_predetect_region">MinImage Dimension To Predetect Region:</string>
+	<string name="max_barcode_count">Max Barcode Count:</string>
+	<string name="enable_fill_binary_vacancy">Enable Fill Binary Vacancy:</string>
+	<string name="code_39">CODE_39</string>
+	<string name="code_128">CODE_128</string>
+	<string name="code_93">CODE_93</string>
+	<string name="codabar">CODABAR</string>
+	<string name="itf">ITF</string>
+	<string name="ean_13">EAN_13</string>
+	<string name="ean_8">EAN_8</string>
+	<string name="upc_a">UPC_A</string>
+	<string name="upc_e">UPC_E</string>
+	<string name="industrial_25">INDUSTRIAL_25</string>
+	<string name="connectedblock">ConnectedBlock</string>
+	<string name="lines">Lines</string>
+	<string name="statistics">Statistics</string>
+	<string name="fullimageasbarcodezone">FullImageAsBarcodeZone</string>
 	<string name="multi_barcodes_best_coverage">Multi barcodes \nBest coverage</string>
 	<string name="general_scan">General Scan</string>
 	<string name="multi_barcodes_balanced_mode">Multi barcodes \nBalanced mode</string>

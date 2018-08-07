@@ -79,6 +79,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
 	private final int BARCODE_RECT_COORD = 0x0003;
 	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
+	private final int REQUEST_SETTING = 0x0002;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -185,8 +186,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 		initUI();
 		frameUtil = new FrameUtil();
-		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
-
+		mCache = DBRCache.get(this);
 		setupFotoapparat();
 	}
 
@@ -233,6 +233,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			case R.id.menu_file:
 				choicePhotoWrapper();
 				break;
+			case R.id.menu_Setting:
+				startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
 			default:
 				break;
 		}

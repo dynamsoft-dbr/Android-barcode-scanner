@@ -1,7 +1,7 @@
 <resources>
 
 	<!-- Base application theme. -->
-	<style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 		<!-- Customize your theme here. -->
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -13,16 +13,14 @@
 	<style name="CustomOverflowStyle" parent="@android:style/Widget.Holo.ActionButton.Overflow">
 		<item name="android:src">@drawable/icon_mode</item>
 	</style>
-
 	<style name="AppTheme.NoActionBar">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 	</style>
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 	<style name="style_qr_box_view_button">
 		<item name="android:layout_width">wrap_content</item>
@@ -53,6 +51,7 @@
 		<item name="android:ellipsize">end</item>
 		<item name="android:text">@string/label_code_value</item>
 	</style>
+
 
 	<style name="ToolbarPopupTheme" parent="Widget.AppCompat.PopupMenu.Overflow">
 		<item name="android:textColorPrimary">@android:color/white</item>
