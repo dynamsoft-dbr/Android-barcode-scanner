@@ -1,0 +1,10 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    style="?attr/spinnerDropDownItemStyle"
+    android:singleLine="true"
+    android:layout_width="wrap_content"
+    android:layout_height="25dp"
+    android:textColor="#808080"
+    android:textSize="@dimen/textSize_10"
+    android:gravity="center"
+    android:ellipsize="marquee"/>

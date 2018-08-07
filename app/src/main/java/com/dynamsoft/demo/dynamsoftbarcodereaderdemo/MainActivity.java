@@ -28,6 +28,7 @@ import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
 import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
@@ -104,6 +105,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private boolean isDrawerExpand = false;
 	private boolean isSingleMode = false;
 	private DBRCache mCache;
+	private DBRCache mSettingCache;
 	private boolean isFlashOn = false;
 	private ArrayList<String> allResultText = new ArrayList<>();
 	private float previewScale;
@@ -234,7 +236,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				choicePhotoWrapper();
 				break;
 			case R.id.menu_Setting:
-				startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
+				goToSetting();
+				break;
+
 			default:
 				break;
 		}
@@ -432,6 +436,21 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private void choicePhotoWrapper() {
 		BGAPhotoHelper photoHelper = new BGAPhotoHelper(new File(Environment.getExternalStorageDirectory(), "DBRDemo"));
 		startActivityForResult(photoHelper.getChooseSystemGalleryIntent(), REQUEST_CHOOSE_PHOTO);
+	}
+	private void goToSetting(){
+		String strSetting = "";
+		mSettingCache = DBRCache.get(this, "SettingCache");
+		if (mSettingCache.getAsString("GeneralSetting") == null){
+			DBRSetting generalSetting = new DBRSetting();
+			try {
+				strSetting = LoganSquare.serialize(generalSetting);
+			}
+			catch (Exception ex){
+				ex.printStackTrace();
+			}
+			mSettingCache.put("GeneralSetting", strSetting);
+		}
+		startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
 	}
 
 	class CodeFrameProcesser implements FrameProcessor {

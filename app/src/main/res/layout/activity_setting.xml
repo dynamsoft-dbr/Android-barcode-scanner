@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.dynamsoft.demo.dynamsoftbarcodereaderdemo.BarcodeTypeActivity"
     android:orientation="vertical">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/settingtoolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:navigationIcon="@drawable/ic_action_back"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -47,20 +40,14 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/oned" />
-
-                    <CheckBox
-                        android:id="@+id/ckboned"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
                     <ImageView
                         android:id="@+id/setoned"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_gravity="center_vertical"
+                        android:layout_gravity="center"
                         android:layout_marginRight="20dp"
                         android:clickable="true"
-                        android:onClick="onViewClicked"
+                        android:onClick="onClicked"
                         android:src="@drawable/arrowright" />
                 </TableRow>
                 <TextView
@@ -78,8 +65,10 @@
                         android:textSize="15sp"
                         android:text="@string/pdf417" />
                     <CheckBox
+                        android:id="@+id/ckbpdf417"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/textview_width"/>
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -96,8 +85,10 @@
                         android:textSize="15sp"
                         android:text="@string/qrcode" />
                     <CheckBox
+                        android:id="@+id/ckbqrcode"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/textview_width"/>
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -114,8 +105,10 @@
                         android:textSize="15sp"
                         android:text="@string/datamatrix" />
                     <CheckBox
+                        android:id="@+id/ckbdatamatrix"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/textview_width"/>
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -130,11 +123,26 @@
                         android:gravity="start|center_vertical"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
-                        android:text="@string/expected_barcode_count" />
+                        android:text="@string/expected_barcode_count"/>
                     <TextView
+                        android:id="@+id/tv_expected_barcode_count"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/textview_width"
-                        android:text="512"/>
+                        android:textSize="15sp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_expected_barcode_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -151,9 +159,21 @@
                         android:textSize="15sp"
                         android:text="@string/timeout" />
                     <TextView
+                        android:id="@+id/tv_timeout"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/textview_width"
-                        android:text="xxx"/>
+                        android:gravity="center"
+                        android:textSize="15sp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_timeout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -168,7 +188,11 @@
                         android:gravity="start|center_vertical"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
-                        android:text="@string/debularlevel" />
+                        android:text="@string/deblurlevel" />
+                    <Spinner
+                        android:id="@+id/sp_deblur_level"
+                        android:layout_width="10dp"
+                        android:layout_gravity="center" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -184,6 +208,10 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/anti_damage_level" />
+                    <Spinner
+                        android:id="@+id/sp_anti_damage_level"
+                        android:layout_width="10dp"
+                        android:layout_gravity="center" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -199,7 +227,9 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/text_filter_mode" />
-                    <android.support.v7.widget.SwitchCompat/>
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/sc_text_filter_mode"
+                        android:layout_gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -215,7 +245,10 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/region_predetection_mode" />
-                    <android.support.v7.widget.SwitchCompat/>
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/sc_region_predetection_mode"
+                        android:layout_gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -232,9 +265,22 @@
                         android:textSize="15sp"
                         android:text="@string/scale_down_Threshold" />
                     <TextView
+                        android:id="@+id/tv_scale_down_threshold"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/textview_width"
-                        android:text="2300"/>
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_scale_down_threshold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -250,6 +296,10 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/colour_image_convert_mode" />
+                    <Spinner
+                        android:id="@+id/sp_colour_image_convert_mode"
+                        android:layout_width="10dp"
+                        android:layout_gravity="end|center_vertical" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -265,6 +315,10 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/barcode_invert_mode" />
+                    <Spinner
+                        android:id="@+id/sp_barcode_invert_mode"
+                        android:layout_width="10dp"
+                        android:layout_gravity="end|center_vertical" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -280,6 +334,10 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/gray_equalization_sensitivity" />
+                    <Spinner
+                        android:id="@+id/sp_gray_equalization_sensitivity"
+                        android:layout_width="10dp"
+                        android:layout_gravity="center" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -294,7 +352,46 @@
                         android:gravity="start|center_vertical"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
-                            android:text="@string/binarization_block_size" />
+                        android:text="@string/texture_detection_sensitivity" />
+
+                    <Spinner
+                        android:id="@+id/sp_texture_detection_sensitivity"
+                        android:layout_width="10dp"
+                        android:layout_gravity="center" />
+                </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/borden_height"
+                    android:background="#fff3f3f3" />
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="start|center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:text="@string/binarization_block_size" />
+                    <TextView
+                        android:id="@+id/tv_binarization_block_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_binarization_block_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -310,17 +407,15 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/localization_algorithm_priority" />
-                    <TextView />
                     <ImageView
                         android:id="@+id/setalgorithm"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_gravity="center_vertical"
                         android:layout_marginRight="20dp"
                         android:src="@drawable/arrowright"
-                        android:gravity="center_horizontal"
+                        android:layout_gravity="center"
                         android:clickable="true"
-                        android:onClick="onViewClicked"/>
+                        android:onClick="onClicked"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -336,20 +431,30 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/max_dimof_full_image_as_barcode_zone" />
+                    <TextView
+                        android:id="@+id/tv_max_dimof_full_image_as_barcode_zone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_max_dimof_full_image_as_barcode_zone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/borden_height"
                     android:background="#fff3f3f3" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/textview_width"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginLeft="20dp"
-                    android:gravity="start|center_vertical"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp"
-                    android:text="@string/minImage_dimension_to_predetect_region" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/borden_height"
@@ -364,6 +469,25 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/max_barcode_count" />
+                    <TextView
+                        android:id="@+id/tv_max_barcode_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:gravity="center"
+                        android:textSize="15sp"
+                        android:layout_gravity="center"
+                        android:onClick="onClicked"/>
+                    <EditText
+                        android:id="@+id/et_max_barcode_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/textview_width"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:visibility="gone"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -379,6 +503,9 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:text="@string/enable_fill_binary_vacancy" />
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/sc_enable_fill_binary_vacancy"
+                        android:layout_gravity="center"/>
                 </TableRow>
             </TableLayout>
         </ScrollView>
