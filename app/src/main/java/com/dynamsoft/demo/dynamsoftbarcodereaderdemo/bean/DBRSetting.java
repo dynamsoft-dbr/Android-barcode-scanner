@@ -59,7 +59,7 @@ public class DBRSetting implements Serializable{
     @JsonField
     private int maxDimOfFullImageAsBarcodeZone = 262144;
     @JsonField
-    private long maxBarcodesCount = 2147483647L;
+    private int maxBarcodesCount = 2147483647;
     @JsonField
     private boolean enableFillBinaryVacancy = true;
     @JsonField
@@ -193,11 +193,11 @@ public class DBRSetting implements Serializable{
         this.maxDimOfFullImageAsBarcodeZone = maxDimOfFullImageAsBarcodeZone;
     }
 
-    public long getMaxBarcodesCount() {
+    public int getMaxBarcodesCount() {
         return maxBarcodesCount;
     }
 
-    public void setMaxBarcodesCount(long maxBarcodesCount) {
+    public void setMaxBarcodesCount(int maxBarcodesCount) {
         this.maxBarcodesCount = maxBarcodesCount;
     }
 

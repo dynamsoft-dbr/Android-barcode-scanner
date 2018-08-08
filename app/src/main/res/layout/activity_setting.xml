@@ -141,11 +141,11 @@
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_expected_barcode_count"
-                        android:layout_width="30dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="@dimen/textview_width"
+                        android:maxEms="10"
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
-                        android:background="@null"
                         android:singleLine="true"
                         android:gravity="center"
                         android:textSize="15sp"
@@ -183,7 +183,6 @@
                         android:layout_height="@dimen/textview_width"
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
-                        android:background="@null"
                         android:singleLine="true"
                         android:visibility="gone"
                         android:textSize="15sp"
@@ -521,8 +520,7 @@
                         android:layout_gravity="center_vertical|end"
                         android:gravity="center"
                         android:visibility="gone"
-                        android:layout_marginRight="16dp"
-                        android:background="@null"/>
+                        android:layout_marginRight="16dp"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
