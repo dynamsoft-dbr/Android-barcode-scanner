@@ -27,6 +27,7 @@ import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.ShareUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
 
@@ -192,7 +193,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		for (int i = 0; i < listItem.get(position).getCodeFormat().size(); i++) {
 			Map<String, String> item = new HashMap<>();
 			item.put("index", i + "");
-			item.put("format", listItem.get(position).getCodeFormat().get(i));
+			item.put("format", DBRUtil.getCodeFormat(listItem.get(position).getCodeFormat().get(i)));
 			item.put("text", listItem.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
 		}

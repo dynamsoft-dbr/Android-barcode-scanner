@@ -201,11 +201,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					isDrawerExpand = false;
 					recentCodeList.clear();
 					simpleAdapter.notifyDataSetChanged();
+					dragView.setVisibility(View.VISIBLE);
 				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
 					Logger.d("sliding drawer 1");
 					isDrawerExpand = true;
-					lvBarcodeList.startLayoutAnimation();
 					simpleAdapter.notifyDataSetChanged();
+					dragView.setVisibility(View.GONE);
 				}
 			}
 		});
@@ -368,7 +369,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private void fulFillRecentList(TextResult[] result) {
 		recentCodeList.clear();
 		dragView.setText(result[0].barcodeText);
-
 		for (TextResult aResult1 : result) {
 			Map<String, String> recentCodeItem = new HashMap<>();
 			recentCodeItem.put("format", aResult1.barcodeFormat + "");
