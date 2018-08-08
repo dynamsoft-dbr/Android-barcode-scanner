@@ -19,6 +19,7 @@
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingRight="16dp"
                 android:stretchColumns="1">
                 <TableRow>
                     <TextView
@@ -51,8 +52,9 @@
                         android:id="@+id/setoned"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="fitEnd"
+                        android:layout_marginRight="6dp"
                         android:clickable="true"
                         android:onClick="onClicked"
                         android:src="@drawable/arrowright" />
@@ -75,7 +77,8 @@
                         android:id="@+id/ckbpdf417"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/textview_width"
-                        android:layout_gravity="center"/>
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -95,7 +98,8 @@
                         android:id="@+id/ckbqrcode"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/textview_width"
-                        android:layout_gravity="center"/>
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -115,7 +119,8 @@
                         android:id="@+id/ckbdatamatrix"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/textview_width"
-                        android:layout_gravity="center"/>
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -136,19 +141,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/textview_width"
                         android:textSize="15sp"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center_vertical|end"
                         android:gravity="center"
+                        android:layout_marginRight="16dp"
                         android:textColor="@color/colorPrimaryDark"
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_expected_barcode_count"
-                        android:layout_width="wrap_content"
+                        android:layout_width="30dp"
                         android:layout_height="@dimen/textview_width"
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
+                        android:background="@null"
                         android:singleLine="true"
                         android:gravity="center"
-                        android:layout_gravity="center"
+                        android:textSize="15sp"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:visibility="gone"/>
                 </TableRow>
                 <TextView
@@ -171,6 +180,8 @@
                         android:layout_height="@dimen/textview_width"
                         android:gravity="center"
                         android:textSize="15sp"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:textColor="@color/colorPrimaryDark"
                         android:onClick="onClicked"/>
                     <EditText
@@ -179,8 +190,13 @@
                         android:layout_height="@dimen/textview_width"
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
+                        android:background="@null"
                         android:singleLine="true"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        android:textSize="15sp"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:gravity="center"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -199,7 +215,8 @@
                     <Spinner
                         android:id="@+id/sp_deblur_level"
                         android:layout_width="10dp"
-                        android:layout_gravity="center" />
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -218,7 +235,8 @@
                     <Spinner
                         android:id="@+id/sp_anti_damage_level"
                         android:layout_width="10dp"
-                        android:layout_gravity="center" />
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -236,7 +254,8 @@
                         android:text="@string/text_filter_mode" />
                     <android.support.v7.widget.SwitchCompat
                         android:id="@+id/sc_text_filter_mode"
-                        android:layout_gravity="center"/>
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -255,7 +274,8 @@
 
                     <android.support.v7.widget.SwitchCompat
                         android:id="@+id/sc_region_predetection_mode"
-                        android:layout_gravity="center"/>
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -278,6 +298,8 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:gravity="center"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_scale_down_threshold"
@@ -285,8 +307,11 @@
                         android:layout_height="@dimen/textview_width"
                         android:textColor="@color/colorPrimaryDark"
                         android:gravity="center"
+                        android:layout_gravity="center_vertical|end"
                         android:inputType="number"
                         android:singleLine="true"
+                        android:textSize="15sp"
+                        android:layout_marginRight="16dp"
                         android:visibility="gone"/>
                 </TableRow>
                 <TextView
@@ -306,6 +331,7 @@
                     <Spinner
                         android:id="@+id/sp_colour_image_convert_mode"
                         android:layout_width="10dp"
+                        android:layout_marginRight="16dp"
                         android:layout_gravity="end|center_vertical" />
                 </TableRow>
                 <TextView
@@ -325,6 +351,7 @@
                     <Spinner
                         android:id="@+id/sp_barcode_invert_mode"
                         android:layout_width="10dp"
+                        android:layout_marginRight="16dp"
                         android:layout_gravity="end|center_vertical" />
                 </TableRow>
                 <TextView
@@ -344,7 +371,8 @@
                     <Spinner
                         android:id="@+id/sp_gray_equalization_sensitivity"
                         android:layout_width="10dp"
-                        android:layout_gravity="center" />
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -364,7 +392,8 @@
                     <Spinner
                         android:id="@+id/sp_texture_detection_sensitivity"
                         android:layout_width="10dp"
-                        android:layout_gravity="center" />
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end" />
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -386,8 +415,9 @@
                         android:layout_height="@dimen/textview_width"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center_vertical|end"
                         android:gravity="center"
+                        android:layout_marginRight="16dp"
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_binarization_block_size"
@@ -397,7 +427,9 @@
                         android:gravity="center"
                         android:inputType="number"
                         android:singleLine="true"
-                        android:layout_gravity="center"
+                        android:textSize="15sp"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:visibility="gone"/>
                 </TableRow>
                 <TextView
@@ -418,9 +450,10 @@
                         android:id="@+id/setalgorithm"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="6dp"
                         android:src="@drawable/arrowright"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="fitEnd"
                         android:clickable="true"
                         android:onClick="onClicked"/>
                 </TableRow>
@@ -445,7 +478,8 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="15sp"
                         android:gravity="center"
-                        android:layout_gravity="center"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_max_dimof_full_image_as_barcode_zone"
@@ -454,14 +488,11 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
                         android:singleLine="true"
-                        android:layout_gravity="center"
-                        android:gravity="center"
+                        android:textSize="15sp"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:visibility="gone"/>
                 </TableRow>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/borden_height"
-                    android:background="#fff3f3f3" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/borden_height"
@@ -483,7 +514,8 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:gravity="center"
                         android:textSize="15sp"
-                        android:layout_gravity="center"
+                        android:layout_marginRight="16dp"
+                        android:layout_gravity="center_vertical|end"
                         android:onClick="onClicked"/>
                     <EditText
                         android:id="@+id/et_max_barcode_count"
@@ -492,9 +524,12 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:inputType="number"
                         android:singleLine="true"
-                        android:layout_gravity="center"
+                        android:textSize="15sp"
+                        android:layout_gravity="center_vertical|end"
                         android:gravity="center"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        android:layout_marginRight="16dp"
+                        android:background="@null"/>
                 </TableRow>
                 <TextView
                     android:layout_width="match_parent"
@@ -512,7 +547,8 @@
                         android:text="@string/enable_fill_binary_vacancy" />
                     <android.support.v7.widget.SwitchCompat
                         android:id="@+id/sc_enable_fill_binary_vacancy"
-                        android:layout_gravity="center"/>
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginRight="16dp"/>
                 </TableRow>
             </TableLayout>
         </ScrollView>
