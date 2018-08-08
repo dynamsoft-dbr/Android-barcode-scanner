@@ -43,7 +43,7 @@
     <string name="texture_detection_sensitivity">Texture Detection Sensitivity:</string>
     <string name="binarization_block_size">Binarization Block Size:</string>
     <string name="localization_algorithm_priority">Localization Algorithm Priority:</string>
-    <string name="max_dimof_full_image_as_barcode_zone">Max Dimof Full Image As Barcode \nZone:</string>
+    <string name="max_dimof_full_image_as_barcode_zone">Max Dim Of Full Image As \nBarcode Zone:</string>
     <string name="max_barcode_count">Max Barcode Count:</string>
     <string name="enable_fill_binary_vacancy">Enable Fill Binary Vacancy:</string>
     <string name="code_39">CODE_39</string>
