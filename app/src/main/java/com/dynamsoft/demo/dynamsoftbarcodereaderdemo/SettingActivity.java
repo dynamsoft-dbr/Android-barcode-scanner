@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -33,7 +34,7 @@ import java.util.concurrent.BrokenBarrierException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends BaseActivity {
 	private DBRSetting mSetting;
 	private DBRCache mSettingCache;
 	private List<String> one2Ten = new ArrayList<>();
@@ -112,18 +113,22 @@ public class SettingActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_setting);
+	}
+
+	@Override
+	protected int getLayoutId() {
+		return R.layout.activity_setting;
+	}
+
+	@Override
+	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.settingtoolbar);
-		setSupportActionBar(toolbar);
+		setToolbarBackgroud("#000000");
+		setToolbarNavIcon(R.drawable.ic_action_back_dark);
+		setToolbarTitle("Setting");
+		setToolbarTitleColor("#ffffff");
 		initSpinner();
 		initSetting();
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
 		etTimeout.setOnEditorActionListener(onEditFinish);
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
@@ -138,6 +143,17 @@ public class SettingActivity extends AppCompatActivity {
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
 	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.findItem(R.id.menu_share).setVisible(false);
+		menu.findItem(R.id.menu_capture).setVisible(false);
+		menu.findItem(R.id.menu_file).setVisible(false);
+		menu.findItem(R.id.menu_scanning).setVisible(false);
+		menu.findItem(R.id.menu_Setting).setVisible(false);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
 	public void onClicked(View view) {
 		switch (view.getId()) {
 			case R.id.setoned:

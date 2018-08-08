@@ -6,15 +6,19 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.ThemedSpinnerAdapter;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.jni.BarcodeReader;
@@ -23,6 +27,8 @@ import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.ShareUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
 
 import org.json.JSONObject;
@@ -60,6 +66,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
 	private BarcodeReader reader;
 	private int pageType;
+	private ShareUtil shareUtil;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -88,6 +95,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
 		initBarcodeReader();
+		shareUtil=new ShareUtil(this);
 		simpleAdapter = new SimpleAdapter(this, recentCodeList,
 				R.layout.item_listview_detail_code_list, new String[]{"index", "format", "text"},
 				new int[]{R.id.tv_index, R.id.tv_code_format_content, R.id.tv_code_text_content});
@@ -142,6 +150,19 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		return super.onPrepareOptionsMenu(menu);
 	}
 
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Bitmap shotBitmap=shareUtil.getScreenShot(this);
+		if (shotBitmap!=null){
+			ArrayList<Uri> imageUris = new ArrayList<>();
+			Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
+			imageUris.add(uri);
+			shareUtil.shareMultiImages(imageUris,this);
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 	@Override
 	protected int getLayoutId() {
 		return R.layout.activity_history_item_detail;
@@ -172,7 +193,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		for (int i = 0; i < listItem.get(position).getCodeFormat().size(); i++) {
 			Map<String, String> item = new HashMap<>();
 			item.put("index", i + "");
-			item.put("format", listItem.get(position).getCodeFormat().get(i));
+			item.put("format", DBRUtil.getCodeFormat(listItem.get(position).getCodeFormat().get(i)));
 			item.put("text", listItem.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
 		}
