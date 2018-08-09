@@ -84,6 +84,7 @@ public class HUDCanvasView extends View {
 
 	public void clear() {
 		rectCoord = null;
+		invalidate();
 	}
 
 	public void setCanvasDegree(int degree) {

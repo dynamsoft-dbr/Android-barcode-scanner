@@ -213,8 +213,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				Path path = new Path();
 				Bitmap oriBitmap;
 				if (imgLocation == 0) {
+					BitmapFactory.Options opts = new BitmapFactory.Options();
+					opts.inSampleSize = 4;
 					oriBitmap = BitmapFactory.decodeFile(new File(getExternalFilesDir("photos"),
-							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath());
+							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(),opts);
 				} else {
 					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
 				}

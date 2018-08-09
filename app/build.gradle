@@ -37,7 +37,7 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
     implementation 'com.github.PierfrancescoSoffritti:SlidingDrawer:0.11'
     //implementation 'com.dynamsoft:dbr:6.2'
-    implementation (name:'DynamsoftBarcodeReaderAndroid-debug-7.27-10.57', ext:'aar'  , )
+    implementation (name:'DynamsoftBarcodeReaderAndroid-onlinedemo', ext:'aar'  , )
     annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.6'
     implementation 'com.bluelinelabs:logansquare:1.3.6'
     implementation 'io.fotoapparat.fotoapparat:library:2.3.1'

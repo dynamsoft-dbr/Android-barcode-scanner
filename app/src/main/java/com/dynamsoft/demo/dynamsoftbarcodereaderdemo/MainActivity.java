@@ -32,6 +32,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
 import com.orhanobut.logger.Logger;
@@ -73,9 +74,6 @@ import static io.fotoapparat.selector.FlashSelectorsKt.torch;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
 
 public class MainActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
-	private static final int PRC_PHOTO_PICKER = 1;
-	private static final int RC_CHOOSE_PHOTO = 1;
-	private static final int RC_PREVIEW = 2;
 	private final int DETECT_BARCODE = 0x0001;
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
 	private final int BARCODE_RECT_COORD = 0x0003;
@@ -188,7 +186,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 		initUI();
 		frameUtil = new FrameUtil();
-		mCache = DBRCache.get(this);
+		mCache = DBRCache.get(this,1000 * 1000 * 50,16);
 		setupFotoapparat();
 	}
 
@@ -200,13 +198,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					Logger.d("sliding drawer 0");
 					isDrawerExpand = false;
 					recentCodeList.clear();
-					simpleAdapter.notifyDataSetChanged();
-					dragView.setVisibility(View.VISIBLE);
 				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
 					Logger.d("sliding drawer 1");
 					isDrawerExpand = true;
-					simpleAdapter.notifyDataSetChanged();
-					dragView.setVisibility(View.GONE);
+					hudView.clear();
+					dragView.setText("Drag me");
 				}
 			}
 		});
@@ -371,10 +367,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		dragView.setText(result[0].barcodeText);
 		for (TextResult aResult1 : result) {
 			Map<String, String> recentCodeItem = new HashMap<>();
-			recentCodeItem.put("format", aResult1.barcodeFormat + "");
+			recentCodeItem.put("format", DBRUtil.getCodeFormat(aResult1.barcodeFormat + ""));
 			recentCodeItem.put("text", aResult1.barcodeText);
 			recentCodeList.add(recentCodeItem);
 		}
+		simpleAdapter.notifyDataSetChanged();
 	}
 
 	private void setupFotoapparat() {
