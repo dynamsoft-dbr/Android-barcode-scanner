@@ -2,6 +2,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -351,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 				break;
 			case R.id.btn_finish:
 				detectStart = false;
+				startActivity(new Intent(this,ResultActivity.class));
 				break;
 			default:
 				break;

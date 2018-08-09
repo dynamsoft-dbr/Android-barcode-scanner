@@ -1,6 +1,8 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,9 +89,14 @@ public class TestActivity extends AppCompatActivity {
 	@OnClick(R.id.btn_switch)
 	public void onViewClicked() {
 		try {
-			TextResult[] results1 = reader.decodeFileInMemory(input2byte(123), "Custom_100947_777");
-			TextResult[] results2 = reader.decodeFileInMemory(input2byte(456), "Custom_100947_777");
-			StitchImageResult result = AfterProcess.stitchImage(input2byte(123), input2byte(456),
+			AssetManager manager = getAssets();
+			InputStream inputStream1 = manager.open("123.png");
+			InputStream inputStream2 = manager.open("456.png");
+			Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream1);
+			Bitmap bitmap2 = BitmapFactory.decodeStream(inputStream2);
+			TextResult[] results1 = reader.decodeBufferedImage(bitmap1,"");
+			TextResult[] results2 = reader.decodeBufferedImage(bitmap2,"");
+			StitchImageResult result = AfterProcess.stitchImage(convertImage(bitmap1), convertImage(bitmap2),
 					EnumImagePixelFormat.IPF_ARGB_8888, 688 * 4, 688 * 4, results1, results2,
 					688, 449, 688, 591);
 			Bitmap bitmap = result.image;
@@ -102,5 +111,13 @@ public class TestActivity extends AppCompatActivity {
 		} catch (BarcodeReaderException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private byte[] convertImage(Bitmap bitmap) {
+		int bytes = bitmap.getByteCount();
+		ByteBuffer buf = ByteBuffer.allocate(bytes);
+		bitmap.copyPixelsToBuffer(buf);
+		byte[] byteArray = buf.array();
+		return byteArray;
 	}
 }
