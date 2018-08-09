@@ -459,7 +459,7 @@ public class SettingActivity extends BaseActivity {
 					case R.id.et_timeout:
 						try {
 							imm.hideSoftInputFromWindow(etTimeout.getWindowToken(), 0);
-							tempValue = Integer.parseInt(tvTimeout.getText().toString());
+							tempValue = Integer.parseInt(etTimeout.getText().toString());
 							if (tempValue >= 0) {
 								mSetting.setTimeout(tempValue);
 							} else {
@@ -501,16 +501,16 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etBinarizationBlockSize.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etBinarizationBlockSize.getText().toString());
 							if (tempValue >= 0 && tempValue <= 1000){
-								mSetting.setScaleDownThreshold(tempValue);
+								mSetting.setBinarizationBlockSize(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
-								mSetting.setScaleDownThreshold(0);
+								mSetting.setBinarizationBlockSize(0);
 							}
 						}
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
-							mSetting.setScaleDownThreshold(0);
+							mSetting.setBinarizationBlockSize(0);
 						}
 						tvBinarizationBlockSize.setText(String.valueOf(mSetting.getBinarizationBlockSize()));
 						etBinarizationBlockSize.setVisibility(View.GONE);
@@ -519,7 +519,7 @@ public class SettingActivity extends BaseActivity {
 					case R.id.et_max_dimof_full_image_as_barcode_zone:
 						try {
 							imm.hideSoftInputFromWindow(etMaxDimofFullImageAsBarcodeZone.getWindowToken(), 0);
-							tempValue = Integer.parseInt(tvMaxDimofFullImageAsBarcodeZone.getText().toString());
+							tempValue = Integer.parseInt(etMaxDimofFullImageAsBarcodeZone.getText().toString());
 							if (tempValue >= 262144){
 								mSetting.setMaxDimOfFullImageAsBarcodeZone(tempValue);
 							} else {
@@ -537,7 +537,7 @@ public class SettingActivity extends BaseActivity {
 					case R.id.et_max_barcode_count:
 						try{
 							imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);
-							tempValue = Integer.parseInt(tvMaxBarcodeCount.getText().toString());
+							tempValue = Integer.parseInt(etMaxBarcodeCount.getText().toString());
 							if (tempValue >= 1){
 								mSetting.setMaxBarcodesCount(tempValue);
 							} else {
