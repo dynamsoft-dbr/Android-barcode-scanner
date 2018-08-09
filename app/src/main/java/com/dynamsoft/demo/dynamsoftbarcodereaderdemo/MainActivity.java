@@ -134,9 +134,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					}
 					int count = allResultText.size();
 					if (count > 1) {
-						mScanCount.setText(count + "Barcodes Scanned");
+						mScanCount.setText(count + " Barcodes Scanned");
 					} else {
-						mScanCount.setText(count + "Barcode Scanned");
+						mScanCount.setText(count + " Barcode Scanned");
 					}
 					break;
 				case BARCODE_RECT_COORD:

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BarcodeTypeActivity extends AppCompatActivity {
+public class BarcodeTypeActivity extends BaseActivity {
     @BindView(R.id.ckbcode39)
     CheckBox mCode39;
     @BindView(R.id.ckbcode128)
@@ -44,19 +45,19 @@ public class BarcodeTypeActivity extends AppCompatActivity {
     private DBRSetting mSetting;
     private final int REQUEST_ONED_SETTING = 0x0001;
     private final int RESPONSE_ONED_SETTING = 0x0001;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_barcode_type);
+    protected int getLayoutId() {
+        return R.layout.activity_barcode_type;
+    }
+
+    @Override
+    protected void init(Bundle savedInstanceState) {
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.barcodetypetoolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        setToolbarBackgroud("#000000");
+        setToolbarNavIcon(R.drawable.ic_action_back_dark);
+        setToolbarTitle("OneD Barcode Format");
+        setToolbarTitleColor("#ffffff");
         initUI();
         mCode39.setOnCheckedChangeListener(checkedChangeListener);
         mCode93.setOnCheckedChangeListener(checkedChangeListener);
@@ -68,6 +69,15 @@ public class BarcodeTypeActivity extends AppCompatActivity {
         mEAN8.setOnCheckedChangeListener(checkedChangeListener);
         mEAN13.setOnCheckedChangeListener(checkedChangeListener);
         mIndustrial25.setOnCheckedChangeListener(checkedChangeListener);
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_share).setVisible(false);
+        menu.findItem(R.id.menu_capture).setVisible(false);
+        menu.findItem(R.id.menu_file).setVisible(false);
+        menu.findItem(R.id.menu_scanning).setVisible(false);
+        menu.findItem(R.id.menu_Setting).setVisible(false);
+        return super.onPrepareOptionsMenu(menu);
     }
     CheckBox.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override

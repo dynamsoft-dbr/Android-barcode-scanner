@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -19,7 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AlgorithmSettingActivity extends AppCompatActivity {
+public class AlgorithmSettingActivity extends BaseActivity {
     private ArrayList<String> algorithmSetting = new ArrayList<>();
     private DBRSetting mSetting;
     private final int REQUEST_ALGORITHM_SETTING = 0x0002;
@@ -40,13 +41,20 @@ public class AlgorithmSettingActivity extends AppCompatActivity {
     CheckBox ckbFullImageAsBarcodeZone;
     @BindView(R.id.tvfullimageasbarcodezone)
     TextView tvFullImageAsBarcodeZone;
-    @BindView(R.id.algorithmtoolbar)
-    Toolbar mToolbar;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_algorithm_setting);
+    protected int getLayoutId() {
+        return R.layout.activity_algorithm_setting;
+    }
+
+    @Override
+    protected void init(Bundle savedInstanceState) {
         ButterKnife.bind(this);
+        setToolbarBackgroud("#000000");
+        setToolbarNavIcon(R.drawable.ic_action_back_dark);
+        setToolbarTitle("Localization Algorithm Priority");
+        setToolbarTitleColor("#ffffff");
+
         ckbConnectedBlock.setOnCheckedChangeListener(checkedChangeListener);
         ckbLines.setOnCheckedChangeListener(checkedChangeListener);
         ckbStatistics.setOnCheckedChangeListener(checkedChangeListener);
@@ -54,24 +62,28 @@ public class AlgorithmSettingActivity extends AppCompatActivity {
         mSetting = (DBRSetting) getIntent().getSerializableExtra("DBRSetting");
         if (mSetting.getLocalizationAlgorithmPriority() != null) {
             ArrayList<String> localSetting = mSetting.getLocalizationAlgorithmPriority();
-            for (int i = 0; i < localSetting.size(); i++){
-                if(localSetting.get(i).equals(getResources().getString(R.string.connectedblock))){
+            for (int i = 0; i < localSetting.size(); i++) {
+                if (localSetting.get(i).equals(getResources().getString(R.string.connectedblock))) {
                     ckbConnectedBlock.setChecked(true);
-                }else if(localSetting.get(i).equals(getResources().getString(R.string.lines))){
+                } else if (localSetting.get(i).equals(getResources().getString(R.string.lines))) {
                     ckbLines.setChecked(true);
-                }else if(localSetting.get(i).equals(getResources().getString(R.string.statistics))){
+                } else if (localSetting.get(i).equals(getResources().getString(R.string.statistics))) {
                     ckbStatistics.setChecked(true);
-                }else if(localSetting.get(i).equals(getResources().getString(R.string.fullimageasbarcodezone))){
+                } else if (localSetting.get(i).equals(getResources().getString(R.string.fullimageasbarcodezone))) {
                     ckbFullImageAsBarcodeZone.setChecked(true);
                 }
             }
         }
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_share).setVisible(false);
+        menu.findItem(R.id.menu_capture).setVisible(false);
+        menu.findItem(R.id.menu_file).setVisible(false);
+        menu.findItem(R.id.menu_scanning).setVisible(false);
+        menu.findItem(R.id.menu_Setting).setVisible(false);
+        return super.onPrepareOptionsMenu(menu);
     }
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override

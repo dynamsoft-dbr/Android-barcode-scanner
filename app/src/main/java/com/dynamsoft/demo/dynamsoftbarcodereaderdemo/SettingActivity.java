@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
@@ -41,17 +42,6 @@ public class SettingActivity extends BaseActivity {
 	private List<String> colourImageConvertMode = new ArrayList<>();
 	private List<String> barcodeInvertMode = new ArrayList<>();
 	private ArrayList<String> tempFormats;
-	private final ArrayList<String> oneDFormats = new ArrayList<String>(){{
-		add("CODE_39");
-		add("CODE_93");
-		add("CODE_128");
-		add("CODABAR");
-		add("ITF");
-		add("EAN_13");
-		add("EAN_8");
-		add("UPC_A");
-		add("UPC_E");
-		add("INDUSTRIAL_25");}};
 	private ArrayAdapter<String> one2tenSpinnerAdapter;
 	private ArrayAdapter<String> isEnableSpinnerAdapter;
 	private ArrayAdapter<String> barcodeInvertModeSpinnerAdapter;
@@ -444,48 +434,123 @@ public class SettingActivity extends BaseActivity {
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			if(actionId == EditorInfo.IME_ACTION_DONE || actionId == KeyEvent.ACTION_DOWN) {
 			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			int tempValue;
 				switch (v.getId()) {
 					case R.id.et_expected_barcode_count:
-						tvExpectedBarcodeCount.setText(etExpectedBarcodeCount.getText());
-						imm.hideSoftInputFromWindow(etExpectedBarcodeCount.getWindowToken(), 0);
+						try {
+							imm.hideSoftInputFromWindow(etExpectedBarcodeCount.getWindowToken(), 0);
+							tempValue = Integer.parseInt(etExpectedBarcodeCount.getText().toString());
+							if (tempValue >= 0 && tempValue <= 100) {
+								mSetting.setExpectedBarcodesCount(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
+								mSetting.setExpectedBarcodesCount(0);
+							}
+						}
+						catch (Exception ex) {
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
+							mSetting.setExpectedBarcodesCount(0);
+						}
+						tvExpectedBarcodeCount.setText(String.valueOf(mSetting.getExpectedBarcodesCount()));
 						etExpectedBarcodeCount.setVisibility(View.GONE);
 						tvExpectedBarcodeCount.setVisibility(View.VISIBLE);
-						mSetting.setExpectedBarcodesCount(Integer.parseInt(tvExpectedBarcodeCount.getText().toString()));
 						break;
 					case R.id.et_timeout:
-						tvTimeout.setText(etTimeout.getText());
-						imm.hideSoftInputFromWindow(etTimeout.getWindowToken(), 0);
+						try {
+							imm.hideSoftInputFromWindow(etTimeout.getWindowToken(), 0);
+							tempValue = Integer.parseInt(tvTimeout.getText().toString());
+							if (tempValue >= 0) {
+								mSetting.setTimeout(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
+								mSetting.setTimeout(10000);
+							}
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
+							mSetting.setTimeout(10000);
+						}
+						tvTimeout.setText(String.valueOf(mSetting.getTimeout()));
 						etTimeout.setVisibility(View.GONE);
 						tvTimeout.setVisibility(View.VISIBLE);
-						mSetting.setTimeout(Integer.parseInt(tvTimeout.getText().toString()));
 						break;
 					case R.id.et_scale_down_threshold:
-						tvScaleDownThreshold.setText(etScaleDownThreshold.getText());
-						imm.hideSoftInputFromWindow(etScaleDownThreshold.getWindowToken(), 0);
+						try {
+							imm.hideSoftInputFromWindow(etScaleDownThreshold.getWindowToken(), 0);
+							tempValue = Integer.parseInt(etScaleDownThreshold.getText().toString());
+							if (tempValue >= 512) {
+								mSetting.setScaleDownThreshold(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
+								mSetting.setScaleDownThreshold(2300);
+							}
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
+							mSetting.setScaleDownThreshold(2300);
+						}
+						tvScaleDownThreshold.setText(String.valueOf(mSetting.getScaleDownThreshold()));
 						etScaleDownThreshold.setVisibility(View.GONE);
 						tvScaleDownThreshold.setVisibility(View.VISIBLE);
-						mSetting.setScaleDownThreshold(Integer.parseInt(tvScaleDownThreshold.getText().toString()));
 						break;
 					case R.id.et_binarization_block_size:
-						tvBinarizationBlockSize.setText(etBinarizationBlockSize.getText());
-						imm.hideSoftInputFromWindow(etBinarizationBlockSize.getWindowToken(), 0);
+						try {
+							imm.hideSoftInputFromWindow(etBinarizationBlockSize.getWindowToken(), 0);
+							tempValue = Integer.parseInt(etBinarizationBlockSize.getText().toString());
+							if (tempValue >= 0 && tempValue <= 1000){
+								mSetting.setScaleDownThreshold(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
+								mSetting.setScaleDownThreshold(0);
+							}
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
+							mSetting.setScaleDownThreshold(0);
+						}
+						tvBinarizationBlockSize.setText(String.valueOf(mSetting.getBinarizationBlockSize()));
 						etBinarizationBlockSize.setVisibility(View.GONE);
 						tvBinarizationBlockSize.setVisibility(View.VISIBLE);
-						mSetting.setBinarizationBlockSize(Integer.parseInt(tvBinarizationBlockSize.getText().toString()));
 						break;
 					case R.id.et_max_dimof_full_image_as_barcode_zone:
-						tvMaxDimofFullImageAsBarcodeZone.setText(etMaxDimofFullImageAsBarcodeZone.getText());
-						imm.hideSoftInputFromWindow(etMaxDimofFullImageAsBarcodeZone.getWindowToken(), 0);
+						try {
+							imm.hideSoftInputFromWindow(etMaxDimofFullImageAsBarcodeZone.getWindowToken(), 0);
+							tempValue = Integer.parseInt(tvMaxDimofFullImageAsBarcodeZone.getText().toString());
+							if (tempValue >= 262144){
+								mSetting.setMaxDimOfFullImageAsBarcodeZone(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [262144, 0x7fffffff]", Toast.LENGTH_LONG).show();
+							}
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [262144, 0x7fffffff]", Toast.LENGTH_LONG).show();
+						}
+						tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mSetting.getMaxDimOfFullImageAsBarcodeZone()));
 						etMaxDimofFullImageAsBarcodeZone.setVisibility(View.GONE);
 						tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
-						mSetting.setMaxDimOfFullImageAsBarcodeZone(Integer.parseInt(tvMaxDimofFullImageAsBarcodeZone.getText().toString()));
 						break;
 					case R.id.et_max_barcode_count:
-						tvMaxBarcodeCount.setText(etMaxBarcodeCount.getText());
-						imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);
+						try{
+							imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);
+							tempValue = Integer.parseInt(tvMaxBarcodeCount.getText().toString());
+							if (tempValue >= 1){
+								mSetting.setMaxBarcodesCount(tempValue);
+							} else {
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
+							}
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
+						}
+						tvMaxBarcodeCount.setText(String.valueOf(mSetting.getMaxBarcodesCount()));
 						etMaxBarcodeCount.setVisibility(View.GONE);
 						tvMaxBarcodeCount.setVisibility(View.VISIBLE);
-						mSetting.setMaxBarcodesCount(Long.parseLong(tvMaxBarcodeCount.getText().toString()));
 					default:
 						break;
 				}

@@ -19,6 +19,8 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="Scan Barcode"
+			android:singleLine="true"
+			android:ellipsize="end"
 			android:textSize="20sp"
 			android:textStyle="bold"
 			android:textColor="@color/encode_view"/>
