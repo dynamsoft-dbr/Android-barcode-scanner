@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -24,13 +25,17 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
+import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
 import com.dynamsoft.barcode.jni.BarcodeReader;
 import com.dynamsoft.barcode.jni.BarcodeReaderException;
 import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
+import com.dynamsoft.barcode.jni.LocalizationResult;
 import com.dynamsoft.barcode.jni.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.YuvInfo;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
@@ -113,10 +118,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private SimpleAdapter simpleAdapter;
 	private long startDetectTime = 0;
 	private long endDetectTime = 0;
+	private int frameTime = 0;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 	private ExecutorService threadManager = Executors.newSingleThreadExecutor();
 	private boolean hasCameraPermission;
 	private Fotoapparat fotoapparat;
+	private YuvInfo yuvInfo;
+	private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -186,7 +194,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 		initUI();
 		frameUtil = new FrameUtil();
-		mCache = DBRCache.get(this,1000 * 1000 * 50,16);
+		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
 	}
 
@@ -434,15 +442,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		BGAPhotoHelper photoHelper = new BGAPhotoHelper(new File(Environment.getExternalStorageDirectory(), "DBRDemo"));
 		startActivityForResult(photoHelper.getChooseSystemGalleryIntent(), REQUEST_CHOOSE_PHOTO);
 	}
-	private void goToSetting(){
+
+	private void goToSetting() {
 		String strSetting = "";
 		mSettingCache = DBRCache.get(this, "SettingCache");
-		if (mSettingCache.getAsString("GeneralSetting") == null){
+		if (mSettingCache.getAsString("GeneralSetting") == null) {
 			DBRSetting generalSetting = new DBRSetting();
 			try {
 				strSetting = LoganSquare.serialize(generalSetting);
-			}
-			catch (Exception ex){
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			mSettingCache.put("GeneralSetting", strSetting);
@@ -479,7 +487,81 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
 						coordMessage.obj = rectCoord;
-						checkTimeAndSaveImg(yuvImage, result);
+						if (frameTime == 0) {
+							yuvInfo = new YuvInfo();
+							yuvInfo.cacheName = System.currentTimeMillis() + "";
+							yuvInfo.yuvImage = yuvImage;
+							yuvInfo.textResult = result;
+							yuvInfoList.add(yuvInfo);
+							handleImage(yuvInfo, null);
+							frameTime++;
+						} else if (frameTime == 1) {
+							yuvInfo = new YuvInfo();
+							yuvInfo.textResult = result;
+							yuvInfo.yuvImage = yuvImage;
+							yuvInfo.cacheName = System.currentTimeMillis() + "";
+							if (yuvInfoList.size() == 1) {
+								yuvInfoList.add(yuvInfo);
+							} else {
+								yuvInfoList.set(1, yuvInfo);
+							}
+							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
+									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
+							if (coordsMapResult != null) {
+								LocalizationResult localizationResult;
+								TextResult textResult;
+								Logger.d("maptype : " + coordsMapResult.basedImg);
+								switch (coordsMapResult.basedImg) {
+									case 0:
+										handleImage(yuvInfoList.get(1), null);
+										yuvInfoList.set(0, yuvInfoList.get(1));
+										break;
+									case 1:
+										TextResult[] newResultBase1 = new TextResult[result.length + coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
+											if (i < result.length) {
+												newResultBase1[i] = result[i];
+											} else {
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												newResultBase1[i] = textResult;
+											}
+										}
+										yuvInfo.textResult = newResultBase1;
+										yuvInfoList.set(0, yuvInfo);
+										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
+										break;
+									case 2:
+										TextResult[] newResultBase2 = new TextResult[result.length + coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
+											if (i < result.length) {
+												newResultBase2[i] = result[i];
+											} else {
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												newResultBase2[i] = textResult;
+											}
+										}
+										yuvInfo.textResult = newResultBase2;
+										yuvInfoList.set(0, yuvInfo);
+										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
+										break;
+									case -1:
+										break;
+									default:
+										break;
+								}
+							}
+						}
+
 					} else {
 						isDetected = true;
 					}
@@ -491,53 +573,59 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 		}
 
-		private void checkTimeAndSaveImg(final YuvImage yuvImage, final TextResult[] results) {
-			if (startDetectTime != 0) {
-				endDetectTime = System.currentTimeMillis();
-				if (endDetectTime - startDetectTime > 500) {
-					threadManager.execute(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								long startSaveFile = System.currentTimeMillis();
-								YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
-										yuvImage.getWidth(), yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
-								String name = System.currentTimeMillis() + "";
-								File previewFile = new File(path + "/" + name + ".jpg");
-								if (!previewFile.exists()) {
-									previewFile.getParentFile().mkdirs();
-									previewFile.createNewFile();
-								}
-								FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
-								newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
-								fileOutputStream.flush();
-								fileOutputStream.close();
-								HistoryItemBean itemBean = new HistoryItemBean();
-								ArrayList<String> codeFormatList = new ArrayList<>();
-								ArrayList<String> codeTextList = new ArrayList<>();
-								ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(results, yuvImage.getHeight(), yuvImage.getWidth());
-								for (int i = 0; i < results.length; i++) {
-									codeFormatList.add(results[i].barcodeFormat + "");
-									codeTextList.add(results[i].barcodeText);
-								}
-								itemBean.setFileName(name);
-								itemBean.setCodeFormat(codeFormatList);
-								itemBean.setCodeText(codeTextList);
-								itemBean.setCodeImgPath(path + "/" + name + ".jpg");
-								itemBean.setRectCoord(pointList);
-								String jsonResult = LoganSquare.serialize(itemBean);
-								mCache.put(name, jsonResult);
-								long endSaveFile = System.currentTimeMillis();
-								Logger.d("save file time : " + (endSaveFile - startSaveFile));
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});
-				}
-			} else {
-				startDetectTime = System.currentTimeMillis();
+		private void deleteErroCache(String name) {
+			if (name == null) {
+				return;
 			}
+			mCache.remove(name);
+			File previewFile = new File(path + "/" + name + ".jpg");
+			if (previewFile.exists()) {
+				previewFile.delete();
+			}
+		}
+
+		private void handleImage(final YuvInfo yuvInfo, final String deleCacheName) {
+			endDetectTime = System.currentTimeMillis();
+			threadManager.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						deleteErroCache(deleCacheName);
+						long startSaveFile = System.currentTimeMillis();
+						YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfo.yuvImage.getYuvData(),
+								yuvInfo.yuvImage.getWidth(), yuvInfo.yuvImage.getHeight()), ImageFormat.NV21, yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth(), null);
+						File previewFile = new File(path + "/" + yuvInfo.cacheName + ".jpg");
+						if (!previewFile.exists()) {
+							previewFile.getParentFile().mkdirs();
+							previewFile.createNewFile();
+						}
+						FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
+						newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
+						fileOutputStream.flush();
+						fileOutputStream.close();
+						HistoryItemBean itemBean = new HistoryItemBean();
+						ArrayList<String> codeFormatList = new ArrayList<>();
+						ArrayList<String> codeTextList = new ArrayList<>();
+						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
+								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
+						for (TextResult result1 : yuvInfo.textResult) {
+							codeFormatList.add(result1.barcodeFormat + "");
+							codeTextList.add(result1.barcodeText);
+						}
+						itemBean.setFileName(yuvInfo.cacheName);
+						itemBean.setCodeFormat(codeFormatList);
+						itemBean.setCodeText(codeTextList);
+						itemBean.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
+						itemBean.setRectCoord(pointList);
+						String jsonResult = LoganSquare.serialize(itemBean);
+						mCache.put(yuvInfo.cacheName, jsonResult);
+						long endSaveFile = System.currentTimeMillis();
+						Logger.d("save file time : " + (endSaveFile - startSaveFile));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 	}
 }
