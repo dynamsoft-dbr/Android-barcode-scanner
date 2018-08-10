@@ -9,7 +9,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.BaseExpandableListAdapter;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -26,10 +27,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.fotoapparat.log.Logger;
 
 /**
  * Created by Elemen on 2018/8/9.
@@ -37,6 +42,8 @@ import io.fotoapparat.log.Logger;
 public class ResultActivity extends AppCompatActivity {
 	@BindView(R.id.scale_imageview)
 	SubsamplingScaleImageView scaleImageview;
+	@BindView(R.id.pb_progress)
+	ProgressBar pbProgress;
 	private String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 	private BarcodeReader reader;
 
@@ -45,6 +52,7 @@ public class ResultActivity extends AppCompatActivity {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			scaleImageview.setImage(ImageSource.bitmap((Bitmap) msg.obj));
+			pbProgress.setVisibility(View.GONE);
 		}
 	};
 
@@ -95,6 +103,9 @@ public class ResultActivity extends AppCompatActivity {
 	private Bitmap readImage() {
 		File file = new File(path);
 		String[] fileNames = file.list();
+		List<String> arrayList=Arrays.asList(fileNames);
+		orderByName(arrayList);
+		fileNames= (String[]) arrayList.toArray();
 		Bitmap bitmap1;
 		Bitmap bitmap2;
 		Bitmap bitmap3 = null;
@@ -120,11 +131,11 @@ public class ResultActivity extends AppCompatActivity {
 						localizationResults = new BarcodeRecognitionResult[textResults1.length];
 						BarcodeRecognitionResult recognitionResult;
 						for (int j = 0; j < textResults1.length; j++) {
-							recognitionResult=new BarcodeRecognitionResult();
-							recognitionResult.barcodeBytes = textResults1[i].barcodeBytes;
-							recognitionResult.barcodeText = textResults1[i].barcodeText;
-							recognitionResult.pts = textResults1[i].localizationResult.resultPoints;
-							localizationResults[i]=recognitionResult;
+							recognitionResult = new BarcodeRecognitionResult();
+							recognitionResult.barcodeBytes = textResults1[j].barcodeBytes;
+							recognitionResult.barcodeText = textResults1[j].barcodeText;
+							recognitionResult.pts = textResults1[j].localizationResult.resultPoints;
+							localizationResults[j] = recognitionResult;
 						}
 						break;
 					case 2:
@@ -132,11 +143,11 @@ public class ResultActivity extends AppCompatActivity {
 						localizationResults = new BarcodeRecognitionResult[textResults2.length];
 						BarcodeRecognitionResult recognitionResult1;
 						for (int j = 0; j < textResults2.length; j++) {
-							recognitionResult1=new BarcodeRecognitionResult();
-							recognitionResult1.barcodeBytes = textResults2[i].barcodeBytes;
-							recognitionResult1.barcodeText = textResults2[i].barcodeText;
-							recognitionResult1.pts = textResults2[i].localizationResult.resultPoints;
-							localizationResults[i]=recognitionResult1;
+							recognitionResult1 = new BarcodeRecognitionResult();
+							recognitionResult1.barcodeBytes = textResults2[j].barcodeBytes;
+							recognitionResult1.barcodeText = textResults2[j].barcodeText;
+							recognitionResult1.pts = textResults2[j].localizationResult.resultPoints;
+							localizationResults[j] = recognitionResult1;
 						}
 						break;
 					case 3:
@@ -167,11 +178,11 @@ public class ResultActivity extends AppCompatActivity {
 							localizationResults = new BarcodeRecognitionResult[textResults1.length];
 							BarcodeRecognitionResult recognitionResult1;
 							for (int j = 0; j < textResults1.length; j++) {
-								recognitionResult1=new BarcodeRecognitionResult();
-								recognitionResult1.barcodeBytes = textResults1[i].barcodeBytes;
-								recognitionResult1.barcodeText = textResults1[i].barcodeText;
-								recognitionResult1.pts = textResults1[i].localizationResult.resultPoints;
-								localizationResults[i]=recognitionResult1;
+								recognitionResult1 = new BarcodeRecognitionResult();
+								recognitionResult1.barcodeBytes = textResults1[j].barcodeBytes;
+								recognitionResult1.barcodeText = textResults1[j].barcodeText;
+								recognitionResult1.pts = textResults1[j].localizationResult.resultPoints;
+								localizationResults[j] = recognitionResult1;
 							}
 							break;
 						case 3:
@@ -208,5 +219,14 @@ public class ResultActivity extends AppCompatActivity {
 		ByteBuffer buf = ByteBuffer.allocate(bytes);
 		bitmap.copyPixelsToBuffer(buf);
 		return buf.array();
+	}
+
+	public void orderByName(List fliePath) {
+		Collections.sort(fliePath, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
 	}
 }
