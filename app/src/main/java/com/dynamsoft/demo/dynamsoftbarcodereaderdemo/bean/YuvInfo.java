@@ -2,7 +2,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean;
 
 import android.graphics.YuvImage;
 
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.TextResult;
 
 /**
  * Created by Elemen on 2018/7/27.

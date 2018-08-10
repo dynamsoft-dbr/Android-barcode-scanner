@@ -38,6 +38,8 @@ import butterknife.ButterKnife;
 public class SettingActivity extends BaseActivity {
 	private DBRSetting mSetting;
 	private DBRCache mSettingCache;
+	private DBRSetting.ImageParameter mImageParameter;
+	private String templateType;
 	private List<String> one2Ten = new ArrayList<>();
 	private List<String> colourImageConvertMode = new ArrayList<>();
 	private List<String> barcodeInvertMode = new ArrayList<>();
@@ -47,9 +49,12 @@ public class SettingActivity extends BaseActivity {
 	private ArrayAdapter<String> barcodeInvertModeSpinnerAdapter;
 	private ArrayAdapter<String> colourImageConvertModeSpinnerAdapter;
 	private final int REQUEST_ONED_SETTING = 0x0001;
-	private final int RESPONSE_ONED_SETTING = 0x0001;
 	private final int REQUEST_ALGORITHM_SETTING = 0x0002;
+	private final int RESPONSE_ONED_SETTING = 0x0001;
 	private final int RESPONSE_ALGORITHM_SETTING = 0x0002;
+	private final int RESPONSE_GENERAL_SETTING = 0x0001;
+	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
+	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
 	@BindView(R.id.setoned)
 	ImageView ivSetOned;
 	@BindView(R.id.ckbpdf417)
@@ -100,11 +105,6 @@ public class SettingActivity extends BaseActivity {
 	Spinner spBarcodeInvertMode;
 	@BindView(R.id.sp_colour_image_convert_mode)
 	Spinner spColourImageConvertMode;
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
 	@Override
 	protected int getLayoutId() {
 		return R.layout.activity_setting;
@@ -217,7 +217,7 @@ public class SettingActivity extends BaseActivity {
 		spDeblurLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mSetting.setDeblurLevel(position);
+				mImageParameter.setDeblurLevel(position);
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -227,7 +227,7 @@ public class SettingActivity extends BaseActivity {
 		spAntiDamageLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mSetting.setAntiDamageLevel(position);
+				mImageParameter.setAntiDamageLevel(position);
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -237,7 +237,7 @@ public class SettingActivity extends BaseActivity {
 		spGrayEqualizationSensitivity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mSetting.setGrayEqualizationSensitivity(position);
+				mImageParameter.setGrayEqualizationSensitivity(position);
 			}
 
 			@Override
@@ -248,7 +248,7 @@ public class SettingActivity extends BaseActivity {
 		spTextureDetectionSensitivity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mSetting.setTextureDetectionSensitivity(position);
+				mImageParameter.setTextureDetectionSensitivity(position);
 			}
 
 			@Override
@@ -260,10 +260,10 @@ public class SettingActivity extends BaseActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(position == 0){
-					mSetting.setBarcodeInvertMode(barcodeInvertMode.get(0));
+					mImageParameter.setBarcodeInvertMode(barcodeInvertMode.get(0));
 				}
 				else{
-					mSetting.setBarcodeInvertMode(barcodeInvertMode.get(1));
+					mImageParameter.setBarcodeInvertMode(barcodeInvertMode.get(1));
 				}
 			}
 
@@ -276,10 +276,10 @@ public class SettingActivity extends BaseActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(position ==0){
-					mSetting.setColourImageConvertMode(colourImageConvertMode.get(0));
+					mImageParameter.setColourImageConvertMode(colourImageConvertMode.get(0));
 				}
 				else {
-					mSetting.setColourImageConvertMode(colourImageConvertMode.get(1));
+					mImageParameter.setColourImageConvertMode(colourImageConvertMode.get(1));
 				}
 			}
 
@@ -291,33 +291,35 @@ public class SettingActivity extends BaseActivity {
 	}
 	private void initSetting(){
 		mSettingCache = DBRCache.get(this, "SettingCache");
+		templateType = getIntent().getStringExtra("templateType");
 		try {
 			mSetting = LoganSquare.parse(mSettingCache.getAsString("GeneralSetting"), DBRSetting.class);
-			tvExpectedBarcodeCount.setText(String.valueOf(mSetting.getExpectedBarcodesCount()));
-			tvTimeout.setText(String.valueOf(mSetting.getTimeout()));
-			spDeblurLevel.setSelection(mSetting.getDeblurLevel());
-			spAntiDamageLevel.setSelection(mSetting.getAntiDamageLevel());
-			scTextFilterMode.setChecked(mSetting.isTextFilterMode());
-			scRegionPredetectionMode.setChecked(mSetting.isRegionPredetectionMode());
-			tvScaleDownThreshold.setText(String.valueOf(mSetting.getScaleDownThreshold()));
-			if (mSetting.getColourImageConvertMode().equals(colourImageConvertMode.get(0))){
+			mImageParameter = mSetting.getImageParameter();
+			tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
+			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
+			spDeblurLevel.setSelection(mImageParameter.getDeblurLevel());
+			spAntiDamageLevel.setSelection(mImageParameter.getAntiDamageLevel());
+			scTextFilterMode.setChecked(mImageParameter.isTextFilterMode());
+			scRegionPredetectionMode.setChecked(mImageParameter.isRegionPredetectionMode());
+			tvScaleDownThreshold.setText(String.valueOf(mImageParameter.getScaleDownThreshold()));
+			if (mImageParameter.getColourImageConvertMode().equals(colourImageConvertMode.get(0))){
 				spColourImageConvertMode.setSelection(0);
 			}else {
 				spColourImageConvertMode.setSelection(1);
 			}
-			if (mSetting.getBarcodeInvertMode().equals(barcodeInvertMode.get(0))){
+			if (mImageParameter.getBarcodeInvertMode().equals(barcodeInvertMode.get(0))){
 				spBarcodeInvertMode.setSelection(0);
 			}else {
 				spBarcodeInvertMode.setSelection(1);
 			}
-			spGrayEqualizationSensitivity.setSelection(mSetting.getGrayEqualizationSensitivity());
-			spTextureDetectionSensitivity.setSelection(mSetting.getTextureDetectionSensitivity());
-			tvBinarizationBlockSize.setText(String.valueOf(mSetting.getBinarizationBlockSize()));
+			spGrayEqualizationSensitivity.setSelection(mImageParameter.getGrayEqualizationSensitivity());
+			spTextureDetectionSensitivity.setSelection(mImageParameter.getTextureDetectionSensitivity());
+			tvBinarizationBlockSize.setText(String.valueOf(mImageParameter.getBinarizationBlockSize()));
 
-			tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mSetting.getMaxDimOfFullImageAsBarcodeZone()));
-			tvMaxBarcodeCount.setText(String.valueOf(mSetting.getMaxBarcodesCount()));
-			scEnableFillBinaryVacancy.setChecked(mSetting.isEnableFillBinaryVacancy());
-			ArrayList<String> formats = mSetting.getBarcodeFormatIds();
+			tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mImageParameter.getMaxDimOfFullImageAsBarcodeZone()));
+			tvMaxBarcodeCount.setText(String.valueOf(mImageParameter.getMaxBarcodesCount()));
+			scEnableFillBinaryVacancy.setChecked(mImageParameter.isEnableFillBinaryVacancy());
+			ArrayList<String> formats = mImageParameter.getBarcodeFormatIds();
 			if (formats.contains("PDF417")) {
 				mPDF417.setChecked(true);
 			} else {
@@ -349,8 +351,20 @@ public class SettingActivity extends BaseActivity {
 	}
 	@Override
 	public void onBackPressed(){
+		mSetting.setImageParameter(mImageParameter);
 		try {
-			mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
+			if ("general".equals(templateType)) {
+				mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
+				setResult(RESPONSE_GENERAL_SETTING);
+			}
+			if ("multiBest".equals(templateType)) {
+				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(mSetting));
+				setResult(RESPONSE_MULTIBEST_SETTING);
+			}
+			if ("multiBal".equals(templateType)) {
+				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
+				setResult(RESPONSE_MULTIBAL_SETTING);
+			}
 		}
 		catch (Exception ex){
 			ex.printStackTrace();
@@ -362,13 +376,13 @@ public class SettingActivity extends BaseActivity {
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			switch (buttonView.getId()){
 				case R.id.sc_enable_fill_binary_vacancy:
-					mSetting.setEnableFillBinaryVacancy(scEnableFillBinaryVacancy.isChecked());
+					mImageParameter.setEnableFillBinaryVacancy(scEnableFillBinaryVacancy.isChecked());
 					break;
 				case R.id.sc_region_predetection_mode:
-					mSetting.setRegionPredetectionMode(scRegionPredetectionMode.isChecked());
+					mImageParameter.setRegionPredetectionMode(scRegionPredetectionMode.isChecked());
 					break;
 				case R.id.sc_text_filter_mode:
-					mSetting.setTextFilterMode(scTextFilterMode.isChecked());
+					mImageParameter.setTextFilterMode(scTextFilterMode.isChecked());
 					break;
 				default:
 					break;
@@ -393,35 +407,35 @@ public class SettingActivity extends BaseActivity {
 					break;*/
 				case R.id.ckbpdf417:
 					if (mPDF417.isChecked()){
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.add("PDF417");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}else {
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("PDF417");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}
 					break;
 				case R.id.ckbqrcode:
 					if (mQRCode.isChecked()) {
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.add("QR_CODE");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}else {
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("QR_CODE");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}
 					break;
 				case R.id.ckbdatamatrix:
 					if (mDataMatrix.isChecked()) {
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.add("DATAMATRIX");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}else {
-						tempFormats = mSetting.getBarcodeFormatIds();
+						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("DATAMATRIX ");
-						mSetting.setBarcodeFormatIds(tempFormats);
+						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}
 					break;
 				default:
@@ -441,18 +455,18 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etExpectedBarcodeCount.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etExpectedBarcodeCount.getText().toString());
 							if (tempValue >= 0 && tempValue <= 100) {
-								mSetting.setExpectedBarcodesCount(tempValue);
+								mImageParameter.setExpectedBarcodesCount(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
-								mSetting.setExpectedBarcodesCount(0);
+								mImageParameter.setExpectedBarcodesCount(0);
 							}
 						}
 						catch (Exception ex) {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
-							mSetting.setExpectedBarcodesCount(0);
+							mImageParameter.setExpectedBarcodesCount(0);
 						}
-						tvExpectedBarcodeCount.setText(String.valueOf(mSetting.getExpectedBarcodesCount()));
+						tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
 						etExpectedBarcodeCount.setVisibility(View.GONE);
 						tvExpectedBarcodeCount.setVisibility(View.VISIBLE);
 						break;
@@ -461,18 +475,18 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etTimeout.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etTimeout.getText().toString());
 							if (tempValue >= 0) {
-								mSetting.setTimeout(tempValue);
+								mImageParameter.setTimeout(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
-								mSetting.setTimeout(10000);
+								mImageParameter.setTimeout(10000);
 							}
 						}
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
-							mSetting.setTimeout(10000);
+							mImageParameter.setTimeout(10000);
 						}
-						tvTimeout.setText(String.valueOf(mSetting.getTimeout()));
+						tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 						etTimeout.setVisibility(View.GONE);
 						tvTimeout.setVisibility(View.VISIBLE);
 						break;
@@ -481,18 +495,18 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etScaleDownThreshold.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etScaleDownThreshold.getText().toString());
 							if (tempValue >= 512) {
-								mSetting.setScaleDownThreshold(tempValue);
+								mImageParameter.setScaleDownThreshold(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
-								mSetting.setScaleDownThreshold(2300);
+								mImageParameter.setScaleDownThreshold(2300);
 							}
 						}
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
-							mSetting.setScaleDownThreshold(2300);
+							mImageParameter.setScaleDownThreshold(2300);
 						}
-						tvScaleDownThreshold.setText(String.valueOf(mSetting.getScaleDownThreshold()));
+						tvScaleDownThreshold.setText(String.valueOf(mImageParameter.getScaleDownThreshold()));
 						etScaleDownThreshold.setVisibility(View.GONE);
 						tvScaleDownThreshold.setVisibility(View.VISIBLE);
 						break;
@@ -501,18 +515,18 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etBinarizationBlockSize.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etBinarizationBlockSize.getText().toString());
 							if (tempValue >= 0 && tempValue <= 1000){
-								mSetting.setBinarizationBlockSize(tempValue);
+								mImageParameter.setBinarizationBlockSize(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
-								mSetting.setBinarizationBlockSize(0);
+								mImageParameter.setBinarizationBlockSize(0);
 							}
 						}
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
-							mSetting.setBinarizationBlockSize(0);
+							mImageParameter.setBinarizationBlockSize(0);
 						}
-						tvBinarizationBlockSize.setText(String.valueOf(mSetting.getBinarizationBlockSize()));
+						tvBinarizationBlockSize.setText(String.valueOf(mImageParameter.getBinarizationBlockSize()));
 						etBinarizationBlockSize.setVisibility(View.GONE);
 						tvBinarizationBlockSize.setVisibility(View.VISIBLE);
 						break;
@@ -521,7 +535,7 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etMaxDimofFullImageAsBarcodeZone.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etMaxDimofFullImageAsBarcodeZone.getText().toString());
 							if (tempValue >= 262144){
-								mSetting.setMaxDimOfFullImageAsBarcodeZone(tempValue);
+								mImageParameter.setMaxDimOfFullImageAsBarcodeZone(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [262144, 0x7fffffff]", Toast.LENGTH_LONG).show();
 							}
@@ -530,7 +544,7 @@ public class SettingActivity extends BaseActivity {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [262144, 0x7fffffff]", Toast.LENGTH_LONG).show();
 						}
-						tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mSetting.getMaxDimOfFullImageAsBarcodeZone()));
+						tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mImageParameter.getMaxDimOfFullImageAsBarcodeZone()));
 						etMaxDimofFullImageAsBarcodeZone.setVisibility(View.GONE);
 						tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
 						break;
@@ -539,7 +553,7 @@ public class SettingActivity extends BaseActivity {
 							imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etMaxBarcodeCount.getText().toString());
 							if (tempValue >= 1){
-								mSetting.setMaxBarcodesCount(tempValue);
+								mImageParameter.setMaxBarcodesCount(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
 							}
@@ -548,7 +562,7 @@ public class SettingActivity extends BaseActivity {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
 						}
-						tvMaxBarcodeCount.setText(String.valueOf(mSetting.getMaxBarcodesCount()));
+						tvMaxBarcodeCount.setText(String.valueOf(mImageParameter.getMaxBarcodesCount()));
 						etMaxBarcodeCount.setVisibility(View.GONE);
 						tvMaxBarcodeCount.setVisibility(View.VISIBLE);
 					default:
@@ -564,6 +578,7 @@ public class SettingActivity extends BaseActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		if ((requestCode == REQUEST_ONED_SETTING && resultCode == RESPONSE_ONED_SETTING)) {
 			mSetting = (DBRSetting) data.getSerializableExtra("OneDSetting");
+			mImageParameter = mSetting.getImageParameter();
 			/*ArrayList<String> formats = mSetting.getBarcodeFormatIds();
 			if (formats.contains("CODE_39") && formats.contains("CODE_128") &&
 					formats.contains("CODE_93") && formats.contains("CODABAR") &&
@@ -577,6 +592,7 @@ public class SettingActivity extends BaseActivity {
 		}
 		if ((requestCode == REQUEST_ALGORITHM_SETTING && resultCode == RESPONSE_ALGORITHM_SETTING)){
 			mSetting = (DBRSetting) data.getSerializableExtra("AlgorithmSetting");
+			mImageParameter = mSetting.getImageParameter();
 		}
 	}
 }

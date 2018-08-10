@@ -43,6 +43,7 @@ public class BarcodeTypeActivity extends BaseActivity {
     private DBRCache mCache;
     private ArrayList<String> tempFormats;
     private DBRSetting mSetting;
+    private DBRSetting.ImageParameter mImageParameter;
     private final int REQUEST_ONED_SETTING = 0x0001;
     private final int RESPONSE_ONED_SETTING = 0x0001;
 
@@ -85,112 +86,112 @@ public class BarcodeTypeActivity extends BaseActivity {
             switch (buttonView.getId()){
                 case R.id.ckbcode39:
                     if (mCode39.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("CODE_39");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("CODE_39");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbcode93:
                     if (mCode93.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("CODE_93");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("CODE_93");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbcode128:
                     if (mCode128.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("CODE_128");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("CODE_128");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbcodabar:
                     if (mCodabar.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("CODABAR");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("CODABAR");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbitf:
                     if (mITF.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("ITF");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("ITF");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbean8:
                     if (mEAN8.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("EAN_8");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("EAN_8");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbean13:
                     if (mEAN13.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("EAN_13");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("EAN_13");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbupca:
                     if (mUPCA.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("UPC_A");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("UPC_A");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbupce:
                     if (mUPCA.isChecked()) {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("UPC_E");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("UPC_E");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 case R.id.ckbindustrial25:
                     if (mIndustrial25.isChecked()){
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("INDUSTRIAL_25");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     } else {
-                        tempFormats = mSetting.getBarcodeFormatIds();
+                        tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.remove("INDUSTRIAL_25");
-                        mSetting.setBarcodeFormatIds(tempFormats);
+                        mImageParameter.setBarcodeFormatIds(tempFormats);
                     }
                     break;
                 default:
@@ -201,6 +202,7 @@ public class BarcodeTypeActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        mSetting.setImageParameter(mImageParameter);
         Intent intent = new Intent();
         intent.putExtra("OneDSetting", mSetting);
         setResult(RESPONSE_ONED_SETTING, intent);
@@ -208,7 +210,8 @@ public class BarcodeTypeActivity extends BaseActivity {
     }
     private void initUI(){
         mSetting = (DBRSetting) getIntent().getSerializableExtra("DBRSetting");
-        ArrayList<String> formats = mSetting.getBarcodeFormatIds();
+        mImageParameter = mSetting.getImageParameter();
+        ArrayList<String> formats = mImageParameter.getBarcodeFormatIds();
         if (formats.contains("CODE_39")){
             mCode39.setChecked(true);
         } else {

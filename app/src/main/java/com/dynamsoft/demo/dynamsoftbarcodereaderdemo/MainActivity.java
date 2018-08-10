@@ -25,13 +25,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.BarcodeReaderException;
-import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
-import com.dynamsoft.barcode.jni.LocalizationResult;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.EnumImagePixelFormat;
+import com.dynamsoft.barcode.LocalizationResult;
+import com.dynamsoft.barcode.PublicParameterSettings;
+import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
@@ -84,6 +86,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int BARCODE_RECT_COORD = 0x0003;
 	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
 	private final int REQUEST_SETTING = 0x0002;
+	private final int RESPONSE_GENERAL_SETTING = 0x0001;
+	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
+	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -103,12 +108,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	Button btnCapture;
 	private BarcodeReader reader;
 	private TextResult[] result;
+	String templateType;
 	private boolean isDetected = true;
 	private boolean isCameraStarted = false;
 	private boolean isDrawerExpand = false;
 	private boolean isSingleMode = false;
 	private DBRCache mCache;
 	private DBRCache mSettingCache;
+	private DBRSetting mSetting;
 	private boolean isFlashOn = false;
 	private ArrayList<String> allResultText = new ArrayList<>();
 	private float previewScale;
@@ -173,29 +180,50 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		setToolbarNavIcon(R.drawable.ic_action_back_dark);
 		setToolbarTitle("Scan Barcode");
 		setToolbarTitleColor("#ffffff");
-		try {
-			reader = new BarcodeReader(getString(R.string.dbr_license));
-			JSONObject jsonObject = new JSONObject("{\n" +
-					"  \"ImageParameters\": {\n" +
-					"    \"Name\": \"Custom_100947_777\",\n" +
-					"    \"BarcodeFormatIds\": [\n" +
-					"      \"QR_CODE\"\n" +
-					"    ],\n" +
-					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
-					"    \"AntiDamageLevel\": 5,\n" +
-					"    \"DeblurLevel\":5,\n" +
-					"    \"ScaleDownThreshold\": 1000\n" +
-					"  },\n" +
-					"\"version\": \"1.0\"" +
-					"}");
-			reader.appendParameterTemplate(jsonObject.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		initTemplate();
 		initUI();
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
+	}
+	private void initTemplate(){
+		templateType = (String) getIntent().getStringExtra("templateType");
+		try {
+			reader = new BarcodeReader(getString(R.string.dbr_license));
+			if ("general".equals(templateType)){
+				String setting = mSettingCache.getAsString("GeneralSetting");
+				if ( setting != null){
+					reader.initRuntimeSettingsWithString(setting, 2);
+
+				} else {
+					mSetting = new DBRSetting();
+					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
+					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
+				}
+			}
+			if ("multiBest".equals(templateType)){
+				DBRSetting multiBest = new DBRSetting();
+				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
+				multiBestImgP.setAntiDamageLevel(7);
+				multiBestImgP.setDeblurLevel(9);
+				multiBestImgP.setScaleDownThreshold(1000);
+				multiBest.setImageParameter(multiBestImgP);
+				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
+			}
+			if ("multiBal".equals(templateType)){
+				DBRSetting multiBal = new DBRSetting();
+				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
+				multiBalImgP.setAntiDamageLevel(5);
+				multiBalImgP.setDeblurLevel(5);
+				multiBalImgP.setScaleDownThreshold(1000);
+				multiBalImgP.setLocalizationAlgorithmPriority(new ArrayList<String>(){{add("ConnectedBlock");add("Lines");add("Statistics");add("FullImageAsBarcodeZone");}});
+				multiBal.setImageParameter(multiBalImgP);
+				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
+			}
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
 	}
 
 	private void setupSlidingDrawer() {
@@ -291,6 +319,24 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			intent.putExtra("page_type", 2);
 			intent.putExtra("FilePath", filePath);
 			startActivity(intent);
+		}
+		if (requestCode == REQUEST_SETTING){
+			String setting = "";
+			if (resultCode == RESPONSE_GENERAL_SETTING){
+				setting = mSettingCache.getAsString("generalSetting");
+			}
+			if (resultCode == RESPONSE_MULTIBAL_SETTING){
+				setting = mSettingCache.getAsString("MultiBestSetting");
+			}
+			if (resultCode == RESPONSE_MULTIBAL_SETTING){
+				setting = mSettingCache.getAsString("MultiBalSetting");
+			}
+			try {
+				reader.initRuntimeSettingsWithString(setting, 2);
+			}
+			catch (Exception ex){
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -444,18 +490,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	}
 
 	private void goToSetting() {
-		String strSetting = "";
-		mSettingCache = DBRCache.get(this, "SettingCache");
-		if (mSettingCache.getAsString("GeneralSetting") == null) {
-			DBRSetting generalSetting = new DBRSetting();
-			try {
-				strSetting = LoganSquare.serialize(generalSetting);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			mSettingCache.put("GeneralSetting", strSetting);
-		}
-		startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
+		Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+		intent.putExtra("templateType", templateType);
+		startActivityForResult(intent, REQUEST_SETTING);
 	}
 
 	class CodeFrameProcesser implements FrameProcessor {

@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 
 import java.util.ArrayList;
