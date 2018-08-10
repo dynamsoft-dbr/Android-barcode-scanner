@@ -254,37 +254,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		/*try {
-			reader = new BarcodeReader("t0068MgAAAJmtGjsv3J5mDE0ECeH0+ZFEr7BJl7gcdJZFYzqa2sZK" +
-					"hpQcsNcQlPZooMc5wDrCWMKnQ72T/+01qsEpM3nwIjc=");
-			JSONObject object = new JSONObject("{\n" +
-					"  \"ImageParameters\": {\n" +
-					"    \"Name\": \"linear\",\n" +
-					"    \"BarcodeFormatIds\": [],\n" +
-					"    \"DeblurLevel\": 9,\n" +
-					"    \"AntiDamageLevel\": 9,\n" +
-					"    \"TextFilterMode\": \"Enable\"\n" +
-					"  }\n" +
-					"}");
-			JSONArray jsonArray = object.getJSONObject("ImageParameters").getJSONArray("BarcodeFormatIds");
-			if (mCache.getAsString("linear").equals("1")) {
-				jsonArray.put("OneD");
-			}
-			if (mCache.getAsString("qrcode").equals("1")) {
-				jsonArray.put("QR_CODE");
-			}
-			if (mCache.getAsString("pdf417").equals("1")) {
-				jsonArray.put("PDF417");
-			}
-			if (mCache.getAsString("matrix").equals("1")) {
-				jsonArray.put("DATAMATRIX");
-			}
-			Log.d("code type", "type : " + object.toString());
-			//reader.appendParameterTemplate(object.toString());
-			name = "linear";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 		if (requestCode == REQUEST_CHOOSE_PHOTO && resultCode == RESULT_OK) {
 			String filePath = BGAPhotoHelper.getFilePathFromUri(data.getData());
 			Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
