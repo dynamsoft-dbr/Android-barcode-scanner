@@ -11,8 +11,12 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
-        <activity android:name=".SettingActivity" />
+        <activity android:name=".MainActivity"
+                  android:screenOrientation="portrait"
+            />
+        <activity android:name=".SettingActivity"
+                  android:screenOrientation="portrait"
+            />
         <activity
             android:name=".StartupActivity"
             android:label="@string/app_name"
@@ -24,14 +28,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HistoryActivity" />
-	<activity android:name=".HistoryItemDetailActivity" />
+        <activity android:name=".HistoryActivity"
+                  android:screenOrientation="portrait"
+            />
+	<activity android:name=".HistoryItemDetailActivity"
+              android:screenOrientation="portrait"
+        />
         <activity
             android:name=".DecodeLocalPictureActivity"
             android:label="@string/title_activity_decode_local_picture"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".BarcodeTypeActivity" />
-        <activity android:name=".AlgorithmSettingActivity"></activity>
+        <activity android:name=".BarcodeTypeActivity"
+                  android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".AlgorithmSettingActivity"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

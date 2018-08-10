@@ -183,7 +183,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		initTemplate();
 		initUI();
 		frameUtil = new FrameUtil();
-		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
+		mCache = DBRCache.get(this,1000 * 1000 * 50,16);
 		setupFotoapparat();
 	}
 	private void initTemplate(){

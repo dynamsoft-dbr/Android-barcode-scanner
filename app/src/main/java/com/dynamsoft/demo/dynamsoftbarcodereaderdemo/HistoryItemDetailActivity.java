@@ -95,7 +95,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
 		initBarcodeReader();
-		shareUtil=new ShareUtil(this);
+		shareUtil = new ShareUtil(this);
 		simpleAdapter = new SimpleAdapter(this, recentCodeList,
 				R.layout.item_listview_detail_code_list, new String[]{"index", "format", "text"},
 				new int[]{R.id.tv_index, R.id.tv_code_format_content, R.id.tv_code_text_content});
@@ -153,12 +153,12 @@ public class HistoryItemDetailActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Bitmap shotBitmap=shareUtil.getScreenShot(this);
-		if (shotBitmap!=null){
+		Bitmap shotBitmap = shareUtil.getScreenShot(this);
+		if (shotBitmap != null) {
 			ArrayList<Uri> imageUris = new ArrayList<>();
 			Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
 			imageUris.add(uri);
-			shareUtil.shareMultiImages(imageUris,this);
+			shareUtil.shareMultiImages(imageUris, this);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -192,7 +192,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		recentCodeList.clear();
 		for (int i = 0; i < listItem.get(position).getCodeFormat().size(); i++) {
 			Map<String, String> item = new HashMap<>();
-			item.put("index", i + "");
+			item.put("index", i + 1 + "");
 			item.put("format", DBRUtil.getCodeFormat(listItem.get(position).getCodeFormat().get(i)));
 			item.put("text", listItem.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
@@ -216,7 +216,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					BitmapFactory.Options opts = new BitmapFactory.Options();
 					opts.inSampleSize = 4;
 					oriBitmap = BitmapFactory.decodeFile(new File(getExternalFilesDir("photos"),
-							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(),opts);
+							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(), opts);
 				} else {
 					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
 				}
