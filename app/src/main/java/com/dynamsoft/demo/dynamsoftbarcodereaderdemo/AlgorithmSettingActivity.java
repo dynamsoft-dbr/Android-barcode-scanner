@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 public class AlgorithmSettingActivity extends BaseActivity {
     private ArrayList<String> algorithmSetting = new ArrayList<>();
     private DBRSetting mSetting;
+    private DBRSetting.ImageParameter mImageParameter;
     private final int REQUEST_ALGORITHM_SETTING = 0x0002;
     private final int RESPONSE_ALGORITHM_SETTING = 0x0002;
     @BindView(R.id.ckbconnectedblock)
@@ -60,8 +61,9 @@ public class AlgorithmSettingActivity extends BaseActivity {
         ckbStatistics.setOnCheckedChangeListener(checkedChangeListener);
         ckbFullImageAsBarcodeZone.setOnCheckedChangeListener(checkedChangeListener);
         mSetting = (DBRSetting) getIntent().getSerializableExtra("DBRSetting");
-        if (mSetting.getLocalizationAlgorithmPriority() != null) {
-            ArrayList<String> localSetting = mSetting.getLocalizationAlgorithmPriority();
+        mImageParameter = mSetting.getImageParameter();
+        if (mImageParameter.getLocalizationAlgorithmPriority() != null) {
+            ArrayList<String> localSetting = mImageParameter.getLocalizationAlgorithmPriority();
             for (int i = 0; i < localSetting.size(); i++) {
                 if (localSetting.get(i).equals(getResources().getString(R.string.connectedblock))) {
                     ckbConnectedBlock.setChecked(true);
@@ -155,7 +157,8 @@ public class AlgorithmSettingActivity extends BaseActivity {
     }
     @Override
     public void onBackPressed(){
-        mSetting.setLocalizationAlgorithmPriority(algorithmSetting);
+        mImageParameter.setLocalizationAlgorithmPriority(algorithmSetting);
+        mSetting.setImageParameter(mImageParameter);
         Intent intent = new Intent();
         intent.putExtra("AlgorithmSetting", mSetting);
         setResult(RESPONSE_ALGORITHM_SETTING, intent);

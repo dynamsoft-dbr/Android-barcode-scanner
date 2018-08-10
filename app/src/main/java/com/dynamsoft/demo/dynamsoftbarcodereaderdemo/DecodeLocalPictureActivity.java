@@ -20,9 +20,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.BarcodeReaderException;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.TextResult;
 
 import org.json.JSONObject;
 

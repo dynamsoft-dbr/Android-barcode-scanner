@@ -21,9 +21,9 @@ import android.widget.SimpleAdapter;
 import android.widget.ThemedSpinnerAdapter;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.BarcodeReaderException;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
