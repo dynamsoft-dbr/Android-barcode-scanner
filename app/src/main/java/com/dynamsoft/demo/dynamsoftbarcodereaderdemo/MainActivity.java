@@ -190,27 +190,28 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		templateType = (String) getIntent().getStringExtra("templateType");
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
+			mSettingCache = DBRCache.get(this, "SettingCache");
 			if ("general".equals(templateType)){
 				String setting = mSettingCache.getAsString("GeneralSetting");
 				if ( setting != null){
 					reader.initRuntimeSettingsWithString(setting, 2);
-
 				} else {
 					mSetting = new DBRSetting();
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
 				}
 			}
-			if ("multiBest".equals(templateType)){
+			if ("MultiBestSetting".equals(templateType)){
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
 				multiBestImgP.setAntiDamageLevel(7);
 				multiBestImgP.setDeblurLevel(9);
 				multiBestImgP.setScaleDownThreshold(1000);
 				multiBest.setImageParameter(multiBestImgP);
+				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
 			}
-			if ("multiBal".equals(templateType)){
+			if ("MultiBalSetting".equals(templateType)){
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
 				multiBalImgP.setAntiDamageLevel(5);
@@ -218,6 +219,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				multiBalImgP.setScaleDownThreshold(1000);
 				multiBalImgP.setLocalizationAlgorithmPriority(new ArrayList<String>(){{add("ConnectedBlock");add("Lines");add("Statistics");add("FullImageAsBarcodeZone");}});
 				multiBal.setImageParameter(multiBalImgP);
+				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(multiBal));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
 			}
 		}
@@ -322,10 +324,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		}
 		if (requestCode == REQUEST_SETTING){
 			String setting = "";
+			mSettingCache = DBRCache.get(this, "SettingCache");
 			if (resultCode == RESPONSE_GENERAL_SETTING){
-				setting = mSettingCache.getAsString("generalSetting");
+				setting = mSettingCache.getAsString("GeneralSetting");
 			}
-			if (resultCode == RESPONSE_MULTIBAL_SETTING){
+			if (resultCode == RESPONSE_MULTIBEST_SETTING){
 				setting = mSettingCache.getAsString("MultiBestSetting");
 			}
 			if (resultCode == RESPONSE_MULTIBAL_SETTING){
@@ -512,7 +515,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					int hgt = frame.getSize().height;
 					long startTime = System.currentTimeMillis();
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
-							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom_100947_777");
+							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					long endTime = System.currentTimeMillis();
 					long duringTime = endTime - startTime;
 					Logger.d("detect code time : " + duringTime);

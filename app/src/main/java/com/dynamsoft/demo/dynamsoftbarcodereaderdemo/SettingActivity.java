@@ -213,7 +213,15 @@ public class SettingActivity extends BaseActivity {
 		spTextureDetectionSensitivity.setAdapter(one2tenSpinnerAdapter);
 		spBarcodeInvertMode.setAdapter(barcodeInvertModeSpinnerAdapter);
 		spColourImageConvertMode.setAdapter(colourImageConvertModeSpinnerAdapter);
+		mSettingCache = DBRCache.get(this, "SettingCache");
+		try {
+			mSetting = LoganSquare.parse(mSettingCache.getAsString("GeneralSetting"), DBRSetting.class);
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
 
+		}
+		mImageParameter = mSetting.getImageParameter();
 		spDeblurLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -293,14 +301,22 @@ public class SettingActivity extends BaseActivity {
 		mSettingCache = DBRCache.get(this, "SettingCache");
 		templateType = getIntent().getStringExtra("templateType");
 		try {
-			mSetting = LoganSquare.parse(mSettingCache.getAsString("GeneralSetting"), DBRSetting.class);
+			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
 			mImageParameter = mSetting.getImageParameter();
 			tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
 			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 			spDeblurLevel.setSelection(mImageParameter.getDeblurLevel());
 			spAntiDamageLevel.setSelection(mImageParameter.getAntiDamageLevel());
-			scTextFilterMode.setChecked(mImageParameter.isTextFilterMode());
-			scRegionPredetectionMode.setChecked(mImageParameter.isRegionPredetectionMode());
+			if ("Enable".equals(mImageParameter.getTextFilterMode())){
+				scTextFilterMode.setChecked(true);
+			} else {
+				scTextFilterMode.setChecked(false);
+			}
+			if ("Enable".equals(mImageParameter.getRegionPredetectionMode())){
+				scRegionPredetectionMode.setChecked(true);
+			} else {
+				scRegionPredetectionMode.setChecked(false);
+			}
 			tvScaleDownThreshold.setText(String.valueOf(mImageParameter.getScaleDownThreshold()));
 			if (mImageParameter.getColourImageConvertMode().equals(colourImageConvertMode.get(0))){
 				spColourImageConvertMode.setSelection(0);
@@ -353,15 +369,15 @@ public class SettingActivity extends BaseActivity {
 	public void onBackPressed(){
 		mSetting.setImageParameter(mImageParameter);
 		try {
-			if ("general".equals(templateType)) {
+			if ("GeneralSetting".equals(templateType)) {
 				mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
 				setResult(RESPONSE_GENERAL_SETTING);
 			}
-			if ("multiBest".equals(templateType)) {
+			if ("MultiBestSetting".equals(templateType)) {
 				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(mSetting));
 				setResult(RESPONSE_MULTIBEST_SETTING);
 			}
-			if ("multiBal".equals(templateType)) {
+			if ("MultiBalSetting".equals(templateType)) {
 				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
 				setResult(RESPONSE_MULTIBAL_SETTING);
 			}
@@ -379,10 +395,19 @@ public class SettingActivity extends BaseActivity {
 					mImageParameter.setEnableFillBinaryVacancy(scEnableFillBinaryVacancy.isChecked());
 					break;
 				case R.id.sc_region_predetection_mode:
-					mImageParameter.setRegionPredetectionMode(scRegionPredetectionMode.isChecked());
+					if(scRegionPredetectionMode.isChecked()) {
+						mImageParameter.setRegionPredetectionMode("Enable");
+					}
+					else {
+						mImageParameter.setRegionPredetectionMode("Disable");
+					}
 					break;
 				case R.id.sc_text_filter_mode:
-					mImageParameter.setTextFilterMode(scTextFilterMode.isChecked());
+					if(scTextFilterMode.isChecked()) {
+						mImageParameter.setTextFilterMode("Enable");
+					}else {
+						mImageParameter.setTextFilterMode("Disable");
+					}
 					break;
 				default:
 					break;
@@ -434,7 +459,7 @@ public class SettingActivity extends BaseActivity {
 						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}else {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
-						tempFormats.remove("DATAMATRIX ");
+						tempFormats.remove("DATAMATRIX");
 						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}
 					break;

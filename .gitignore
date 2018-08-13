@@ -16,3 +16,4 @@ app/release/output.json
 app/libs/DynamsoftBarcodeReaderAndroid-debug.aar
 app/libs/DynamsoftBarcodeReaderAndroid-debug-7.27-10.57.aar
 *.aar
+app/libs/DynamsoftBarcodeReaderAndroid-debug-8.13-1.21.zip

@@ -46,18 +46,18 @@ public class StartupActivity extends AppCompatActivity {
 				break;
 			case R.id.btn_general:
 				Intent intentGeneral = new Intent(StartupActivity.this, MainActivity.class);
-				intentGeneral.putExtra("templateType", "general");
+				intentGeneral.putExtra("templateType", "GeneralSetting");
 				startActivity(intentGeneral);
 				break;
 			case R.id.btn_multi_best:
 				Intent intentMultiBest = new Intent(StartupActivity.this, MainActivity.class);
-				intentMultiBest.putExtra("templateType", "multiBest");
-				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				intentMultiBest.putExtra("templateType", "MultiBestSetting");
+				startActivity(intentMultiBest);
 				break;
 			case R.id.btn_multi_bal:
 				Intent intentMultiBal = new Intent(StartupActivity.this, MainActivity.class);
-				intentMultiBal.putExtra("templateType", "multiBal");
-				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				intentMultiBal.putExtra("templateType", "MultiBalSetting");
+				startActivity(intentMultiBal);
 				break;
 			default:
 				break;

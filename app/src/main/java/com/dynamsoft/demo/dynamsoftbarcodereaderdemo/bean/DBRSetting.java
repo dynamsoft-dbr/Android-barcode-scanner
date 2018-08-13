@@ -15,16 +15,16 @@ import javax.xml.transform.Templates;
 public class DBRSetting implements Serializable{
 
     @JsonField
-    private float version = 2.0f;
+    private String version = "2.0";
 
     @JsonField
     private ImageParameter imageParameter = new ImageParameter();
 
-    public float getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(float version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
@@ -37,7 +37,7 @@ public class DBRSetting implements Serializable{
     @JsonObject
     public static class ImageParameter implements Serializable{
         @JsonField
-        private String templateName = "Custom";
+        private String Name = "Custom";
         @JsonField
         private ArrayList<String> barcodeFormatIds = new ArrayList<String>() {{
             add("PDF417");
@@ -63,9 +63,9 @@ public class DBRSetting implements Serializable{
         @JsonField
         private int antiDamageLevel = 9;
         @JsonField
-        private boolean textFilterMode = true;
+        private String textFilterMode = "Enable";
         @JsonField
-        private boolean regionPredetectionMode = false;
+        private String regionPredetectionMode = "Disable";
         @JsonField
         private int scaleDownThreshold = 2300;
         @JsonField
@@ -87,12 +87,12 @@ public class DBRSetting implements Serializable{
         @JsonField
         private boolean enableFillBinaryVacancy = true;
 
-        public String getTemplateName() {
-            return templateName;
+        public String getName() {
+            return Name;
         }
 
-        public void setTemplateName(String templateName) {
-            this.templateName = templateName;
+        public void setName(String templateName) {
+            this.Name = templateName;
         }
 
         public ArrayList<String> getBarcodeFormatIds() {
@@ -135,19 +135,19 @@ public class DBRSetting implements Serializable{
             this.antiDamageLevel = antiDamageLevel;
         }
 
-        public boolean isTextFilterMode() {
+        public String getTextFilterMode() {
             return textFilterMode;
         }
 
-        public void setTextFilterMode(boolean textFilterMode) {
+        public void setTextFilterMode(String textFilterMode) {
             this.textFilterMode = textFilterMode;
         }
 
-        public boolean isRegionPredetectionMode() {
+        public String getRegionPredetectionMode() {
             return regionPredetectionMode;
         }
 
-        public void setRegionPredetectionMode(boolean regionPredetectionMode) {
+        public void setRegionPredetectionMode(String regionPredetectionMode) {
             this.regionPredetectionMode = regionPredetectionMode;
         }
 
