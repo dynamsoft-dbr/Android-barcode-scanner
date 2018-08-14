@@ -488,7 +488,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					long endTime = System.currentTimeMillis();
 					long duringTime = endTime - startTime;
-					Logger.d("detect code time : " + duringTime);
+					//Logger.d("detect code time : " + duringTime);
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
