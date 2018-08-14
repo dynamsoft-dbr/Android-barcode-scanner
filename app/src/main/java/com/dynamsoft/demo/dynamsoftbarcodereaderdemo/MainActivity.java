@@ -132,6 +132,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private Fotoapparat fotoapparat;
 	private YuvInfo yuvInfo;
 	private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
+	private long duringTime;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -487,7 +488,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					long endTime = System.currentTimeMillis();
-					long duringTime = endTime - startTime;
+					duringTime = endTime - startTime;
 					//Logger.d("detect code time : " + duringTime);
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
@@ -627,6 +628,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						itemBean.setCodeText(codeTextList);
 						itemBean.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
 						itemBean.setRectCoord(pointList);
+						itemBean.setDecodeTime(duringTime);
 						String jsonResult = LoganSquare.serialize(itemBean);
 						mCache.put(yuvInfo.cacheName, jsonResult);
 						long endSaveFile = System.currentTimeMillis();

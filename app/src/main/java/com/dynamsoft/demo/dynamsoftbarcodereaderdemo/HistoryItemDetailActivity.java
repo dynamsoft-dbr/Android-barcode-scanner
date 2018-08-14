@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.ThemedSpinnerAdapter;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -57,6 +58,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	ProgressBar pbProgress;
 	@BindView(R.id.pv_photo_detail)
 	PhotoView pvPhotoDetail;
+	@BindView(R.id.tv_decode_time)
+	TextView tvDecodeTime;
+	@BindView(R.id.tv_barcode_count)
+	TextView tvBarcodeCount;
 	private DBRCache mCache;
 	private String[] fileNames;
 	private int intentPosition;
@@ -67,6 +72,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private BarcodeReader reader;
 	private int pageType;
 	private ShareUtil shareUtil;
+	private Long decodeTime;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -80,6 +86,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					pbProgress.setVisibility(View.GONE);
 					simpleAdapter.notifyDataSetChanged();
 					lvCodeList.startLayoutAnimation();
+					tvDecodeTime.setText("Total time spent: " + String.valueOf(decodeTime) + "ms");
+					tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 					break;
 				default:
 					break;
@@ -197,6 +205,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			item.put("text", listItem.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
 		}
+		tvDecodeTime.setText("Total time spent: " + String.valueOf(listItem.get(0).getDecodeTime()) + "ms");
+		tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 		simpleAdapter.notifyDataSetChanged();
 		lvCodeList.startLayoutAnimation();
 	}
@@ -222,7 +232,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {
+					long startTime = System.currentTimeMillis();
 					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
+					long endTime = System.currentTimeMillis();
+					decodeTime = endTime - startTime;
 					if (textResults != null && textResults.length > 0) {
 						Canvas canvas = new Canvas(rectBitmap);
 						for (int i = 0; i < textResults.length; i++) {
@@ -234,7 +247,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							path.close();
 							canvas.drawPath(path, paint);
 							Map<String, String> item = new HashMap<>();
-							item.put("index", i + "");
+							item.put("index", i + 1 + "");
 							item.put("format", textResults[i].barcodeFormat + "");
 							item.put("text", textResults[i].barcodeText);
 							recentCodeList.add(item);

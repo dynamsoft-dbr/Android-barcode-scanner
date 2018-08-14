@@ -17,6 +17,31 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_above="@+id/lv_code_list"/>
+	<TableRow
+		android:layout_above="@+id/lv_code_list"
+		android:layout_width="match_parent"
+		android:layout_height="30dp"
+		android:background="#fff5f5f5">
+		<ImageView
+			android:src="@drawable/icon_history"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			android:layout_marginLeft="16dp"
+			android:layout_gravity="center"/>
+		<TextView
+			android:id="@+id/tv_decode_time"
+			android:layout_width="wrap_content"
+			android:layout_height="30dp"
+			android:layout_weight="3"
+			android:layout_marginLeft="28dp"/>
+		<TextView
+			android:id="@+id/tv_barcode_count"
+			android:layout_width="wrap_content"
+			android:layout_height="30dp"
+			android:gravity="center"
+			android:layout_above="@+id/lv_code_list"
+			android:layout_weight="2"/>
+	</TableRow>
 	<ListView
 		android:background="#ffffff"
 		android:layout_alignParentBottom="true"
