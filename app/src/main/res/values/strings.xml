@@ -24,7 +24,7 @@
     <string name="pdf417">PDF417</string>
     <string name="datamatrix">DataMatrix</string>
     <string name="dynamsoft_website_url">https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx</string>
-    <string name="dbr_license">t0068MgAAABZvv2H6L76coooeMkvR53Df77uie1hPRaVY6XwlsEzkSPxTouZ3T8U/r0ruzfzcn8MNVazf2KPO53b2ro8xBQU=</string>
+    <string name="dbr_license">t0068EgAAAKVNCqZ7OAJZC0AHj1RC4XCY3oh7yck/+LSlaVbdKAfdV+v0W92aBrDU83JbNDsgs9kLdp9MgLKsRxap9j/triY=</string>
     <string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
     <string name="title_activity_barcode_type">BarcodeType</string>
     <string name="template_name">Template Name:</string>>
@@ -56,6 +56,7 @@
     <string name="upc_a">UPC_A</string>
     <string name="upc_e">UPC_E</string>
     <string name="industrial_25">INDUSTRIAL_25</string>
+    <string name="aztec">AZTEC</string>
     <string name="connectedblock">ConnectedBlock</string>
     <string name="lines">Lines</string>
     <string name="statistics">Statistics</string>

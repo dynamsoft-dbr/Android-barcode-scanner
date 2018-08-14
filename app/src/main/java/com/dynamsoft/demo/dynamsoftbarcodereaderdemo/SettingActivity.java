@@ -63,6 +63,8 @@ public class SettingActivity extends BaseActivity {
 	CheckBox mQRCode;
 	@BindView(R.id.ckbdatamatrix)
 	CheckBox mDataMatrix;
+	@BindView(R.id.ckbaztec)
+	CheckBox mAZTEC;
 	@BindView(R.id.tv_expected_barcode_count)
 	TextView tvExpectedBarcodeCount;
 	@BindView(R.id.et_expected_barcode_count)
@@ -132,6 +134,7 @@ public class SettingActivity extends BaseActivity {
 		mDataMatrix.setOnCheckedChangeListener(onCKBCheckedChange);
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
+		mAZTEC.setOnCheckedChangeListener(onCKBCheckedChange);
 	}
 
 	@Override
@@ -299,7 +302,7 @@ public class SettingActivity extends BaseActivity {
 	}
 	private void initSetting(){
 		mSettingCache = DBRCache.get(this, "SettingCache");
-		templateType = getIntent().getStringExtra("templateType");
+		templateType = mSettingCache.getAsString("templateType");
 		try {
 			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
 			mImageParameter = mSetting.getImageParameter();
@@ -350,6 +353,11 @@ public class SettingActivity extends BaseActivity {
 				mDataMatrix.setChecked(true);
 			} else {
 				mDataMatrix.setChecked(false);
+			}
+			if (formats.contains("AZTEC")) {
+				mAZTEC.setChecked(true);
+			} else {
+				mAZTEC.setChecked(false);
 			}
 			/*if (formats.contains("CODE_39") && formats.contains("CODE_128") &&
 			    	formats.contains("CODE_93") && formats.contains("CODABAR") &&
@@ -463,6 +471,16 @@ public class SettingActivity extends BaseActivity {
 						mImageParameter.setBarcodeFormatIds(tempFormats);
 					}
 					break;
+				case R.id.ckbaztec:
+					if (mAZTEC.isChecked()) {
+						tempFormats = mImageParameter.getBarcodeFormatIds();
+						tempFormats.add("AZTEC");
+						mImageParameter.setBarcodeFormatIds(tempFormats);
+					} else {
+						tempFormats = mImageParameter.getBarcodeFormatIds();
+						tempFormats.remove("AZTEC");
+						mImageParameter.setBarcodeFormatIds(tempFormats);
+					}
 				default:
 					break;
 			}

@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -19,6 +21,7 @@ public class StartupActivity extends AppCompatActivity {
 	private static final int PRC_PHOTO_PICKER = 1;
 	private static final int RC_CHOOSE_PHOTO = 1;
 	private static final String TAG = "StartupActivity";
+	DBRCache mCache;
 	TextView tvHistory;
 	@BindView(R.id.btn_history)
 	Button btnHistory;
@@ -40,23 +43,24 @@ public class StartupActivity extends AppCompatActivity {
 
 	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal})
 	public void onViewClicked(View view) {
+		mCache = DBRCache.get(this, "SettingCache");
 		switch (view.getId()) {
 			case R.id.btn_history:
 				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
 			case R.id.btn_general:
 				Intent intentGeneral = new Intent(StartupActivity.this, MainActivity.class);
-				intentGeneral.putExtra("templateType", "GeneralSetting");
+				mCache.put("templateType", "GeneralSetting");
 				startActivity(intentGeneral);
 				break;
 			case R.id.btn_multi_best:
 				Intent intentMultiBest = new Intent(StartupActivity.this, MainActivity.class);
-				intentMultiBest.putExtra("templateType", "MultiBestSetting");
+				mCache.put("templateType", "MultiBestSetting");
 				startActivity(intentMultiBest);
 				break;
 			case R.id.btn_multi_bal:
 				Intent intentMultiBal = new Intent(StartupActivity.this, MainActivity.class);
-				intentMultiBal.putExtra("templateType", "MultiBalSetting");
+				mCache.put("templateType", "MultiBalSetting");
 				startActivity(intentMultiBal);
 				break;
 			default:

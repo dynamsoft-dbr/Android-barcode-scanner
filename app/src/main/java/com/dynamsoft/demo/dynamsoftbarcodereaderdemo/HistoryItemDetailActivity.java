@@ -222,7 +222,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {
-					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom_100947_777");
+					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					if (textResults != null && textResults.length > 0) {
 						Canvas canvas = new Canvas(rectBitmap);
 						for (int i = 0; i < textResults.length; i++) {
@@ -257,20 +257,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private void initBarcodeReader() {
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
-			JSONObject jsonObject = new JSONObject("{\n" +
-					"  \"ImageParameters\": {\n" +
-					"    \"Name\": \"Custom_100947_777\",\n" +
-					"    \"BarcodeFormatIds\": [\n" +
-					"      \"QR_CODE\"\n" +
-					"    ],\n" +
-					"    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
-					"    \"AntiDamageLevel\": 5,\n" +
-					"    \"DeblurLevel\":5,\n" +
-					"    \"ScaleDownThreshold\": 1000\n" +
-					"  },\n" +
-					"\"version\": \"1.0\"" +
-					"}");
-			reader.appendParameterTemplate(jsonObject.toString());
+			DBRCache mSettingCache = DBRCache.get(this, "SettingCache");
+			String templateType = mSettingCache.getAsString("templateType");
+			reader.initRuntimeSettingsWithString(mSettingCache.getAsString(templateType), 2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

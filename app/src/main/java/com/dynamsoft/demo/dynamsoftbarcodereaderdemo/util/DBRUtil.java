@@ -52,6 +52,9 @@ public class DBRUtil {
 			case 134217728:
 				barcodeFormat = "DATAMATAIX";
 				break;
+			case 268435456:
+				barcodeFormat = "AZTEC";
+				break;
 			default:
 				break;
 		}

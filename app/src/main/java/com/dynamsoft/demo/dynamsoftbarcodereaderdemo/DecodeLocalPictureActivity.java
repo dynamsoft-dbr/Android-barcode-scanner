@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.dynamsoft.barcode.BarcodeReader;
 import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 
 import org.json.JSONObject;
 
@@ -80,19 +81,9 @@ public class DecodeLocalPictureActivity extends AppCompatActivity {
     private void initBarcodeReader() {
         try {
             reader = new BarcodeReader(getString(R.string.dbr_license));
-            JSONObject jsonObject = new JSONObject("{\n" +
-                    "  \"ImageParameters\": {\n" +
-                    "    \"Name\": \"Custom_100947_777\",\n" +
-                    "    \"BarcodeFormatIds\": [\n" +
-                    "      \"QR_CODE\"\n" +
-                    "    ],\n" +
-                    "    \"LocalizationAlgorithmPriority\": [\"ConnectedBlock\", \"Lines\", \"Statistics\", \"FullImageAsBarcodeZone\"],\n" +
-                    "    \"AntiDamageLevel\": 5,\n" +
-                    "    \"DeblurLevel\":5,\n" +
-                    "    \"ScaleDownThreshold\": 1000\n" +
-                    "  }\n" +
-                    "}");
-            reader.appendParameterTemplate(jsonObject.toString());
+            DBRCache mSettingCache = DBRCache.get(this, "SettingCache");
+            String templateType = mSettingCache.getAsString("templateType");
+            reader.initRuntimeSettingsWithString(mSettingCache.getAsString(templateType), 2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +97,7 @@ public class DecodeLocalPictureActivity extends AppCompatActivity {
                     byte[] bytes = new byte[inputStream.available()];
                     inputStream.read(bytes);
                     inputStream.close();
-                    TextResult[] results = reader.decodeFileInMemory(bytes, "Custom_100947_777");
+                    TextResult[] results = reader.decodeFileInMemory(bytes, "Custom");
                     Message message = handler.obtainMessage();
                     message.obj = results;
                     message.what = BARCODE_RESULT;
@@ -141,7 +132,7 @@ public class DecodeLocalPictureActivity extends AppCompatActivity {
                 Arrays.sort(yAarray);
                 switch (results[i].barcodeFormat) {
                     case 234882047:
-                        barcodeFormat = "all";
+                        barcodeFormat = "All";
                         break;
                     case 1023:
                         barcodeFormat = "OneD";
@@ -183,8 +174,10 @@ public class DecodeLocalPictureActivity extends AppCompatActivity {
                         barcodeFormat = "QR_CODE";
                         break;
                     case 134217728:
-
                         barcodeFormat = "DATAMATAIX";
+                        break;
+                    case 268435456:
+                        barcodeFormat = "AZTEC";
                         break;
                     default:
                         break;
@@ -210,7 +203,7 @@ public class DecodeLocalPictureActivity extends AppCompatActivity {
                 Bitmap oriBitmap = BitmapFactory.decodeFile(filePath);
                 Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 try {
-                    TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom_100947_777");
+                    TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
                     if (textResults != null && textResults.length > 0) {
                         Canvas canvas = new Canvas(rectBitmap);
                         for (int i = 0; i < textResults.length; i++) {

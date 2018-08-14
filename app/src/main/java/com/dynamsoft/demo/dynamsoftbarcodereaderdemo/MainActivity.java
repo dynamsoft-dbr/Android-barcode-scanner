@@ -187,11 +187,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		setupFotoapparat();
 	}
 	private void initTemplate(){
-		templateType = (String) getIntent().getStringExtra("templateType");
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			mSettingCache = DBRCache.get(this, "SettingCache");
-			if ("general".equals(templateType)){
+			templateType = mSettingCache.getAsString("templateType");
+			if ("GeneralSetting".equals(templateType)){
 				String setting = mSettingCache.getAsString("GeneralSetting");
 				if ( setting != null){
 					reader.initRuntimeSettingsWithString(setting, 2);
@@ -304,6 +304,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				setting = mSettingCache.getAsString("MultiBalSetting");
 			}
 			try {
+				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
 			}
 			catch (Exception ex){

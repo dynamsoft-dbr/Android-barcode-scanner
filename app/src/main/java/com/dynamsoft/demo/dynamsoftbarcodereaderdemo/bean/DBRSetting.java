@@ -43,6 +43,7 @@ public class DBRSetting implements Serializable{
             add("PDF417");
             add("QR_CODE");
             add("DATAMATRIX");
+            add("AZTEC");
             add("CODE_39");
             add("CODE_93");
             add("CODE_128");
