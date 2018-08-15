@@ -1,0 +1,65 @@
+package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean;
+
+import org.litepal.annotation.Column;
+import org.litepal.crud.LitePalSupport;
+
+import java.util.ArrayList;
+
+/**
+ * Created by Elemen on 2018/8/15.
+ */
+public class DBRImage extends LitePalSupport {
+	@Column(defaultValue = "")
+	private String codeImgPath;
+
+	@Column(defaultValue = "")
+	private String fileName;
+
+	private ArrayList<String> codeFormat = new ArrayList<>();
+
+	private ArrayList<String> codeText = new ArrayList<>();
+
+	public String getRectCoord() {
+		return rectCoord;
+	}
+
+	public void setRectCoord(String rectCoord) {
+		this.rectCoord = rectCoord;
+	}
+
+	@Column(defaultValue = "")
+	private String rectCoord;
+
+	public String getCodeImgPath() {
+		return codeImgPath;
+	}
+
+	public void setCodeImgPath(String codeImgPath) {
+		this.codeImgPath = codeImgPath;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public ArrayList<String> getCodeFormat() {
+		return codeFormat;
+	}
+
+	public void setCodeFormat(ArrayList<String> codeFormat) {
+		this.codeFormat = codeFormat;
+	}
+
+	public ArrayList<String> getCodeText() {
+		return codeText;
+	}
+
+	public void setCodeText(ArrayList<String> codeText) {
+		this.codeText = codeText;
+	}
+
+}

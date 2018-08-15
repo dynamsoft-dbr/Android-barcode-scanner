@@ -12,13 +12,20 @@ import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.bumptech.glide.Glide;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.bingoogolapple.photopicker.util.BGABrowserPhotoViewAttacher;
 import cn.bingoogolapple.photopicker.util.BGAPhotoPickerUtil;
@@ -28,10 +35,10 @@ import cn.bingoogolapple.photopicker.widget.BGAImageView;
  * Created by Elemen on 2018/7/16.
  */
 public class HistoryDetailViewPagerAdapter extends PagerAdapter {
-	private ArrayList<HistoryItemBean> picPathList;
+	private List<DBRImage> picPathList;
 	private Context context;
 
-	public HistoryDetailViewPagerAdapter(Context context, ArrayList<HistoryItemBean> picPathList) {
+	public HistoryDetailViewPagerAdapter(Context context, List<DBRImage> picPathList) {
 		this.picPathList = picPathList;
 		this.context = context;
 	}
@@ -81,23 +88,37 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 		paint.setColor(context.getResources().getColor(R.color.aboutOK));
 		paint.setAntiAlias(true);
 		Path path = new Path();
-		HistoryItemBean historyItemBean;
-		historyItemBean = picPathList.get(position);
-		if (historyItemBean != null) {
-			Bitmap oriBitmap = BitmapFactory.decodeFile(historyItemBean.getCodeImgPath());
+/*		HistoryItemBean historyItemBean;
+		historyItemBean = picPathList.get(position);*/
+		DBRImage dbrImage = picPathList.get(position);
+		if (dbrImage != null) {
+			Bitmap oriBitmap = BitmapFactory.decodeFile(dbrImage.getCodeImgPath());
+			if (oriBitmap == null) {
+				Toast.makeText(context, "The image dosen't exist.", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			RectCoordinate rectCoordinate = null;
+			try {
+				rectCoordinate = LoganSquare.parse(dbrImage.getRectCoord(), RectCoordinate.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.ARGB_8888, true);
-			Canvas canvas = new Canvas(rectBitmap);
-			for (int i = 0; i < historyItemBean.getRectCoord().size(); i++) {
-				path.reset();
-				path.moveTo(historyItemBean.getRectCoord().get(i)[0].x, historyItemBean.getRectCoord().get(i)[0].y);
-				path.lineTo(historyItemBean.getRectCoord().get(i)[1].x, historyItemBean.getRectCoord().get(i)[1].y);
-				path.lineTo(historyItemBean.getRectCoord().get(i)[2].x, historyItemBean.getRectCoord().get(i)[2].y);
-				path.lineTo(historyItemBean.getRectCoord().get(i)[3].x, historyItemBean.getRectCoord().get(i)[3].y);
-				path.close();
-				canvas.drawPath(path, paint);
+			if (rectCoordinate != null) {
+				List<RectPoint[]> pointList = rectCoordinate.getRectCoord();
+				Canvas canvas = new Canvas(rectBitmap);
+				for (int i = 0; i < pointList.size(); i++) {
+					path.reset();
+					path.moveTo(pointList.get(i)[0].x, pointList.get(i)[0].y);
+					path.lineTo(pointList.get(i)[1].x, pointList.get(i)[1].y);
+					path.lineTo(pointList.get(i)[2].x, pointList.get(i)[2].y);
+					path.lineTo(pointList.get(i)[3].x, pointList.get(i)[3].y);
+					path.close();
+					canvas.drawPath(path, paint);
+				}
 			}
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			rectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+			rectBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
 			byte[] bytes = baos.toByteArray();
 			Glide.with(context)
 					.load(bytes)

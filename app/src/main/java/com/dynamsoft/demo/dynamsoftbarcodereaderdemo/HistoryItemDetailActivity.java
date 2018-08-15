@@ -19,12 +19,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.ThemedSpinnerAdapter;
+import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.BarcodeReader;
 import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
@@ -32,6 +34,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.ShareUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
 
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +64,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private String[] fileNames;
 	private int intentPosition;
 	private ArrayList<HistoryItemBean> listItem;
+	private List<DBRImage> imageList;
 	private HistoryDetailViewPagerAdapter adapter;
 	private SimpleAdapter simpleAdapter;
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
@@ -169,7 +173,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fillHistoryList() {
-		HistoryItemBean historyItemBean;
+/*		HistoryItemBean historyItemBean;
 		listItem = new ArrayList<>();
 		for (int i = 0; i < fileNames.length; i++) {
 			try {
@@ -181,8 +185,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		adapter = new HistoryDetailViewPagerAdapter(this, listItem);
+		}*/
+		imageList= LitePal.findAll(DBRImage.class);
+		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);
 		fillCodeList(intentPosition);
@@ -190,11 +195,11 @@ public class HistoryItemDetailActivity extends BaseActivity {
 
 	private void fillCodeList(int position) {
 		recentCodeList.clear();
-		for (int i = 0; i < listItem.get(position).getCodeFormat().size(); i++) {
+		for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
 			Map<String, String> item = new HashMap<>();
 			item.put("index", i + 1 + "");
-			item.put("format", DBRUtil.getCodeFormat(listItem.get(position).getCodeFormat().get(i)));
-			item.put("text", listItem.get(position).getCodeText().get(i));
+			item.put("format", DBRUtil.getCodeFormat(imageList.get(position).getCodeFormat().get(i)));
+			item.put("text", imageList.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
 		}
 		simpleAdapter.notifyDataSetChanged();
@@ -219,6 +224,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(), opts);
 				} else {
 					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
+				}
+				if (oriBitmap == null) {
+					Toast.makeText(HistoryItemDetailActivity.this, "Decode failed.", Toast.LENGTH_SHORT).show();
+					return;
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {

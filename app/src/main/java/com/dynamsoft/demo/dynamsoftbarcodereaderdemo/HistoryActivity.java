@@ -9,12 +9,17 @@ import android.view.ViewGroup;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryListAdapter;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
+
+import org.litepal.LitePal;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +56,17 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 	}
 
 	private void fillHistoryList() {
-		File file = new File(getCacheDir() + "/DBRCache");
+		List<DBRImage> imageList= LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size()>16){
+			imageList=imageList.subList(0,15);
+		}
+		historyListAdapter.setData(imageList);
+		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
+		rlvHistory.setLayoutManager(getLinearLayoutManager());
+		rlvHistory.setAdapter(historyListAdapter);
+
+/*		File file = new File(getCacheDir() + "/DBRCache");
 		fileNames = file.list();
 		HistoryItemBean historyItemBean;
 		listItem = new ArrayList<>();
@@ -71,7 +86,7 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 			rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
 			rlvHistory.setLayoutManager(getLinearLayoutManager());
 			rlvHistory.setAdapter(historyListAdapter);
-		}
+		}*/
 	}
 
 	private RecyclerView.LayoutManager getLinearLayoutManager() {

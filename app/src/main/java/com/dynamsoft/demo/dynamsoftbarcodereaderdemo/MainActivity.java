@@ -34,8 +34,10 @@ import com.dynamsoft.barcode.EnumImagePixelFormat;
 import com.dynamsoft.barcode.LocalizationResult;
 import com.dynamsoft.barcode.PublicParameterSettings;
 import com.dynamsoft.barcode.TextResult;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.YuvInfo;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
@@ -47,6 +49,9 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
+import org.litepal.crud.LitePalSupport;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -183,17 +188,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		initTemplate();
 		initUI();
 		frameUtil = new FrameUtil();
-		mCache = DBRCache.get(this,1000 * 1000 * 50,16);
+		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
 	}
-	private void initTemplate(){
+
+	private void initTemplate() {
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			mSettingCache = DBRCache.get(this, "SettingCache");
 			templateType = mSettingCache.getAsString("templateType");
-			if ("GeneralSetting".equals(templateType)){
+			if ("GeneralSetting".equals(templateType)) {
 				String setting = mSettingCache.getAsString("GeneralSetting");
-				if ( setting != null){
+				if (setting != null) {
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
 					mSetting = new DBRSetting();
@@ -201,7 +207,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
 				}
 			}
-			if ("MultiBestSetting".equals(templateType)){
+			if ("MultiBestSetting".equals(templateType)) {
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
 				multiBestImgP.setAntiDamageLevel(7);
@@ -211,19 +217,23 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
 			}
-			if ("MultiBalSetting".equals(templateType)){
+			if ("MultiBalSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
 				multiBalImgP.setAntiDamageLevel(5);
 				multiBalImgP.setDeblurLevel(5);
 				multiBalImgP.setScaleDownThreshold(1000);
-				multiBalImgP.setLocalizationAlgorithmPriority(new ArrayList<String>(){{add("ConnectedBlock");add("Lines");add("Statistics");add("FullImageAsBarcodeZone");}});
+				multiBalImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+					add("ConnectedBlock");
+					add("Lines");
+					add("Statistics");
+					add("FullImageAsBarcodeZone");
+				}});
 				multiBal.setImageParameter(multiBalImgP);
 				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(multiBal));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
 			}
-		}
-		catch (Exception ex){
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -291,23 +301,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			intent.putExtra("FilePath", filePath);
 			startActivity(intent);
 		}
-		if (requestCode == REQUEST_SETTING){
+		if (requestCode == REQUEST_SETTING) {
 			String setting = "";
 			mSettingCache = DBRCache.get(this, "SettingCache");
-			if (resultCode == RESPONSE_GENERAL_SETTING){
+			if (resultCode == RESPONSE_GENERAL_SETTING) {
 				setting = mSettingCache.getAsString("GeneralSetting");
 			}
-			if (resultCode == RESPONSE_MULTIBEST_SETTING){
+			if (resultCode == RESPONSE_MULTIBEST_SETTING) {
 				setting = mSettingCache.getAsString("MultiBestSetting");
 			}
-			if (resultCode == RESPONSE_MULTIBAL_SETTING){
+			if (resultCode == RESPONSE_MULTIBAL_SETTING) {
 				setting = mSettingCache.getAsString("MultiBalSetting");
 			}
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
-			}
-			catch (Exception ex){
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -613,7 +622,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
 						fileOutputStream.flush();
 						fileOutputStream.close();
-						HistoryItemBean itemBean = new HistoryItemBean();
 						ArrayList<String> codeFormatList = new ArrayList<>();
 						ArrayList<String> codeTextList = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
@@ -622,13 +630,25 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							codeFormatList.add(result1.barcodeFormat + "");
 							codeTextList.add(result1.barcodeText);
 						}
+
+						DBRImage dbrImage = new DBRImage();
+						dbrImage.setFileName(yuvInfo.cacheName);
+						dbrImage.setCodeFormat(codeFormatList);
+						dbrImage.setCodeText(codeTextList);
+						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
+						RectCoordinate rectCoordinate=new RectCoordinate();
+						rectCoordinate.setRectCoord(pointList);
+						String rectCoord=LoganSquare.serialize(rectCoordinate);
+						dbrImage.setRectCoord(rectCoord);
+						dbrImage.save();
+			/*		    HistoryItemBean itemBean = new HistoryItemBean();
 						itemBean.setFileName(yuvInfo.cacheName);
 						itemBean.setCodeFormat(codeFormatList);
 						itemBean.setCodeText(codeTextList);
 						itemBean.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
 						itemBean.setRectCoord(pointList);
 						String jsonResult = LoganSquare.serialize(itemBean);
-						mCache.put(yuvInfo.cacheName, jsonResult);
+						mCache.put(yuvInfo.cacheName, jsonResult);*/
 						long endSaveFile = System.currentTimeMillis();
 						Logger.d("save file time : " + (endSaveFile - startSaveFile));
 					} catch (IOException e) {
