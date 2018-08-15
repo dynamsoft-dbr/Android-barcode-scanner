@@ -453,6 +453,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	private void switchToSingle() {
 		isSingleMode = true;
+		hudView.clear();
+		hudView.invalidate();
 		slidingDrawer.setVisibility(View.GONE);
 		mScanCount.setVisibility(View.GONE);
 		btnCapture.setVisibility(View.VISIBLE);

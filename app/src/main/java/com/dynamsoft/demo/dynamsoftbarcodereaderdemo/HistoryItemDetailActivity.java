@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,6 +74,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private int pageType;
 	private ShareUtil shareUtil;
 	private Long decodeTime;
+	private int angle;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -82,6 +84,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					pvPhotoDetail.setImageBitmap((Bitmap) msg.obj);
 					if (pageType == 0) {
 						pvPhotoDetail.setRotation(90);
+					}
+					if (pageType == 2) {
+						pvPhotoDetail.setRotation(angle);
 					}
 					pbProgress.setVisibility(View.GONE);
 					simpleAdapter.notifyDataSetChanged();
@@ -229,6 +234,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(), opts);
 				} else {
 					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
+					angle = readPictureDegree(getIntent().getStringExtra("FilePath"));
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {
@@ -248,7 +254,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							canvas.drawPath(path, paint);
 							Map<String, String> item = new HashMap<>();
 							item.put("index", i + 1 + "");
-							item.put("format", textResults[i].barcodeFormat + "");
+							item.put("format", DBRUtil.getCodeFormat(textResults[i].barcodeFormat + ""));
 							item.put("text", textResults[i].barcodeText);
 							recentCodeList.add(item);
 						}
@@ -282,5 +288,28 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ButterKnife.bind(this);
+	}
+
+	private int readPictureDegree(String path){
+		int degree = 0;
+		try{
+			ExifInterface exifInterface = new ExifInterface(path);
+			switch (exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)){
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degree = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degree = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degree = 270;
+					break;
+				default:
+					break;
+			}
+		} catch (Exception ex){
+			ex.printStackTrace();
+		}
+		return degree;
 	}
 }
