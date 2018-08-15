@@ -19,6 +19,16 @@ public class DBRImage extends LitePalSupport {
 
 	private ArrayList<String> codeText = new ArrayList<>();
 
+	private long decodeTime = 0;
+
+	public long getDecodeTime() {
+		return decodeTime;
+	}
+
+	public void setDecodeTime(long decodeTime) {
+		this.decodeTime = decodeTime;
+	}
+
 	public String getRectCoord() {
 		return rectCoord;
 	}

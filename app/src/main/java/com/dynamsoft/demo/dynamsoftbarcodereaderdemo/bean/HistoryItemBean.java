@@ -21,6 +21,8 @@ public class HistoryItemBean {
 	private ArrayList<String> codeText = new ArrayList<>();
 	@JsonField
 	private ArrayList<RectPoint[]> rectCoord = new ArrayList<>();
+	@JsonField
+	private long decodeTime = 0;
 
 	public String getFileName() {
 		return fileName;
@@ -28,6 +30,14 @@ public class HistoryItemBean {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public long getDecodeTime() {
+		return decodeTime;
+	}
+
+	public void setDecodeTime(long decodeTime) {
+		this.decodeTime = decodeTime;
 	}
 
 	public ArrayList<RectPoint[]> getRectCoord() {

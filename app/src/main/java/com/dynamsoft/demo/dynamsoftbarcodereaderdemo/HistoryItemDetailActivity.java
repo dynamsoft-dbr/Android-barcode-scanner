@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
 
@@ -60,6 +62,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	ProgressBar pbProgress;
 	@BindView(R.id.pv_photo_detail)
 	PhotoView pvPhotoDetail;
+	@BindView(R.id.tv_decode_time)
+	TextView tvDecodeTime;
+	@BindView(R.id.tv_barcode_count)
+	TextView tvBarcodeCount;
 	private DBRCache mCache;
 	private String[] fileNames;
 	private int intentPosition;
@@ -71,6 +77,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private BarcodeReader reader;
 	private int pageType;
 	private ShareUtil shareUtil;
+	private Long decodeTime;
+	private int angle;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -81,9 +89,14 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					if (pageType == 0) {
 						pvPhotoDetail.setRotation(90);
 					}
+					if (pageType == 2) {
+						pvPhotoDetail.setRotation(angle);
+					}
 					pbProgress.setVisibility(View.GONE);
 					simpleAdapter.notifyDataSetChanged();
 					lvCodeList.startLayoutAnimation();
+					tvDecodeTime.setText("Total time spent: " + String.valueOf(decodeTime) + "ms");
+					tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 					break;
 				default:
 					break;
@@ -202,6 +215,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			item.put("text", imageList.get(position).getCodeText().get(i));
 			recentCodeList.add(item);
 		}
+		tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(0).getDecodeTime()) + "ms");
+		tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 		simpleAdapter.notifyDataSetChanged();
 		lvCodeList.startLayoutAnimation();
 	}
@@ -224,6 +239,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(), opts);
 				} else {
 					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
+					angle = readPictureDegree(getIntent().getStringExtra("FilePath"));
 				}
 				if (oriBitmap == null) {
 					Toast.makeText(HistoryItemDetailActivity.this, "Decode failed.", Toast.LENGTH_SHORT).show();
@@ -231,7 +247,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
 				try {
+					long startTime = System.currentTimeMillis();
 					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
+					long endTime = System.currentTimeMillis();
+					decodeTime = endTime - startTime;
 					if (textResults != null && textResults.length > 0) {
 						Canvas canvas = new Canvas(rectBitmap);
 						for (int i = 0; i < textResults.length; i++) {
@@ -243,8 +262,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							path.close();
 							canvas.drawPath(path, paint);
 							Map<String, String> item = new HashMap<>();
-							item.put("index", i + "");
-							item.put("format", textResults[i].barcodeFormat + "");
+							item.put("index", i + 1 + "");
+							item.put("format", DBRUtil.getCodeFormat(textResults[i].barcodeFormat + ""));
 							item.put("text", textResults[i].barcodeText);
 							recentCodeList.add(item);
 						}
@@ -278,5 +297,28 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ButterKnife.bind(this);
+	}
+
+	private int readPictureDegree(String path){
+		int degree = 0;
+		try{
+			ExifInterface exifInterface = new ExifInterface(path);
+			switch (exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)){
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degree = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degree = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degree = 270;
+					break;
+				default:
+					break;
+			}
+		} catch (Exception ex){
+			ex.printStackTrace();
+		}
+		return degree;
 	}
 }
