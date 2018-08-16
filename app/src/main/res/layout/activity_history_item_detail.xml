@@ -10,14 +10,15 @@
 		android:id="@+id/vp_history_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@+id/lv_code_list"/>
+		android:layout_above="@+id/tablerow"/>
 
 	<uk.co.senab.photoview.PhotoView
 		android:id="@+id/pv_photo_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@+id/lv_code_list"/>
+		android:layout_above="@+id/tablerow"/>
 	<TableRow
+		android:id="@+id/tablerow"
 		android:layout_above="@+id/lv_code_list"
 		android:layout_width="match_parent"
 		android:layout_height="30dp"
