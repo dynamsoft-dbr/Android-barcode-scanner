@@ -17,9 +17,6 @@ import com.orhanobut.logger.Logger;
 
 import java.lang.reflect.Method;
 
-/**
- * Created by Elemen on 2018/7/25.
- */
 public abstract class BaseActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private FrameLayout viewContent;

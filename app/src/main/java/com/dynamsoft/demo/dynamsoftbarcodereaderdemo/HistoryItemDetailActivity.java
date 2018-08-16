@@ -53,9 +53,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.senab.photoview.PhotoView;
 
-/**
- * Created by Elemen on 2018/7/13.
- */
+
 public class HistoryItemDetailActivity extends BaseActivity {
 	private final int DECODE_FINISHI = 0x0001;
 	@BindView(R.id.vp_history_detail)

@@ -32,9 +32,7 @@ import cn.bingoogolapple.photopicker.util.BGABrowserPhotoViewAttacher;
 import cn.bingoogolapple.photopicker.util.BGAPhotoPickerUtil;
 import cn.bingoogolapple.photopicker.widget.BGAImageView;
 
-/**
- * Created by Elemen on 2018/7/16.
- */
+
 public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 	private List<DBRImage> picPathList;
 	private Context context;

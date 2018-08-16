@@ -2,9 +2,6 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util;
 
 import android.media.ExifInterface;
 
-/**
- * Created by Elemen on 2018/8/8.
- */
 public class DBRUtil {
 	public static String getCodeFormat(String formatNum){
 		String barcodeFormat="0";

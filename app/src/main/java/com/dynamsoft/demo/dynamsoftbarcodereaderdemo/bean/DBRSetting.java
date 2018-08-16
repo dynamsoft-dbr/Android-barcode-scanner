@@ -8,9 +8,6 @@ import java.util.ArrayList;
 
 import javax.xml.transform.Templates;
 
-/**
- * Created by Martin on 8/1/2018.
- */
 @JsonObject
 public class DBRSetting implements Serializable{
 

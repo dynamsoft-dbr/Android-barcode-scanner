@@ -11,9 +11,6 @@ import java.util.ArrayList;
 
 import io.fotoapparat.parameter.Resolution;
 
-/**
- * Created by Elemen on 2018/7/4.
- */
 public class FrameUtil {
 	private int viewWidth;
 	private int viewHeight;

@@ -5,9 +5,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by Elemen on 2018/7/3.
- */
 @JsonObject
 public class HistoryItemBean {
 	@JsonField

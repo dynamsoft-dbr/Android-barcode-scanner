@@ -5,9 +5,6 @@ import org.litepal.crud.LitePalSupport;
 
 import java.util.ArrayList;
 
-/**
- * Created by Elemen on 2018/8/15.
- */
 public class DBRImage extends LitePalSupport {
 	@Column(defaultValue = "")
 	private String codeImgPath;

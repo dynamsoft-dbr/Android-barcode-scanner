@@ -14,9 +14,7 @@ import java.util.Date;
 import cn.bingoogolapple.baseadapter.BGARecyclerViewAdapter;
 import cn.bingoogolapple.baseadapter.BGAViewHolderHelper;
 
-/**
- * Created by Elemen on 2018/7/3.
- */
+
 public class HistoryListAdapter extends BGARecyclerViewAdapter<DBRImage> {
 	public HistoryListAdapter(RecyclerView recyclerView) {
 		super(recyclerView, R.layout.history_recyclerview_item);

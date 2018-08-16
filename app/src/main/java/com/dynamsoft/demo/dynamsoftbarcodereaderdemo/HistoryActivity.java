@@ -35,9 +35,6 @@ import butterknife.ButterKnife;
 import cn.bingoogolapple.baseadapter.BGADivider;
 import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 
-/**
- * Created by Elemen on 2018/7/3.
- */
 public class HistoryActivity extends BaseActivity implements BGAOnItemChildClickListener {
 	@BindView(R.id.rlv_history)
 	RecyclerView rlvHistory;

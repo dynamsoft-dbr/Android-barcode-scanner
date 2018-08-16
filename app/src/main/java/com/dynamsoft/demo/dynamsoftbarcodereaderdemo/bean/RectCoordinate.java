@@ -5,9 +5,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by Elemen on 2018/8/15.
- */
 @JsonObject
 public class RectCoordinate {
 	@JsonField
