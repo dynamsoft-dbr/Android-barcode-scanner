@@ -21,6 +21,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -92,7 +93,11 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 		historyItemBean = picPathList.get(position);*/
 		DBRImage dbrImage = picPathList.get(position);
 		if (dbrImage != null) {
-			Bitmap oriBitmap = BitmapFactory.decodeFile(dbrImage.getCodeImgPath());
+			BitmapFactory.Options opts = new BitmapFactory.Options();
+			if (dbrImage.getScaleValue() != -1){
+				opts.inSampleSize = dbrImage.getScaleValue();
+			}
+			Bitmap oriBitmap = BitmapFactory.decodeFile(dbrImage.getCodeImgPath(),opts);
 			if (oriBitmap == null) {
 				Toast.makeText(context, "The image dosen't exist.", Toast.LENGTH_SHORT).show();
 				return;
@@ -120,6 +125,11 @@ public class HistoryDetailViewPagerAdapter extends PagerAdapter {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			rectBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
 			byte[] bytes = baos.toByteArray();
+			if (dbrImage.getScaleValue()==4){
+				imageView.setRotation(90);
+			}else if (dbrImage.getScaleValue()==2){
+				imageView.setRotation(DBRUtil.readPictureDegree(dbrImage.getCodeImgPath()));
+			}
 			Glide.with(context)
 					.load(bytes)
 					.into(imageView);

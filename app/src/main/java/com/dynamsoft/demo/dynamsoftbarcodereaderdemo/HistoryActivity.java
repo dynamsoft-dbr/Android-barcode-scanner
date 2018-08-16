@@ -35,7 +35,6 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 	private DBRCache mCache;
 	private HistoryListAdapter historyListAdapter;
 	private ArrayList<HistoryItemBean> listItem;
-	private String[] fileNames;
 
 	@Override
 	protected int getLayoutId() {
@@ -56,10 +55,10 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> imageList= LitePal.findAll(DBRImage.class);
+		List<DBRImage> imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
-		if (imageList.size()>16){
-			imageList=imageList.subList(0,15);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 15);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
@@ -98,8 +97,7 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 		switch (childView.getId()) {
 			case R.id.cl_item_history:
 				Intent intent = new Intent(this, HistoryItemDetailActivity.class);
-				intent.putExtra("page_type",1);
-				intent.putExtra("imgdetail_file", fileNames);
+				intent.putExtra("page_type", 1);
 				intent.putExtra("position", position);
 				startActivity(intent);
 				break;

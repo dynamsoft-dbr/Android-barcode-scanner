@@ -67,6 +67,14 @@ public class StartupActivity extends AppCompatActivity {
 				break;
 		}
 	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (isFinishing()){
+
+		}
+	}
 }
 
 

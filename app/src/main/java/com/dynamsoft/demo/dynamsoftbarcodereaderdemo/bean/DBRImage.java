@@ -21,6 +21,16 @@ public class DBRImage extends LitePalSupport {
 
 	private long decodeTime = 0;
 
+	private int scaleValue = -1;
+
+	public int getScaleValue() {
+		return scaleValue;
+	}
+
+	public void setScaleValue(int scaleValue) {
+		this.scaleValue = scaleValue;
+	}
+
 	public long getDecodeTime() {
 		return decodeTime;
 	}

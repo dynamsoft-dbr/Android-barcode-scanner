@@ -186,4 +186,34 @@ public class FrameUtil {
 		}
 		return rectCoord;
 	}
+
+	public static ArrayList<RectPoint[]> translatePoints(TextResult[] textResults) {
+		ArrayList<RectPoint[]> rectCoord = new ArrayList<>();
+		RectPoint point0;
+		RectPoint point1;
+		RectPoint point2;
+		RectPoint point3;
+		RectPoint[] points;
+		for (int i = 0; i < textResults.length; i++) {
+			points = new RectPoint[4];
+			point0 = new RectPoint();
+			point1 = new RectPoint();
+			point2 = new RectPoint();
+			point3 = new RectPoint();
+			point0.x = textResults[i].localizationResult.resultPoints[0].x;
+			point0.y = textResults[i].localizationResult.resultPoints[0].y;
+			point1.x = textResults[i].localizationResult.resultPoints[1].x;
+			point1.y = textResults[i].localizationResult.resultPoints[1].y;
+			point2.x = textResults[i].localizationResult.resultPoints[2].x;
+			point2.y = textResults[i].localizationResult.resultPoints[2].y;
+			point3.x = textResults[i].localizationResult.resultPoints[3].x;
+			point3.y = textResults[i].localizationResult.resultPoints[3].y;
+			points[0] = point0;
+			points[1] = point1;
+			points[2] = point2;
+			points[3] = point3;
+			rectCoord.add(points);
+		}
+		return rectCoord;
+	}
 }
