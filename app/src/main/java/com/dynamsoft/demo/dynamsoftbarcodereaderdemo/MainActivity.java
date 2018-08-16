@@ -53,6 +53,7 @@ import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.LitePalSupport;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -500,7 +501,24 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					long endTime = System.currentTimeMillis();
 					duringTime = endTime - startTime;
-					//Logger.d("detect code time : " + duringTime);
+					/*Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
+					File file = new File(Environment.getExternalStorageDirectory(), endTime + "");
+					try{
+						file.createNewFile();
+						FileOutputStream outputStream = new FileOutputStream(file);
+						BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+						bufferedOutputStream.write(yuvImage.getYuvData());
+						bufferedOutputStream.flush();
+						if (outputStream != null){
+							outputStream.close();
+						}
+						if (bufferedOutputStream != null){
+							bufferedOutputStream.close();
+						}
+
+					}catch (Exception ex){
+						ex.printStackTrace();
+					}*/
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -532,7 +550,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							if (coordsMapResult != null) {
 								LocalizationResult localizationResult;
 								TextResult textResult;
-								Logger.d("maptype : " + coordsMapResult.basedImg);
+								//Logger.d("maptype : " + coordsMapResult.basedImg);
 								switch (coordsMapResult.basedImg) {
 									case 0:
 										handleImage(yuvInfoList.get(1), null);

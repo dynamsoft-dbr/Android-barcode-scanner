@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -375,25 +376,29 @@ public class SettingActivity extends BaseActivity {
 	}
 	@Override
 	public void onBackPressed(){
-		mSetting.setImageParameter(mImageParameter);
-		try {
-			if ("GeneralSetting".equals(templateType)) {
-				mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
-				setResult(RESPONSE_GENERAL_SETTING);
+		if (mImageParameter.getBarcodeFormatIds().size() > 0){
+			mSetting.setImageParameter(mImageParameter);
+			try {
+				if ("GeneralSetting".equals(templateType)) {
+					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
+					setResult(RESPONSE_GENERAL_SETTING);
+				}
+				if ("MultiBestSetting".equals(templateType)) {
+					mSettingCache.put("MultiBestSetting", LoganSquare.serialize(mSetting));
+					setResult(RESPONSE_MULTIBEST_SETTING);
+				}
+				if ("MultiBalSetting".equals(templateType)) {
+					mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
+					setResult(RESPONSE_MULTIBAL_SETTING);
+				}
 			}
-			if ("MultiBestSetting".equals(templateType)) {
-				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(mSetting));
-				setResult(RESPONSE_MULTIBEST_SETTING);
+			catch (Exception ex){
+				ex.printStackTrace();
 			}
-			if ("MultiBalSetting".equals(templateType)) {
-				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
-				setResult(RESPONSE_MULTIBAL_SETTING);
-			}
+			super.onBackPressed();
+		} else {
+			Toast.makeText(SettingActivity.this, "You must choose at least one barcode format.", Toast.LENGTH_LONG).show();
 		}
-		catch (Exception ex){
-			ex.printStackTrace();
-		}
-		super.onBackPressed();
 	}
 	SwitchCompat.OnCheckedChangeListener onSCCheckedChange = new CompoundButton.OnCheckedChangeListener() {
 		@Override
