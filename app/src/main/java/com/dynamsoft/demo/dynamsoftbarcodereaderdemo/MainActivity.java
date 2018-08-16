@@ -550,6 +550,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												textResult.localizationResult = localizationResult;
 												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
 												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
 												newResultBase1[i] = textResult;
 											}
 										}
@@ -569,6 +570,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												textResult.localizationResult = localizationResult;
 												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
 												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
 												newResultBase2[i] = textResult;
 											}
 										}
