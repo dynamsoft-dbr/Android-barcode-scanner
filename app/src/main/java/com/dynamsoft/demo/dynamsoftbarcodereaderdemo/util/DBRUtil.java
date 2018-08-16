@@ -1,5 +1,7 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util;
 
+import android.media.ExifInterface;
+
 /**
  * Created by Elemen on 2018/8/8.
  */
@@ -59,5 +61,32 @@ public class DBRUtil {
 				break;
 		}
 		return barcodeFormat;
+	}
+
+	public static void clearHistory(){
+
+	}
+
+	public static int readPictureDegree(String path) {
+		int degree = 0;
+		try {
+			ExifInterface exifInterface = new ExifInterface(path);
+			switch (exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degree = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degree = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degree = 270;
+					break;
+				default:
+					break;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return degree;
 	}
 }

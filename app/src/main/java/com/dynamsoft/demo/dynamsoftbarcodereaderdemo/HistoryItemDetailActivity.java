@@ -30,8 +30,11 @@ import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.ShareUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
 
@@ -41,6 +44,7 @@ import org.litepal.LitePal;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +83,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private ShareUtil shareUtil;
 	private Long decodeTime;
 	private int angle;
+	private int scaleValue = -1;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -138,7 +143,6 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fromHistoryList() {
-		fileNames = getIntent().getStringArrayExtra("imgdetail_file");
 		intentPosition = getIntent().getIntExtra("position", 0);
 		fillHistoryList();
 		vpHistoryDetail.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -199,7 +203,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				e.printStackTrace();
 			}
 		}*/
-		imageList= LitePal.findAll(DBRImage.class);
+		imageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);
@@ -230,25 +235,36 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				paint.setStrokeWidth(9f);
 				paint.setColor(getResources().getColor(R.color.aboutOK));
 				paint.setAntiAlias(true);
+				String imgPath;
+				String fileName;
 				Path path = new Path();
 				Bitmap oriBitmap;
+				BitmapFactory.Options opts = new BitmapFactory.Options();
 				if (imgLocation == 0) {
-					BitmapFactory.Options opts = new BitmapFactory.Options();
 					opts.inSampleSize = 4;
-					oriBitmap = BitmapFactory.decodeFile(new File(getExternalFilesDir("photos"),
-							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath(), opts);
+					scaleValue = 4;
+					imgPath = new File(getExternalFilesDir("photos"),
+							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath();
+					fileName = new File(getExternalFilesDir("photos"),
+							getIntent().getStringExtra("photoname") + ".jpg").getName();
+					oriBitmap = BitmapFactory.decodeFile(imgPath,opts);
 				} else {
-					oriBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("FilePath"));
-					angle = readPictureDegree(getIntent().getStringExtra("FilePath"));
+					opts.inSampleSize = 2;
+					scaleValue=2;
+					imgPath = getIntent().getStringExtra("FilePath");
+					fileName = new File(getIntent().getStringExtra("FilePath")).getName();
+					oriBitmap = BitmapFactory.decodeFile(imgPath,opts);
+					angle = DBRUtil.readPictureDegree(imgPath);
 				}
 				if (oriBitmap == null) {
 					Toast.makeText(HistoryItemDetailActivity.this, "Decode failed.", Toast.LENGTH_SHORT).show();
 					return;
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
+				TextResult[] textResults;
 				try {
 					long startTime = System.currentTimeMillis();
-					TextResult[] textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
+					textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					long endTime = System.currentTimeMillis();
 					decodeTime = endTime - startTime;
 					if (textResults != null && textResults.length > 0) {
@@ -273,6 +289,28 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					message.what = DECODE_FINISHI;
 					message.obj = rectBitmap;
 					mHandler.sendMessage(message);
+
+					if (textResults != null && textResults.length > 0) {
+						DBRImage dbrImage = new DBRImage();
+						dbrImage.setDecodeTime(decodeTime);
+						dbrImage.setCodeImgPath(imgPath);
+						ArrayList<String> codeFormatList = new ArrayList<>();
+						ArrayList<String> codeTextList = new ArrayList<>();
+						for (TextResult result1 : textResults) {
+							codeFormatList.add(result1.barcodeFormat + "");
+							codeTextList.add(result1.barcodeText);
+						}
+						ArrayList<RectPoint[]> pointList = FrameUtil.translatePoints(textResults);
+						RectCoordinate rectCoordinate = new RectCoordinate();
+						rectCoordinate.setRectCoord(pointList);
+						String rectCoord = LoganSquare.serialize(rectCoordinate);
+						dbrImage.setCodeText(codeTextList);
+						dbrImage.setCodeFormat(codeFormatList);
+						dbrImage.setFileName(fileName);
+						dbrImage.setRectCoord(rectCoord);
+						dbrImage.setScaleValue(scaleValue);
+						dbrImage.save();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (BarcodeReaderException e) {
@@ -297,28 +335,5 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ButterKnife.bind(this);
-	}
-
-	private int readPictureDegree(String path){
-		int degree = 0;
-		try{
-			ExifInterface exifInterface = new ExifInterface(path);
-			switch (exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)){
-				case ExifInterface.ORIENTATION_ROTATE_90:
-					degree = 90;
-					break;
-				case ExifInterface.ORIENTATION_ROTATE_180:
-					degree = 180;
-					break;
-				case ExifInterface.ORIENTATION_ROTATE_270:
-					degree = 270;
-					break;
-				default:
-					break;
-			}
-		} catch (Exception ex){
-			ex.printStackTrace();
-		}
-		return degree;
 	}
 }
