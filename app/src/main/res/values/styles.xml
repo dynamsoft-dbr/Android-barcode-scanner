@@ -13,14 +13,15 @@
 	<style name="CustomOverflowStyle" parent="@android:style/Widget.Holo.ActionButton.Overflow">
 		<item name="android:src">@drawable/icon_mode</item>
 	</style>
+
 	<style name="AppTheme.NoActionBar">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 	</style>
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 	<style name="style_qr_box_view_button">
 		<item name="android:layout_width">wrap_content</item>
@@ -59,5 +60,10 @@
 		<item name="overlapAnchor">false</item>
 		<item name="android:dropDownWidth">50dp</item>
 		<item name="android:popupBackground">@drawable/bg_popmenu_black</item>
+	</style>
+
+	<style name="CustomDialogTheme" parent="Theme.AppCompat.Dialog">
+		<item name="android:textColorPrimary">@android:color/black</item>
+		<item name="android:background">@color/white</item>
 	</style>
 </resources>
