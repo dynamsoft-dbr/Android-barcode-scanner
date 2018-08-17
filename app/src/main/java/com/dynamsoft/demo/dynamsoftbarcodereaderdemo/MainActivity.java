@@ -501,24 +501,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					long endTime = System.currentTimeMillis();
 					duringTime = endTime - startTime;
-					/*Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
-					File file = new File(Environment.getExternalStorageDirectory(), endTime + "");
-					try{
-						file.createNewFile();
-						FileOutputStream outputStream = new FileOutputStream(file);
-						BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-						bufferedOutputStream.write(yuvImage.getYuvData());
-						bufferedOutputStream.flush();
-						if (outputStream != null){
-							outputStream.close();
-						}
-						if (bufferedOutputStream != null){
-							bufferedOutputStream.close();
-						}
-
-					}catch (Exception ex){
-						ex.printStackTrace();
-					}*/
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {

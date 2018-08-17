@@ -121,9 +121,8 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 								temp.delete();
 							}
 						}
-						LitePal.deleteAll(DBRImage.class);
 					}
-
+					LitePal.deleteAll(DBRImage.class);
 				}
 				handler.sendEmptyMessage(0);
 			}
@@ -134,7 +133,7 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 		imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 15);
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
