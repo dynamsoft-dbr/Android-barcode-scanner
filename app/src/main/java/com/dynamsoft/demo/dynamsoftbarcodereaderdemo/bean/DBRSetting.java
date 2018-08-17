@@ -9,224 +9,226 @@ import java.util.ArrayList;
 import javax.xml.transform.Templates;
 
 @JsonObject
-public class DBRSetting implements Serializable{
+public class DBRSetting implements Serializable {
 
-    @JsonField
-    private String version = "2.0";
+	@JsonField
+	private String version = "2.0";
 
-    @JsonField
-    private ImageParameter imageParameter = new ImageParameter();
+	@JsonField
+	private ImageParameter imageParameter = new ImageParameter();
 
-    public String getVersion() {
-        return version;
-    }
+	public String getVersion() {
+		return version;
+	}
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
-    public ImageParameter getImageParameter() {
-        return imageParameter;
-    }
-    public void setImageParameter(ImageParameter imageParameter){
-        this.imageParameter = imageParameter;
-    }
-    @JsonObject
-    public static class ImageParameter implements Serializable{
-        @JsonField
-        private String Name = "Custom";
-        @JsonField
-        private ArrayList<String> barcodeFormatIds = new ArrayList<String>() {{
-            add("PDF417");
-            add("QR_CODE");
-            add("DATAMATRIX");
-            add("AZTEC");
-            add("CODE_39");
-            add("CODE_93");
-            add("CODE_128");
-            add("CODABAR");
-            add("ITF");
-            add("EAN_13");
-            add("EAN_8");
-            add("UPC_A");
-            add("UPC_E");
-            add("INDUSTRIAL_25");
-        }};
-        @JsonField
-        private int expectedBarcodesCount = 0;
-        @JsonField
-        private int timeout = 10000;
-        @JsonField
-        private int deblurLevel = 9;
-        @JsonField
-        private int antiDamageLevel = 9;
-        @JsonField
-        private String textFilterMode = "Enable";
-        @JsonField
-        private String regionPredetectionMode = "Disable";
-        @JsonField
-        private int scaleDownThreshold = 2300;
-        @JsonField
-        private String colourImageConvertMode = "Auto";
-        @JsonField
-        private String barcodeInvertMode = "DarkOnLight";
-        @JsonField
-        private int grayEqualizationSensitivity = 0;
-        @JsonField
-        private int textureDetectionSensitivity = 5;
-        @JsonField
-        private int binarizationBlockSize = 0;
-        @JsonField
-        private ArrayList<String> localizationAlgorithmPriority = new ArrayList<>();
-        @JsonField
-        private int maxDimOfFullImageAsBarcodeZone = 262144;
-        @JsonField
-        private int maxBarcodesCount = 2147483647;
-        @JsonField
-        private boolean enableFillBinaryVacancy = true;
+	public ImageParameter getImageParameter() {
+		return imageParameter;
+	}
 
-        public String getName() {
-            return Name;
-        }
+	public void setImageParameter(ImageParameter imageParameter) {
+		this.imageParameter = imageParameter;
+	}
 
-        public void setName(String templateName) {
-            this.Name = templateName;
-        }
+	@JsonObject
+	public static class ImageParameter implements Serializable {
+		@JsonField
+		private String Name = "Custom";
+		@JsonField
+		private ArrayList<String> barcodeFormatIds = new ArrayList<String>() {{
+			add("PDF417");
+			add("QR_CODE");
+			add("DATAMATRIX");
+			add("AZTEC");
+			add("CODE_39");
+			add("CODE_93");
+			add("CODE_128");
+			add("CODABAR");
+			add("ITF");
+			add("EAN_13");
+			add("EAN_8");
+			add("UPC_A");
+			add("UPC_E");
+			add("INDUSTRIAL_25");
+		}};
+		@JsonField
+		private int expectedBarcodesCount = 0;
+		@JsonField
+		private int timeout = 10000;
+		@JsonField
+		private int deblurLevel = 9;
+		@JsonField
+		private int antiDamageLevel = 9;
+		@JsonField
+		private String textFilterMode = "Enable";
+		@JsonField
+		private String regionPredetectionMode = "Disable";
+		@JsonField
+		private int scaleDownThreshold = 2300;
+		@JsonField
+		private String colourImageConvertMode = "Auto";
+		@JsonField
+		private String barcodeInvertMode = "DarkOnLight";
+		@JsonField
+		private int grayEqualizationSensitivity = 0;
+		@JsonField
+		private int textureDetectionSensitivity = 5;
+		@JsonField
+		private int binarizationBlockSize = 0;
+		@JsonField
+		private ArrayList<String> localizationAlgorithmPriority = new ArrayList<>();
+		@JsonField
+		private int maxDimOfFullImageAsBarcodeZone = 262144;
+		@JsonField
+		private int maxBarcodesCount = 2147483647;
+		@JsonField
+		private boolean enableFillBinaryVacancy = true;
 
-        public ArrayList<String> getBarcodeFormatIds() {
-            return barcodeFormatIds;
-        }
+		public String getName() {
+			return Name;
+		}
 
-        public void setBarcodeFormatIds(ArrayList<String> barcodeFormat) {
-            this.barcodeFormatIds = barcodeFormat;
-        }
+		public void setName(String templateName) {
+			this.Name = templateName;
+		}
 
-        public int getExpectedBarcodesCount() {
-            return expectedBarcodesCount;
-        }
+		public ArrayList<String> getBarcodeFormatIds() {
+			return barcodeFormatIds;
+		}
 
-        public void setExpectedBarcodesCount(int expectedBarcodesCount) {
-            this.expectedBarcodesCount = expectedBarcodesCount;
-        }
+		public void setBarcodeFormatIds(ArrayList<String> barcodeFormat) {
+			this.barcodeFormatIds = barcodeFormat;
+		}
 
-        public int getTimeout() {
-            return timeout;
-        }
+		public int getExpectedBarcodesCount() {
+			return expectedBarcodesCount;
+		}
 
-        public void setTimeout(int timeout) {
-            this.timeout = timeout;
-        }
+		public void setExpectedBarcodesCount(int expectedBarcodesCount) {
+			this.expectedBarcodesCount = expectedBarcodesCount;
+		}
 
-        public int getDeblurLevel() {
-            return deblurLevel;
-        }
+		public int getTimeout() {
+			return timeout;
+		}
 
-        public void setDeblurLevel(int deblurLevel) {
-            this.deblurLevel = deblurLevel;
-        }
+		public void setTimeout(int timeout) {
+			this.timeout = timeout;
+		}
 
-        public int getAntiDamageLevel() {
-            return antiDamageLevel;
-        }
+		public int getDeblurLevel() {
+			return deblurLevel;
+		}
 
-        public void setAntiDamageLevel(int antiDamageLevel) {
-            this.antiDamageLevel = antiDamageLevel;
-        }
+		public void setDeblurLevel(int deblurLevel) {
+			this.deblurLevel = deblurLevel;
+		}
 
-        public String getTextFilterMode() {
-            return textFilterMode;
-        }
+		public int getAntiDamageLevel() {
+			return antiDamageLevel;
+		}
 
-        public void setTextFilterMode(String textFilterMode) {
-            this.textFilterMode = textFilterMode;
-        }
+		public void setAntiDamageLevel(int antiDamageLevel) {
+			this.antiDamageLevel = antiDamageLevel;
+		}
 
-        public String getRegionPredetectionMode() {
-            return regionPredetectionMode;
-        }
+		public String getTextFilterMode() {
+			return textFilterMode;
+		}
 
-        public void setRegionPredetectionMode(String regionPredetectionMode) {
-            this.regionPredetectionMode = regionPredetectionMode;
-        }
+		public void setTextFilterMode(String textFilterMode) {
+			this.textFilterMode = textFilterMode;
+		}
 
-        public int getScaleDownThreshold() {
-            return scaleDownThreshold;
-        }
+		public String getRegionPredetectionMode() {
+			return regionPredetectionMode;
+		}
 
-        public void setScaleDownThreshold(int scaleDownThreshold) {
-            this.scaleDownThreshold = scaleDownThreshold;
-        }
+		public void setRegionPredetectionMode(String regionPredetectionMode) {
+			this.regionPredetectionMode = regionPredetectionMode;
+		}
 
-        public String getColourImageConvertMode() {
-            return colourImageConvertMode;
-        }
+		public int getScaleDownThreshold() {
+			return scaleDownThreshold;
+		}
 
-        public void setColourImageConvertMode(String colourImageConvertMode) {
-            this.colourImageConvertMode = colourImageConvertMode;
-        }
+		public void setScaleDownThreshold(int scaleDownThreshold) {
+			this.scaleDownThreshold = scaleDownThreshold;
+		}
 
-        public String getBarcodeInvertMode() {
-            return barcodeInvertMode;
-        }
+		public String getColourImageConvertMode() {
+			return colourImageConvertMode;
+		}
 
-        public void setBarcodeInvertMode(String barcodeInvertMode) {
-            this.barcodeInvertMode = barcodeInvertMode;
-        }
+		public void setColourImageConvertMode(String colourImageConvertMode) {
+			this.colourImageConvertMode = colourImageConvertMode;
+		}
 
-        public int getGrayEqualizationSensitivity() {
-            return grayEqualizationSensitivity;
-        }
+		public String getBarcodeInvertMode() {
+			return barcodeInvertMode;
+		}
 
-        public void setGrayEqualizationSensitivity(int grayEqualizationSensitivity) {
-            this.grayEqualizationSensitivity = grayEqualizationSensitivity;
-        }
+		public void setBarcodeInvertMode(String barcodeInvertMode) {
+			this.barcodeInvertMode = barcodeInvertMode;
+		}
 
-        public int getTextureDetectionSensitivity() {
-            return textureDetectionSensitivity;
-        }
+		public int getGrayEqualizationSensitivity() {
+			return grayEqualizationSensitivity;
+		}
 
-        public void setTextureDetectionSensitivity(int textureDetectionSensitivity) {
-            this.textureDetectionSensitivity = textureDetectionSensitivity;
-        }
+		public void setGrayEqualizationSensitivity(int grayEqualizationSensitivity) {
+			this.grayEqualizationSensitivity = grayEqualizationSensitivity;
+		}
 
-        public int getBinarizationBlockSize() {
-            return binarizationBlockSize;
-        }
+		public int getTextureDetectionSensitivity() {
+			return textureDetectionSensitivity;
+		}
 
-        public void setBinarizationBlockSize(int binarizationBlockSize) {
-            this.binarizationBlockSize = binarizationBlockSize;
-        }
+		public void setTextureDetectionSensitivity(int textureDetectionSensitivity) {
+			this.textureDetectionSensitivity = textureDetectionSensitivity;
+		}
 
-        public ArrayList<String> getLocalizationAlgorithmPriority() {
-            return localizationAlgorithmPriority;
-        }
+		public int getBinarizationBlockSize() {
+			return binarizationBlockSize;
+		}
 
-        public void setLocalizationAlgorithmPriority(ArrayList<String> localizationAlgorithmPriority) {
-            this.localizationAlgorithmPriority = localizationAlgorithmPriority;
-        }
+		public void setBinarizationBlockSize(int binarizationBlockSize) {
+			this.binarizationBlockSize = binarizationBlockSize;
+		}
 
-        public int getMaxDimOfFullImageAsBarcodeZone() {
-            return maxDimOfFullImageAsBarcodeZone;
-        }
+		public ArrayList<String> getLocalizationAlgorithmPriority() {
+			return localizationAlgorithmPriority;
+		}
 
-        public void setMaxDimOfFullImageAsBarcodeZone(int maxDimOfFullImageAsBarcodeZone) {
-            this.maxDimOfFullImageAsBarcodeZone = maxDimOfFullImageAsBarcodeZone;
-        }
+		public void setLocalizationAlgorithmPriority(ArrayList<String> localizationAlgorithmPriority) {
+			this.localizationAlgorithmPriority = localizationAlgorithmPriority;
+		}
 
-        public int getMaxBarcodesCount() {
-            return maxBarcodesCount;
-        }
+		public int getMaxDimOfFullImageAsBarcodeZone() {
+			return maxDimOfFullImageAsBarcodeZone;
+		}
 
-        public void setMaxBarcodesCount(int maxBarcodesCount) {
-            this.maxBarcodesCount = maxBarcodesCount;
-        }
+		public void setMaxDimOfFullImageAsBarcodeZone(int maxDimOfFullImageAsBarcodeZone) {
+			this.maxDimOfFullImageAsBarcodeZone = maxDimOfFullImageAsBarcodeZone;
+		}
 
-        public boolean isEnableFillBinaryVacancy() {
-            return enableFillBinaryVacancy;
-        }
+		public int getMaxBarcodesCount() {
+			return maxBarcodesCount;
+		}
 
-        public void setEnableFillBinaryVacancy(boolean enableFillBinaryVacancy) {
-            this.enableFillBinaryVacancy = enableFillBinaryVacancy;
-        }
-    }
+		public void setMaxBarcodesCount(int maxBarcodesCount) {
+			this.maxBarcodesCount = maxBarcodesCount;
+		}
+
+		public boolean isEnableFillBinaryVacancy() {
+			return enableFillBinaryVacancy;
+		}
+
+		public void setEnableFillBinaryVacancy(boolean enableFillBinaryVacancy) {
+			this.enableFillBinaryVacancy = enableFillBinaryVacancy;
+		}
+	}
 }

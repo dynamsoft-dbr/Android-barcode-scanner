@@ -205,11 +205,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
 					mSetting = new DBRSetting();
+					DBRSetting.ImageParameter generalImgP = new DBRSetting.ImageParameter();
+					mSetting.setImageParameter(generalImgP);
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
 				}
 			}
-			if ("MultiBestSetting".equals(templateType)) {
+			else if ("MultiBestSetting".equals(templateType)) {
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
 				multiBestImgP.setAntiDamageLevel(7);
@@ -219,7 +221,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
 			}
-			if ("MultiBalSetting".equals(templateType)) {
+			else if ("MultiBalSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
 				multiBalImgP.setAntiDamageLevel(5);
