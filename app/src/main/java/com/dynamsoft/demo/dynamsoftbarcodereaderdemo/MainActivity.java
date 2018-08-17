@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.dynamsoft.barcode.PublicRuntimeSettings;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
 import com.dynamsoft.barcode.BarcodeReader;
@@ -55,6 +56,7 @@ import org.litepal.crud.LitePalSupport;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -192,6 +194,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
+		/*File file = new File(Environment.getExternalStorageDirectory(),"1534411536760");
+		byte[] buffer = null;
+		try {
+			FileInputStream fs = new FileInputStream(file);
+			buffer = new byte[fs.available()];
+			fs.read(buffer);
+			fs.close();
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+		try {
+			reader.decodeBuffer(buffer, 1920, 1080, 1920, EnumImagePixelFormat.IPF_NV21, "Custom");
+		}catch (BarcodeReaderException ex){
+			ex.printStackTrace();
+		}*/
 	}
 
 	private void initTemplate() {
@@ -496,13 +514,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							frame.getSize().width, frame.getSize().height, null);
 					int wid = frame.getSize().width;
 					int hgt = frame.getSize().height;
-					long startTime = System.currentTimeMillis();
-					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
-							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
-					long endTime = System.currentTimeMillis();
-					duringTime = endTime - startTime;
-					/*Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
-					File file = new File(Environment.getExternalStorageDirectory(), endTime + "");
+					long saveTime = System.currentTimeMillis();
+					/*Logger.d("FileName: " + saveTime + ".jpg");
+					File file = new File(Environment.getExternalStorageDirectory(), saveTime + "");
 					try{
 						file.createNewFile();
 						FileOutputStream outputStream = new FileOutputStream(file);
@@ -519,6 +533,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					}catch (Exception ex){
 						ex.printStackTrace();
 					}*/
+					long startTime = System.currentTimeMillis();
+					Logger.d("decode start");
+					PublicRuntimeSettings l = reader.getRuntimeSettings();
+					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
+							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
+					long endTime = System.currentTimeMillis();
+					duringTime = endTime - startTime;
+					//Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
+					Logger.d("decode finish");
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -548,6 +571,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 							if (coordsMapResult != null) {
+								Logger.d("coordMap finish");
 								LocalizationResult localizationResult;
 								TextResult textResult;
 								//Logger.d("maptype : " + coordsMapResult.basedImg);
