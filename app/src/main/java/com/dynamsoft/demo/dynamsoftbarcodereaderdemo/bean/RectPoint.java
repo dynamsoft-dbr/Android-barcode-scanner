@@ -6,9 +6,6 @@ import android.os.Parcelable;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-/**
- * Created by Elemen on 2018/7/6.
- */
 @JsonObject
 public class RectPoint implements Parcelable {
 	@JsonField

@@ -35,9 +35,6 @@ import butterknife.ButterKnife;
 import cn.bingoogolapple.baseadapter.BGADivider;
 import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 
-/**
- * Created by Elemen on 2018/7/3.
- */
 public class HistoryActivity extends BaseActivity implements BGAOnItemChildClickListener {
 	@BindView(R.id.rlv_history)
 	RecyclerView rlvHistory;
@@ -124,9 +121,8 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 								temp.delete();
 							}
 						}
-						LitePal.deleteAll(DBRImage.class);
 					}
-
+					LitePal.deleteAll(DBRImage.class);
 				}
 				handler.sendEmptyMessage(0);
 			}
@@ -137,7 +133,7 @@ public class HistoryActivity extends BaseActivity implements BGAOnItemChildClick
 		imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 15);
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());

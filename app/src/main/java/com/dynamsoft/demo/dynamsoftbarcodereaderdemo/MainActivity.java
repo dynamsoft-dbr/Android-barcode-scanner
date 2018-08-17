@@ -221,6 +221,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				String setting = mSettingCache.getAsString("GeneralSetting");
 				if (setting != null) {
 					reader.initRuntimeSettingsWithString(setting, 2);
+					PublicRuntimeSettings T = reader.getRuntimeSettings();
+					Logger.d("TT", "TT");
 				} else {
 					mSetting = new DBRSetting();
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
@@ -336,6 +338,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
+				PublicRuntimeSettings T = reader.getRuntimeSettings();
+				Logger.d("tt", "uu");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
