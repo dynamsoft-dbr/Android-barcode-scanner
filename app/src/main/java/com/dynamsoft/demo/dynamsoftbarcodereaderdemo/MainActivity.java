@@ -221,10 +221,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				String setting = mSettingCache.getAsString("GeneralSetting");
 				if (setting != null) {
 					reader.initRuntimeSettingsWithString(setting, 2);
-					PublicRuntimeSettings T = reader.getRuntimeSettings();
-					Logger.d("TT", "TT");
 				} else {
 					mSetting = new DBRSetting();
+					DBRSetting.ImageParameter generalImP = new DBRSetting.ImageParameter();
+					mSetting.setImageParameter(generalImP);
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
 				}
@@ -457,6 +457,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnCapture.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnCapture.setVisibility(View.GONE);
 				shootSound();
 				PhotoResult photoResult = fotoapparat.takePicture();
 				final String photoName = System.currentTimeMillis() + "";
@@ -468,6 +469,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
+						btnCapture.setVisibility(View.VISIBLE);
 						startActivity(intent);
 					}
 				});
@@ -540,8 +542,23 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					long startTime = System.currentTimeMillis();
 					Logger.d("decode start");
 					PublicRuntimeSettings l = reader.getRuntimeSettings();
+					l.mBarcodeInvertMode = 1;
+					try {
+						reader.updateRuntimeSettings(l);
+					}
+					catch (Exception ex){
+						ex.printStackTrace();
+					}
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
+					ArrayList<TextResult> resultArrayList = new ArrayList<>();
+					for(int i = 0; i < result.length; i++){
+						if(result[i] != null) {
+							resultArrayList.add(result[i]);
+						}
+					}
+					result = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
+					PublicRuntimeSettings settings = new PublicRuntimeSettings();
 					long endTime = System.currentTimeMillis();
 					duringTime = endTime - startTime;
 					//Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
