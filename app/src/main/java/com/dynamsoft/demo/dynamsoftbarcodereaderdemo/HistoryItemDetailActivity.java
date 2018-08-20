@@ -56,6 +56,7 @@ import uk.co.senab.photoview.PhotoView;
 
 public class HistoryItemDetailActivity extends BaseActivity {
 	private final int DECODE_FINISHI = 0x0001;
+	private final int DECODE_FAILED = 0X0045;
 	@BindView(R.id.vp_history_detail)
 	HistoryPreviewViewPager vpHistoryDetail;
 	@BindView(R.id.lv_code_list)
@@ -100,6 +101,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					lvCodeList.startLayoutAnimation();
 					tvDecodeTime.setText("Total time spent: " + String.valueOf(decodeTime) + "ms");
 					tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
+					break;
+				case DECODE_FAILED:
+					Toast.makeText(HistoryItemDetailActivity.this, "Decode failed.", Toast.LENGTH_SHORT).show();
 					break;
 				default:
 					break;
@@ -245,17 +249,19 @@ public class HistoryItemDetailActivity extends BaseActivity {
 							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath();
 					fileName = new File(getExternalFilesDir("photos"),
 							getIntent().getStringExtra("photoname") + ".jpg").getName();
-					oriBitmap = BitmapFactory.decodeFile(imgPath,opts);
+					oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
 				} else {
 					opts.inSampleSize = 2;
-					scaleValue=2;
+					scaleValue = 2;
 					imgPath = getIntent().getStringExtra("FilePath");
 					fileName = new File(getIntent().getStringExtra("FilePath")).getName();
-					oriBitmap = BitmapFactory.decodeFile(imgPath,opts);
+					oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
 					angle = DBRUtil.readPictureDegree(imgPath);
 				}
 				if (oriBitmap == null) {
-					Toast.makeText(HistoryItemDetailActivity.this, "Decode failed.", Toast.LENGTH_SHORT).show();
+					Message message = mHandler.obtainMessage();
+					message.what = DECODE_FAILED;
+					mHandler.sendMessage(message);
 					return;
 				}
 				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
