@@ -222,11 +222,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (setting != null) {
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
-					mSetting = new DBRSetting();
+					DBRSetting generalSetting = new DBRSetting();
 					DBRSetting.ImageParameter generalImgP = new DBRSetting.ImageParameter();
-					mSetting.setImageParameter(generalImgP);
-					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
-					reader.initRuntimeSettingsWithString(LoganSquare.serialize(mSetting), 2);
+					generalSetting.setImageParameter(generalImgP);
+					mSettingCache.put("GeneralSetting", LoganSquare.serialize(generalSetting));
+					reader.initRuntimeSettingsWithString(LoganSquare.serialize(generalSetting), 2);
 				}
 			}
 			else if ("MultiBestSetting".equals(templateType)) {
