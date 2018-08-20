@@ -67,7 +67,7 @@ public class DBRSetting implements Serializable {
 		@JsonField
 		private String regionPredetectionMode = "Disable";
 		@JsonField
-		private int scaleDownThreshold = 2300;
+		private int scaleDownThreshold = 1000;
 		@JsonField
 		private String colourImageConvertMode = "Auto";
 		@JsonField

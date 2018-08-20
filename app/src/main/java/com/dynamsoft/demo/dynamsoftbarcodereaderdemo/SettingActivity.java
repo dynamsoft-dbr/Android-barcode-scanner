@@ -1,12 +1,14 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -397,7 +399,16 @@ public class SettingActivity extends BaseActivity {
 			}
 			super.onBackPressed();
 		} else {
-			Toast.makeText(SettingActivity.this, "You must choose at least one barcode format.", Toast.LENGTH_LONG).show();
+			final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+			builder.setMessage("You must choose at least one barcode format.");
+			builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialogInterface, int i) {
+					dialogInterface.dismiss();
+				}
+			});
+			builder.create();
+			builder.show();
 		}
 	}
 	SwitchCompat.OnCheckedChangeListener onSCCheckedChange = new CompoundButton.OnCheckedChangeListener() {
