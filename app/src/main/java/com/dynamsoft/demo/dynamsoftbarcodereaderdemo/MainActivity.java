@@ -584,8 +584,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
 						coordMessage.obj = rectCoord;
-
-										if (frameTime == 0) {
+						if (frameTime == 0) {
 							yuvInfo = new YuvInfo();
 							yuvInfo.cacheName = System.currentTimeMillis() + "";
 							yuvInfo.yuvImage = yuvImage;
