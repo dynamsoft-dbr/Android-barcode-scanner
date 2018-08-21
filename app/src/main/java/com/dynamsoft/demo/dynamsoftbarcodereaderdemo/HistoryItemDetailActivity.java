@@ -207,6 +207,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		}*/
 		imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
+		if (imageList.size()>16){
+			imageList=imageList.subList(0,15);
+		}
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);

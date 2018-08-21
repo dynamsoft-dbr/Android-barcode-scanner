@@ -228,8 +228,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(generalSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(generalSetting), 2);
 				}
-			}
-			else if ("MultiBestSetting".equals(templateType)) {
+			} else if ("MultiBestSetting".equals(templateType)) {
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
 				multiBestImgP.setAntiDamageLevel(7);
@@ -238,8 +237,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				multiBest.setImageParameter(multiBestImgP);
 				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
-			}
-			else if ("MultiBalSetting".equals(templateType)) {
+			} else if ("MultiBalSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
 				multiBalImgP.setAntiDamageLevel(5);
@@ -520,49 +518,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							frame.getSize().width, frame.getSize().height, null);
 					int wid = frame.getSize().width;
 					int hgt = frame.getSize().height;
-					long saveTime = System.currentTimeMillis();
-					/*Logger.d("FileName: " + saveTime + ".jpg");
-					File file = new File(Environment.getExternalStorageDirectory(), saveTime + "");
-					try{
-						file.createNewFile();
-						FileOutputStream outputStream = new FileOutputStream(file);
-						BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-						bufferedOutputStream.write(yuvImage.getYuvData());
-						bufferedOutputStream.flush();
-						if (outputStream != null){
-							outputStream.close();
-						}
-						if (bufferedOutputStream != null){
-							bufferedOutputStream.close();
-						}
-
-					}catch (Exception ex){
-						ex.printStackTrace();
-					}*/
-					long startTime = System.currentTimeMillis();
-					Logger.d("decode start");
 					PublicRuntimeSettings l = reader.getRuntimeSettings();
 					l.mBarcodeInvertMode = 1;
 					try {
 						reader.updateRuntimeSettings(l);
-					}
-					catch (Exception ex){
+					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
-					for(int i = 0; i < result.length; i++){
-						if(result[i] != null) {
+					for (int i = 0; i < result.length; i++) {
+						if (result[i] != null) {
 							resultArrayList.add(result[i]);
 						}
 					}
 					result = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
-					PublicRuntimeSettings settings = new PublicRuntimeSettings();
-					long endTime = System.currentTimeMillis();
-					duringTime = endTime - startTime;
-					//Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
-					Logger.d("decode finish");
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -589,13 +560,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							} else {
 								yuvInfoList.set(1, yuvInfo);
 							}
+							Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + yuvInfoList.get(1).textResult.length);
 							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 							if (coordsMapResult != null) {
-								Logger.d("coordMap finish");
 								LocalizationResult localizationResult;
 								TextResult textResult;
-								//Logger.d("maptype : " + coordsMapResult.basedImg);
 								switch (coordsMapResult.basedImg) {
 									case 0:
 										handleImage(yuvInfoList.get(1), null);
@@ -664,10 +634,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			if (name == null) {
 				return;
 			}
-			mCache.remove(name);
-			File previewFile = new File(path + "/" + name + ".jpg");
-			if (previewFile.exists()) {
-				previewFile.delete();
+			List<DBRImage> erroImage = LitePal.where("fileName = ?", name).find(DBRImage.class);
+			if (erroImage != null && erroImage.size() > 0) {
+				File previewFile = new File(erroImage.get(0).getCodeImgPath());
+				if (previewFile.exists()) {
+					previewFile.delete();
+					LitePal.deleteAll(DBRImage.class, "fileName = ?", name);
+				}
 			}
 		}
 
@@ -704,9 +677,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						dbrImage.setCodeFormat(codeFormatList);
 						dbrImage.setCodeText(codeTextList);
 						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
-						RectCoordinate rectCoordinate=new RectCoordinate();
+						RectCoordinate rectCoordinate = new RectCoordinate();
 						rectCoordinate.setRectCoord(pointList);
-						String rectCoord=LoganSquare.serialize(rectCoordinate);
+						String rectCoord = LoganSquare.serialize(rectCoordinate);
 						dbrImage.setRectCoord(rectCoord);
 						dbrImage.setDecodeTime(duringTime);
 						dbrImage.save();
