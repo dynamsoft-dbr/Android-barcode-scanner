@@ -194,22 +194,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
-		/*File file = new File(Environment.getExternalStorageDirectory(),"1534411536760");
-		byte[] buffer = null;
-		try {
-			FileInputStream fs = new FileInputStream(file);
-			buffer = new byte[fs.available()];
-			fs.read(buffer);
-			fs.close();
-		}
-		catch (Exception ex){
-			ex.printStackTrace();
-		}
-		try {
-			reader.decodeBuffer(buffer, 1920, 1080, 1920, EnumImagePixelFormat.IPF_NV21, "Custom");
-		}catch (BarcodeReaderException ex){
-			ex.printStackTrace();
-		}*/
 	}
 
 	private void initTemplate() {
@@ -664,11 +648,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			if (name == null) {
 				return;
 			}
-			mCache.remove(name);
-			File previewFile = new File(path + "/" + name + ".jpg");
-			if (previewFile.exists()) {
-				previewFile.delete();
+			List<DBRImage> erroImage= LitePal.where("fileName = ?",name).find(DBRImage.class);
+			if (erroImage!=null&&erroImage.size()>0){
+				File previewFile = new File(erroImage.get(0).getCodeImgPath());
+				if (previewFile.exists()) {
+					previewFile.delete();
+				}
 			}
+
 		}
 
 		private void handleImage(final YuvInfo yuvInfo, final String deleCacheName) {
