@@ -214,18 +214,20 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fillCodeList(int position) {
-		recentCodeList.clear();
-		for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
-			Map<String, String> item = new HashMap<>();
-			item.put("index", i + 1 + "");
-			item.put("format", DBRUtil.getCodeFormat(imageList.get(position).getCodeFormat().get(i)));
-			item.put("text", imageList.get(position).getCodeText().get(i));
-			recentCodeList.add(item);
+		if (imageList!=null&&imageList.size()>0){
+			recentCodeList.clear();
+			for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
+				Map<String, String> item = new HashMap<>();
+				item.put("index", i + 1 + "");
+				item.put("format", DBRUtil.getCodeFormat(imageList.get(position).getCodeFormat().get(i)));
+				item.put("text", imageList.get(position).getCodeText().get(i));
+				recentCodeList.add(item);
+			}
+			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(0).getDecodeTime()) + "ms");
+			tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
+			simpleAdapter.notifyDataSetChanged();
+			lvCodeList.startLayoutAnimation();
 		}
-		tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(0).getDecodeTime()) + "ms");
-		tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
-		simpleAdapter.notifyDataSetChanged();
-		lvCodeList.startLayoutAnimation();
 	}
 
 	private void drawRectOnImg(final int imgLocation) {
