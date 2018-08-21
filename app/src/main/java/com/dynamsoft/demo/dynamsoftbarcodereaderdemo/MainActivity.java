@@ -45,7 +45,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HUDCanvasView;
-import com.orhanobut.logger.Logger;
+//import com.orhanobut.logger.Logger;
 import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.jetbrains.annotations.Nullable;
@@ -206,8 +206,21 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			ex.printStackTrace();
 		}
 		try {
-			reader.decodeBuffer(buffer, 1920, 1080, 1920, EnumImagePixelFormat.IPF_NV21, "Custom");
-		}catch (BarcodeReaderException ex){
+			String s = Environment.getExternalStorageDirectory() + "/DCIM/test.jpg";
+			PublicRuntimeSettings settings = new PublicRuntimeSettings();
+			settings.mBarcodeInvertMode = 1;
+			settings.mScaleDownThreshold = 1000;
+			settings.mBarcodeFormatIds = 234882047;
+			File file = new File(Environment.getExternalStorageDirectory(), "test.jpg");
+			FileInputStream fs = new FileInputStream(file);
+			byte[] bf = new byte[fs.available()];
+			fs.read(bf);
+			fs.close();
+			reader.updateRuntimeSettings(settings);
+			TextResult[] t1 = reader.decodeFile(s, "");
+			TextResult[] t2 = reader.decodeBuffer(bf,1920, 1080, 1920, EnumImagePixelFormat.IPF_NV21,  "");
+			Logger.d("Text");
+		}catch (Exception ex){
 			ex.printStackTrace();
 		}*/
 	}
@@ -265,11 +278,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onSlide(SlidingDrawer slidingDrawer, float currentSlide) {
 				if (slidingDrawer.getState() == SlidingDrawer.COLLAPSED) {
-					Logger.d("sliding drawer 0");
+					//Logger.d("sliding drawer 0");
 					isDrawerExpand = false;
 					recentCodeList.clear();
 				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
-					Logger.d("sliding drawer 1");
+					//Logger.d("sliding drawer 1");
 					isDrawerExpand = true;
 					hudView.clear();
 					dragView.setText("Drag me");
@@ -339,7 +352,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
 				PublicRuntimeSettings T = reader.getRuntimeSettings();
-				Logger.d("tt", "uu");
+				//Logger.d("tt", "uu");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -465,7 +478,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				)).whenDone(new WhenDoneListener<Unit>() {
 					@Override
 					public void whenDone(@Nullable Unit it) {
-						Logger.d("save img done~!");
+						//Logger.d("save img done~!");
 						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
@@ -540,7 +553,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						ex.printStackTrace();
 					}*/
 					long startTime = System.currentTimeMillis();
-					Logger.d("decode start");
+					//Logger.d("decode start");
 					PublicRuntimeSettings l = reader.getRuntimeSettings();
 					l.mBarcodeInvertMode = 1;
 					try {
@@ -562,7 +575,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					long endTime = System.currentTimeMillis();
 					duringTime = endTime - startTime;
 					//Logger.d("detect code time : " + duringTime + "  endTime :" + endTime);
-					Logger.d("decode finish");
+					//Logger.d("decode finish");
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -571,7 +584,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
 						coordMessage.obj = rectCoord;
-						if (frameTime == 0) {
+
+										if (frameTime == 0) {
 							yuvInfo = new YuvInfo();
 							yuvInfo.cacheName = System.currentTimeMillis() + "";
 							yuvInfo.yuvImage = yuvImage;
@@ -592,7 +606,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 							if (coordsMapResult != null) {
-								Logger.d("coordMap finish");
+								//Logger.d("coordMap finish");
 								LocalizationResult localizationResult;
 								TextResult textResult;
 								//Logger.d("maptype : " + coordsMapResult.basedImg);
@@ -720,7 +734,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						String jsonResult = LoganSquare.serialize(itemBean);
 						mCache.put(yuvInfo.cacheName, jsonResult);*/
 						long endSaveFile = System.currentTimeMillis();
-						Logger.d("save file time : " + (endSaveFile - startSaveFile));
+						//Logger.d("save file time : " + (endSaveFile - startSaveFile));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
