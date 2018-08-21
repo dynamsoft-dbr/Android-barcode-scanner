@@ -207,8 +207,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		}*/
 		imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
-		if (imageList.size()>16){
-			imageList=imageList.subList(0,15);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 15);
 		}
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
@@ -217,7 +217,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fillCodeList(int position) {
-		if (imageList!=null&&imageList.size()>0){
+		if (imageList != null && imageList.size() > 0) {
 			recentCodeList.clear();
 			for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
 				Map<String, String> item = new HashMap<>();
@@ -277,8 +277,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					long endTime = System.currentTimeMillis();
 					decodeTime = endTime - startTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
-					for(int i = 0; i < textResults.length; i++){
-						if(textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 30) {
+					for (int i = 0; i < textResults.length; i++) {
+						if (textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 30) {
 							resultArrayList.add(textResults[i]);
 						}
 					}
