@@ -11,11 +11,13 @@ import android.widget.Button;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
+import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
+import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
 import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.BarcodeReaderException;
-import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.EnumImagePixelFormat;
+import com.dynamsoft.barcode.TextResult;
 
 import org.json.JSONObject;
 
@@ -94,12 +96,49 @@ public class TestActivity extends AppCompatActivity {
 			InputStream inputStream2 = manager.open("456.png");
 			Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream1);
 			Bitmap bitmap2 = BitmapFactory.decodeStream(inputStream2);
-			TextResult[] results1 = reader.decodeBufferedImage(bitmap1,"");
-			TextResult[] results2 = reader.decodeBufferedImage(bitmap2,"");
-			StitchImageResult result = AfterProcess.stitchImage(convertImage(bitmap1), convertImage(bitmap2),
-					EnumImagePixelFormat.IPF_ARGB_8888, 688 * 4, 688 * 4, results1, results2,
-					688, 449, 688, 591);
+			TextResult[] results1 = reader.decodeBufferedImage(bitmap1, "");
+			TextResult[] results2 = reader.decodeBufferedImage(bitmap2, "");
+			InputParasOfSwitchImagesFun[] input1 = new InputParasOfSwitchImagesFun[2];
+			input1[0] = new InputParasOfSwitchImagesFun();
+			input1[0].buffer = convertImage(bitmap1);
+			input1[0].width = 688;
+			input1[0].height = 449;
+			input1[0].stride = 688 * 4;
+			input1[0].format = EnumImagePixelFormat.IPF_ARGB_8888;
+			input1[0].domainOfImgX = 688;
+			input1[0].domianOfImgY = 449;
+			BarcodeRecognitionResult[] bar1 = new BarcodeRecognitionResult[results1.length];
+			for (int i = 0; i < results1.length; ++i) {
+				TextResult textResult = results1[i];
+				BarcodeRecognitionResult barcodeRecognitionResult = bar1[i] = new BarcodeRecognitionResult();
+				barcodeRecognitionResult.barcodeBytes = textResult.barcodeBytes;
+				barcodeRecognitionResult.barcodeText = textResult.barcodeText;
+				barcodeRecognitionResult.pts = textResult.localizationResult.resultPoints;
+				barcodeRecognitionResult.format = textResult.barcodeFormat;
+			}
+			input1[0].barcodeRecognitionResults = bar1;
+			input1[1] = new InputParasOfSwitchImagesFun();
+			input1[1].buffer = convertImage(bitmap2);
+			input1[1].width = 688;
+			input1[1].height = 591;
+			input1[1].stride = 688 * 4;
+			input1[1].format = EnumImagePixelFormat.IPF_ARGB_8888;
+			input1[1].domainOfImgX = 688;
+			input1[1].domianOfImgY = 449;
+			BarcodeRecognitionResult[] bar2 = new BarcodeRecognitionResult[results2.length];
+			for (int i = 0; i < results2.length; ++i) {
+				TextResult textResult = results2[i];
+				BarcodeRecognitionResult barcodeRecognitionResult = bar2[i] = new BarcodeRecognitionResult();
+				barcodeRecognitionResult.barcodeBytes = textResult.barcodeBytes;
+				barcodeRecognitionResult.barcodeText = textResult.barcodeText;
+				barcodeRecognitionResult.pts = textResult.localizationResult.resultPoints;
+				barcodeRecognitionResult.format = textResult.barcodeFormat;
+			}
+			input1[1].barcodeRecognitionResults = bar2;
+			StitchImageResult result = AfterProcess.stitchImages(input1);
 			Bitmap bitmap = result.image;
+
+
 /*			Bitmap bm = Bitmap.createBitmap(result.basedImgWidth, result.basedImgHeight, Bitmap.Config.RGB_565);
 			ByteBuffer byteBuffer=ByteBuffer.wrap(result.imageBytes);
 			byteBuffer.rewind();
@@ -114,10 +153,12 @@ public class TestActivity extends AppCompatActivity {
 	}
 
 	private byte[] convertImage(Bitmap bitmap) {
-		int bytes = bitmap.getByteCount();
+		/*int bytes = bitmap.getByteCount();
 		ByteBuffer buf = ByteBuffer.allocate(bytes);
 		bitmap.copyPixelsToBuffer(buf);
-		byte[] byteArray = buf.array();
-		return byteArray;
+		byte[] byteArray = buf.array();*/
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+		return baos.toByteArray();
 	}
 }

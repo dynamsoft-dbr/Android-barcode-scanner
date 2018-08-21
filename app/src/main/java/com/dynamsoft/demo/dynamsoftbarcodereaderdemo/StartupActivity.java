@@ -14,8 +14,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.TextResult;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

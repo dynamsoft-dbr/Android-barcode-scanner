@@ -17,10 +17,10 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
 import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
-import com.dynamsoft.barcode.jni.BarcodeReader;
-import com.dynamsoft.barcode.jni.BarcodeReaderException;
-import com.dynamsoft.barcode.jni.EnumImagePixelFormat;
-import com.dynamsoft.barcode.jni.TextResult;
+import com.dynamsoft.barcode.BarcodeReader;
+import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.EnumImagePixelFormat;
+import com.dynamsoft.barcode.TextResult;
 
 import org.json.JSONObject;
 
@@ -101,7 +101,7 @@ public class ResultActivity extends AppCompatActivity {
 	}
 
 	private Bitmap readImage() {
-		File file = new File(path);
+		/*File file = new File(path);
 		String[] fileNames = file.list();
 		List<String> arrayList=Arrays.asList(fileNames);
 		orderByName(arrayList);
@@ -194,8 +194,8 @@ public class ResultActivity extends AppCompatActivity {
 					}
 				}
 			}
-		}
-		return bitmap3;
+		}*/
+		return null;
 	}
 
 	private Bitmap decodeFile(String fileName) {
