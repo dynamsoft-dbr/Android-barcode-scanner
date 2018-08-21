@@ -276,6 +276,13 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					long endTime = System.currentTimeMillis();
 					decodeTime = endTime - startTime;
+					ArrayList<TextResult> resultArrayList = new ArrayList<>();
+					for(int i = 0; i < textResults.length; i++){
+						if(textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 30) {
+							resultArrayList.add(textResults[i]);
+						}
+					}
+					textResults = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
 					if (textResults != null && textResults.length > 0) {
 						Canvas canvas = new Canvas(rectBitmap);
 						for (int i = 0; i < textResults.length; i++) {

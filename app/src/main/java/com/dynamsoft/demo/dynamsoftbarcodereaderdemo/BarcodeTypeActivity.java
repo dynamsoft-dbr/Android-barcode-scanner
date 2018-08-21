@@ -173,7 +173,7 @@ public class BarcodeTypeActivity extends BaseActivity {
                     }
                     break;
                 case R.id.ckbupce:
-                    if (mUPCA.isChecked()) {
+                    if (mUPCE.isChecked()) {
                         tempFormats = mImageParameter.getBarcodeFormatIds();
                         tempFormats.add("UPC_E");
                         mImageParameter.setBarcodeFormatIds(tempFormats);
