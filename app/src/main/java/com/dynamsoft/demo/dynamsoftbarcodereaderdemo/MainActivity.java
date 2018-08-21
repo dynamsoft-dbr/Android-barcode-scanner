@@ -152,7 +152,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					TextResult[] result = (TextResult[]) msg.obj;
 					fulFillRecentList(result);
 					for (TextResult aResult : result) {
-						if (!allResultText.contains(aResult.barcodeText) && aResult.localizationResult.extendedResultArray[0].confidence > 50) {
+						if (!allResultText.contains(aResult.barcodeText) && aResult.localizationResult.extendedResultArray[0].confidence > 30) {
 							allResultText.add(aResult.barcodeText);
 						}
 					}
@@ -566,7 +566,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for(int i = 0; i < result.length; i++){
-						if(result[i] != null) {
+						if(result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 30) {
 							resultArrayList.add(result[i]);
 						}
 					}
