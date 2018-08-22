@@ -217,7 +217,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fillCodeList(int position) {
-		if (imageList != null && imageList.size() > 0) {
+		if (imageList != null && imageList.size() > 0 && position < imageList.size()) {
 			recentCodeList.clear();
 			for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
 				Map<String, String> item = new HashMap<>();
