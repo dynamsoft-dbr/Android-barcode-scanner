@@ -263,11 +263,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onSlide(SlidingDrawer slidingDrawer, float currentSlide) {
 				if (slidingDrawer.getState() == SlidingDrawer.COLLAPSED) {
-					Logger.d("sliding drawer 0");
+					//Logger.d("sliding drawer 0");
 					isDrawerExpand = false;
 					recentCodeList.clear();
 				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
-					Logger.d("sliding drawer 1");
+					//Logger.d("sliding drawer 1");
 					isDrawerExpand = true;
 					hudView.clear();
 					dragView.setText("Drag me");
@@ -336,8 +336,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
-				PublicRuntimeSettings T = reader.getRuntimeSettings();
-				Logger.d("tt", "uu");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -523,18 +521,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							frame.getSize().width, frame.getSize().height, null);
 					int wid = frame.getSize().width;
 					int hgt = frame.getSize().height;
-					PublicRuntimeSettings l = reader.getRuntimeSettings();
-					l.mBarcodeInvertMode = 1;
-					try {
-						reader.updateRuntimeSettings(l);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
+					startDetectTime = System.currentTimeMillis();
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
+					endDetectTime = System.currentTimeMillis();
+					duringTime = endDetectTime - startDetectTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for (int i = 0; i < result.length; i++) {
-						if (result[i] != null) {
+						if (result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 50) {
 							resultArrayList.add(result[i]);
 						}
 					}
@@ -565,7 +559,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							} else {
 								yuvInfoList.set(1, yuvInfo);
 							}
-							Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + yuvInfoList.get(1).textResult.length);
+							//Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + yuvInfoList.get(1).textResult.length);
 							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 							if (coordsMapResult != null) {
@@ -577,46 +571,46 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										yuvInfoList.set(0, yuvInfoList.get(1));
 										break;
 									case 1:
-										TextResult[] newResultBase1 = new TextResult[result.length + coordsMapResult.resultArr.length];
-										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
-											if (i < result.length) {
-												newResultBase1[i] = result[i];
+										TextResult[] newResultBase1 = new TextResult[yuvInfoList.get(0).textResult.length + coordsMapResult.resultArr.length];
+										for (int i = 0; i < yuvInfoList.get(0).textResult.length + coordsMapResult.resultArr.length; i++) {
+											if (i < yuvInfoList.get(0).textResult.length) {
+												newResultBase1[i] = yuvInfoList.get(0).textResult[i];
 											} else {
 												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].pts;
 												textResult = new TextResult();
 												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
+												textResult.barcodeText = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].format;
 												newResultBase1[i] = textResult;
 											}
 										}
 										yuvInfo.textResult = newResultBase1;
-
+										yuvInfo.yuvImage = yuvInfoList.get(0).yuvImage;
 										yuvInfoList.set(0, yuvInfo);
 										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
 										break;
 									case 2:
-										TextResult[] newResultBase2 = new TextResult[result.length + coordsMapResult.resultArr.length];
-										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
-											if (i < result.length) {
-												newResultBase2[i] = result[i];
+										TextResult[] newResultBase2 = new TextResult[yuvInfoList.get(1).textResult.length + coordsMapResult.resultArr.length];
+										for (int i = 0; i < yuvInfoList.get(1).textResult.length + coordsMapResult.resultArr.length; i++) {
+											if (i < yuvInfoList.get(1).textResult.length) {
+												newResultBase2[i] = yuvInfoList.get(1).textResult[i];
 											} else {
 												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].pts;
 												textResult = new TextResult();
 												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
+												textResult.barcodeText = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].format;
 												newResultBase2[i] = textResult;
 											}
 										}
 										yuvInfo.textResult = newResultBase2;
-
 										yuvInfoList.set(0, yuvInfo);
 										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
+										yuvInfoList.set(0, yuvInfo);
 										break;
 									case -1:
 										break;
@@ -678,7 +672,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							codeFormatList.add(result1.barcodeFormat + "");
 							codeTextList.add(result1.barcodeText);
 						}
-
 						DBRImage dbrImage = new DBRImage();
 						dbrImage.setFileName(yuvInfo.cacheName);
 						dbrImage.setCodeFormat(codeFormatList);
@@ -700,7 +693,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						String jsonResult = LoganSquare.serialize(itemBean);
 						mCache.put(yuvInfo.cacheName, jsonResult);*/
 						long endSaveFile = System.currentTimeMillis();
-						Logger.d("save file time : " + (endSaveFile - startSaveFile));
+						//Logger.d("save file time : " + (endSaveFile - startSaveFile));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
