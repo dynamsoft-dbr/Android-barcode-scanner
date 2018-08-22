@@ -588,6 +588,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											}
 										}
 										yuvInfo.textResult = newResultBase1;
+
 										yuvInfoList.set(0, yuvInfo);
 										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
 										break;
@@ -608,6 +609,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											}
 										}
 										yuvInfo.textResult = newResultBase2;
+
 										yuvInfoList.set(0, yuvInfo);
 										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
 										break;
