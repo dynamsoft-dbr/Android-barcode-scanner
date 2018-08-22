@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.dynamsoft.barcode.Point;
 import com.dynamsoft.barcode.PublicRuntimeSettings;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.CoordsMapResult;
@@ -61,6 +63,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -554,9 +557,51 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							} else {
 								yuvInfoList.set(1, yuvInfo);
 							}
-							//Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + yuvInfoList.get(1).textResult.length);
+							//Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + arrayLength1);
 							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
+							/*for(int i = 0; i < coordsMapResult.resultArr.length; i++){
+								Point one =coordsMapResult.resultArr[i].pts[0];
+								Point two =coordsMapResult.resultArr[i].pts[1];
+								Point three =coordsMapResult.resultArr[i].pts[2];
+								Point four =coordsMapResult.resultArr[i].pts[3];
+
+								double length1 = Math.sqrt((one.x - two.x)* (one.x - two.x) + (one.y - two.y) * (one.y - two.y));
+								double length2 = Math.sqrt((three.x - two.x) * (three.x - two.x) + (three.y - two.y) * (three.y - two.y));
+
+								double ratio = length1 > length2 ? (length1 / length2) : (length2 / length1);
+								Log.e("Ratio: ", String.valueOf(ratio));
+								if(ratio > 20)
+								{
+									File file1 = new File(path + "po1.jpg");
+									File file2 = new File(path + "po2.jpg");
+									try {
+										FileOutputStream fileOutputStream1 = new FileOutputStream(file1);
+										YuvImage y1 = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfoList.get(0).yuvImage.getYuvData(),
+												yuvInfoList.get(0).yuvImage.getWidth(), yuvInfoList.get(0).yuvImage.getHeight()), ImageFormat.NV21, yuvInfoList.get(0).yuvImage.getHeight(), yuvInfoList.get(0).yuvImage.getWidth(), null);
+										y1.compressToJpeg(new Rect(0, 0, y1.getWidth(), y1.getHeight()), 100, fileOutputStream1);
+										fileOutputStream1.flush();
+										fileOutputStream1.close();
+										FileOutputStream fileOutputStream2 = new FileOutputStream(file2);
+										YuvImage y2 = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfoList.get(1).yuvImage.getYuvData(),
+												yuvInfoList.get(1).yuvImage.getWidth(), yuvInfoList.get(1).yuvImage.getHeight()), ImageFormat.NV21, yuvInfoList.get(1).yuvImage.getHeight(), yuvInfoList.get(1).yuvImage.getWidth(), null);
+										y2.compressToJpeg(new Rect(0, 0, y2.getWidth(), y2.getHeight()), 100, fileOutputStream2);
+										fileOutputStream2.flush();
+										fileOutputStream2.close();
+									}
+									catch (Exception ex){
+										ex.printStackTrace();
+									}
+								}
+								/*
+								if((Math.abs(coordsMapResult.resultArr[i].pts[0].x - coordsMapResult.resultArr[i].pts[1].x) / Math.abs(coordsMapResult.resultArr[i].pts[2].y - coordsMapResult.resultArr[i].pts[1].y)) > 20){
+									Logger.d("  ");
+								}
+								if((Math.abs(coordsMapResult.resultArr[i].pts[2].x - coordsMapResult.resultArr[i].pts[1].x) / Math.abs(coordsMapResult.resultArr[i].pts[0].y - coordsMapResult.resultArr[i].pts[1].y)) > 20){
+									Logger.d("  ");
+								}
+
+							}*/
 							if (coordsMapResult != null) {
 								LocalizationResult localizationResult;
 								TextResult textResult;
@@ -566,18 +611,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										yuvInfoList.set(0, yuvInfoList.get(1));
 										break;
 									case 1:
-										TextResult[] newResultBase1 = new TextResult[yuvInfoList.get(0).textResult.length + coordsMapResult.resultArr.length];
-										for (int i = 0; i < yuvInfoList.get(0).textResult.length + coordsMapResult.resultArr.length; i++) {
-											if (i < yuvInfoList.get(0).textResult.length) {
-												newResultBase1[i] = yuvInfoList.get(0).textResult[i];
+										TextResult[] newResultBase1 = new TextResult[result.length+ coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
+											if (i < result.length) {
+												newResultBase1[i] = result[i];
 											} else {
 												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].pts;
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
 												textResult = new TextResult();
 												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - yuvInfoList.get(0).textResult.length].format;
+												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
 												newResultBase1[i] = textResult;
 											}
 										}
@@ -587,24 +632,24 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
 										break;
 									case 2:
-										TextResult[] newResultBase2 = new TextResult[yuvInfoList.get(1).textResult.length + coordsMapResult.resultArr.length];
-										for (int i = 0; i < yuvInfoList.get(1).textResult.length + coordsMapResult.resultArr.length; i++) {
-											if (i < yuvInfoList.get(1).textResult.length) {
-												newResultBase2[i] = yuvInfoList.get(1).textResult[i];
+										TextResult[] newResultBase2 = new TextResult[result.length + coordsMapResult.resultArr.length];
+										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
+											if (i < result.length) {
+												newResultBase2[i] = result[i];
 											} else {
 												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].pts;
+												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
 												textResult = new TextResult();
 												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - yuvInfoList.get(1).textResult.length].format;
+												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
 												newResultBase2[i] = textResult;
 											}
 										}
 										yuvInfo.textResult = newResultBase2;
-										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
 										yuvInfoList.set(0, yuvInfo);
+										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
 										break;
 									case -1:
 										break;
@@ -666,10 +711,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							codeFormatList.add(result1.barcodeFormat + "");
 							codeTextList.add(result1.barcodeText);
 						}
+						ArrayList<String> newCodeFormatList = new ArrayList<>();
+						ArrayList<String> newCodeTextList = new ArrayList<>();
+						Iterator it1 = codeFormatList.iterator();
+						Iterator it2 = codeTextList.iterator();
+						while (it1.hasNext()){
+							Object t1 = it1.next();
+							Object t2 = it2.next();
+							if((!newCodeFormatList.contains(t1)) && (!newCodeTextList.contains(t2))){
+								newCodeFormatList.add((String)t1);
+								newCodeTextList.add((String)t2);
+							}
+						}
 						DBRImage dbrImage = new DBRImage();
 						dbrImage.setFileName(yuvInfo.cacheName);
-						dbrImage.setCodeFormat(codeFormatList);
-						dbrImage.setCodeText(codeTextList);
+						dbrImage.setCodeFormat(newCodeFormatList);
+						dbrImage.setCodeText(newCodeTextList);
 						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
 						RectCoordinate rectCoordinate = new RectCoordinate();
 						rectCoordinate.setRectCoord(pointList);

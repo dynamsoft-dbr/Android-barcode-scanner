@@ -226,7 +226,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				item.put("text", imageList.get(position).getCodeText().get(i));
 				recentCodeList.add(item);
 			}
-			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(0).getDecodeTime()) + "ms");
+			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(position).getDecodeTime()) + "ms");
 			tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 			simpleAdapter.notifyDataSetChanged();
 			lvCodeList.startLayoutAnimation();
@@ -275,6 +275,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					long startTime = System.currentTimeMillis();
 					textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					long endTime = System.currentTimeMillis();
+
 					decodeTime = endTime - startTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for (int i = 0; i < textResults.length; i++) {
