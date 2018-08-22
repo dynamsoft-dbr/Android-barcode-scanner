@@ -455,7 +455,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnCapture.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				btnCapture.setVisibility(View.GONE);
+				btnCapture.setEnabled(false);
 				shootSound();
 				PhotoResult photoResult = fotoapparat.takePicture();
 				final String photoName = System.currentTimeMillis() + "";
@@ -464,10 +464,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					@Override
 					public void whenDone(@Nullable Unit it) {
 						Logger.d("save img done~!");
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								btnCapture.setEnabled(true);
+							}
+						});
 						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
-						btnCapture.setVisibility(View.VISIBLE);
 						startActivity(intent);
 					}
 				});
