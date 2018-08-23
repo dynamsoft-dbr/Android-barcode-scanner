@@ -718,14 +718,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						}
 						ArrayList<String> newCodeFormatList = new ArrayList<>();
 						ArrayList<String> newCodeTextList = new ArrayList<>();
+						ArrayList<RectPoint[]> newPointList = new ArrayList<>();
 						Iterator it1 = codeFormatList.iterator();
 						Iterator it2 = codeTextList.iterator();
+						Iterator it3 = pointList.iterator();
 						while (it1.hasNext()){
 							Object t1 = it1.next();
 							Object t2 = it2.next();
+							Object t3 = it3.next();
 							if((!newCodeFormatList.contains(t1)) && (!newCodeTextList.contains(t2))){
 								newCodeFormatList.add((String)t1);
 								newCodeTextList.add((String)t2);
+								newPointList.add((RectPoint[])t3);
 							}
 						}
 						DBRImage dbrImage = new DBRImage();
@@ -734,7 +738,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						dbrImage.setCodeText(newCodeTextList);
 						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
 						RectCoordinate rectCoordinate = new RectCoordinate();
-						rectCoordinate.setRectCoord(pointList);
+						rectCoordinate.setRectCoord(newPointList);
 						String rectCoord = LoganSquare.serialize(rectCoordinate);
 						dbrImage.setRectCoord(rectCoord);
 						dbrImage.setDecodeTime(duringTime);
