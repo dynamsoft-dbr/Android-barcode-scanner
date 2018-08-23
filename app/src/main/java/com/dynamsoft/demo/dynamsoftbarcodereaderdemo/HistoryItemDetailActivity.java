@@ -207,6 +207,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		}*/
 		imageList = LitePal.findAll(DBRImage.class);
 		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
+		}
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);
@@ -214,7 +217,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	}
 
 	private void fillCodeList(int position) {
-		if (imageList!=null&&imageList.size()>0){
+		if (imageList != null && imageList.size() > 0 && position < imageList.size()) {
 			recentCodeList.clear();
 			for (int i = 0; i < imageList.get(position).getCodeFormat().size(); i++) {
 				Map<String, String> item = new HashMap<>();
@@ -223,7 +226,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				item.put("text", imageList.get(position).getCodeText().get(i));
 				recentCodeList.add(item);
 			}
-			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(0).getDecodeTime()) + "ms");
+			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(position).getDecodeTime()) + "ms");
 			tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 			simpleAdapter.notifyDataSetChanged();
 			lvCodeList.startLayoutAnimation();
@@ -272,7 +275,15 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					long startTime = System.currentTimeMillis();
 					textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					long endTime = System.currentTimeMillis();
+
 					decodeTime = endTime - startTime;
+					ArrayList<TextResult> resultArrayList = new ArrayList<>();
+					for (int i = 0; i < textResults.length; i++) {
+						if (textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 30) {
+							resultArrayList.add(textResults[i]);
+						}
+					}
+					textResults = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
 					if (textResults != null && textResults.length > 0) {
 						Canvas canvas = new Canvas(rectBitmap);
 						for (int i = 0; i < textResults.length; i++) {

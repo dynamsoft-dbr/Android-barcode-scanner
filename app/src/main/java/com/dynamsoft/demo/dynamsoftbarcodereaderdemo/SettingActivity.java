@@ -563,7 +563,7 @@ public class SettingActivity extends BaseActivity {
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
-							mImageParameter.setScaleDownThreshold(2300);
+							mImageParameter.setScaleDownThreshold(1000);
 						}
 						tvScaleDownThreshold.setText(String.valueOf(mImageParameter.getScaleDownThreshold()));
 						etScaleDownThreshold.setVisibility(View.GONE);
