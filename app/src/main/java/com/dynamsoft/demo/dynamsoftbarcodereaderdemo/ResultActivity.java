@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,11 +17,14 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
+import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
 import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
 import com.dynamsoft.barcode.BarcodeReader;
 import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.EnumImagePixelFormat;
 import com.dynamsoft.barcode.TextResult;
+
+import junit.framework.Assert;
 
 import org.json.JSONObject;
 
@@ -84,7 +88,7 @@ public class ResultActivity extends AppCompatActivity {
 					"  },\n" +
 					"\"version\":\"1.0\"" +
 					"}");
-			reader.appendParameterTemplate(jsonObject.toString());
+			//reader.appendParameterTemplate(jsonObject.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,12 +105,37 @@ public class ResultActivity extends AppCompatActivity {
 	}
 
 	private Bitmap readImage() {
-		/*File file = new File(path);
+		File file = new File(path);
 		String[] fileNames = file.list();
-		List<String> arrayList=Arrays.asList(fileNames);
+		List<String> arrayList = Arrays.asList(fileNames);
 		orderByName(arrayList);
-		fileNames= (String[]) arrayList.toArray();
-		Bitmap bitmap1;
+		fileNames = (String[]) arrayList.toArray();
+		Bitmap[] bitmaps = new Bitmap[fileNames.length];
+		InputParasOfSwitchImagesFun[] input = new InputParasOfSwitchImagesFun[fileNames.length];
+		for (int i = 0; i < fileNames.length; i++) {
+			bitmaps[i] = decodeFile(fileNames[i]);
+			TextResult[] textResults = decodeImage(bitmaps[i]);
+			input[i] = new InputParasOfSwitchImagesFun();
+			input[i].buffer = convertImage(bitmaps[i]);
+			input[i].width = bitmaps[i].getWidth();
+			input[i].height = bitmaps[i].getHeight();
+			input[i].format = EnumImagePixelFormat.IPF_ARGB_8888;
+			input[i].stride = bitmaps[i].getWidth() * 4;
+			input[i].domainOfImgX = bitmaps[i].getWidth();
+			input[i].domainOfImgY = bitmaps[i].getHeight();
+			BarcodeRecognitionResult[] b = new BarcodeRecognitionResult[textResults.length];
+			for (int j = 0; j < textResults.length; j++) {
+				BarcodeRecognitionResult barcodeRecognitionResult = b[j] = new BarcodeRecognitionResult();
+				barcodeRecognitionResult.barcodeBytes = textResults[j].barcodeBytes;
+				barcodeRecognitionResult.format = textResults[j].barcodeFormat;
+				barcodeRecognitionResult.barcodeText = textResults[j].barcodeText;
+				barcodeRecognitionResult.pts = textResults[j].localizationResult.resultPoints;
+			}
+			input[i].barcodeRecognitionResults = b;
+		}
+		StitchImageResult result = AfterProcess.stitchImages(input);
+		return result.image;
+		/*Bitmap bitmap1;
 		Bitmap bitmap2;
 		Bitmap bitmap3 = null;
 		TextResult[] textResults1;
@@ -119,11 +148,51 @@ public class ResultActivity extends AppCompatActivity {
 				bitmap2 = decodeFile(fileNames[1]);
 				textResults1 = decodeImage(bitmap1);
 				textResults2 = decodeImage(bitmap2);
-				StitchImageResult result = AfterProcess.stitchImage(convertImage(bitmap1), convertImage(bitmap2),
-						EnumImagePixelFormat.IPF_ARGB_8888, bitmap1.getWidth() * 4,
-						bitmap2.getWidth() * 4, textResults1, textResults2,
-						bitmap1.getWidth(), bitmap1.getHeight(), bitmap2.getWidth(), bitmap2.getHeight());
-				switch (result.basedImg) {
+
+				InputParasOfSwitchImagesFun[] input1 = new InputParasOfSwitchImagesFun[2];
+				input1[0] = new InputParasOfSwitchImagesFun();
+				input1[0].buffer = convertImage(bitmap1);
+				input1[0].width = bitmap1.getWidth();
+				input1[0].height = bitmap1.getHeight();
+				input1[0].stride = bitmap1.getWidth() * 4;
+				input1[0].format = EnumImagePixelFormat.IPF_ARGB_8888;
+				input1[0].domainOfImgX = bitmap1.getWidth();
+				input1[0].domainOfImgY = bitmap1.getHeight();
+				BarcodeRecognitionResult[] bar1 = new BarcodeRecognitionResult[textResults1.length];
+				for (int a = 0; a < textResults1.length; a++) {
+					TextResult textResult = textResults1[a];
+					BarcodeRecognitionResult barcodeRecognitionResult = bar1[a] = new BarcodeRecognitionResult();
+					barcodeRecognitionResult.barcodeBytes = textResult.barcodeBytes;
+					barcodeRecognitionResult.barcodeText = textResult.barcodeText;
+					barcodeRecognitionResult.pts = textResult.localizationResult.resultPoints;
+					barcodeRecognitionResult.format = textResult.barcodeFormat;
+				}
+				input1[0].barcodeRecognitionResults = bar1;
+
+				input1[1] = new InputParasOfSwitchImagesFun();
+				input1[1].buffer = convertImage(bitmap2);
+				input1[1].width = bitmap2.getWidth();
+				input1[1].height = bitmap2.getHeight();
+				input1[1].stride = bitmap2.getWidth() * 4;
+				input1[1].format = EnumImagePixelFormat.IPF_ARGB_8888;
+				input1[1].domainOfImgX = bitmap2.getWidth();
+				input1[1].domainOfImgY = bitmap2.getHeight();
+				BarcodeRecognitionResult[] bar2 = new BarcodeRecognitionResult[textResults2.length];
+				for (int a = 0; a < textResults2.length; a++) {
+					TextResult textResult = textResults2[a];
+					BarcodeRecognitionResult barcodeRecognitionResult = bar2[a] = new BarcodeRecognitionResult();
+					barcodeRecognitionResult.barcodeBytes = textResult.barcodeBytes;
+					barcodeRecognitionResult.barcodeText = textResult.barcodeText;
+					barcodeRecognitionResult.pts = textResult.localizationResult.resultPoints;
+					barcodeRecognitionResult.format = textResult.barcodeFormat;
+				}
+				input1[1].barcodeRecognitionResults = bar2;
+				StitchImageResult result = AfterProcess.stitchImages(input1);
+				if(result != null){
+					bitmap3 = result.image;
+					localizationResults = result.resultArr;
+				}
+				/*switch (result.basedImg) {
 					case 0:
 						break;
 					case 1:
@@ -156,24 +225,52 @@ public class ResultActivity extends AppCompatActivity {
 						break;
 					default:
 						break;
-				}
-			} else {
+				}*/
+			/*} else {
 				if (fileNames.length <= 2) {
 					break;
 				}
 				if (i + 1 < fileNames.length) {
 					bitmap1 = decodeFile(fileNames[i + 1]);
 					textResults1 = decodeImage(bitmap1);
-					StitchImageResult result = AfterProcess.stitchImage(convertImage(bitmap3), convertImage(bitmap1),
-							EnumImagePixelFormat.IPF_ARGB_8888, bitmap3.getWidth() * 4,
-							bitmap1.getWidth() * 4, localizationResults, textResults1,
-							bitmap3.getWidth(), bitmap3.getHeight(), bitmap1.getWidth(), bitmap1.getHeight());
-					switch (result.basedImg) {
+					InputParasOfSwitchImagesFun[] input1 = new InputParasOfSwitchImagesFun[2];
+					input1[0] = new InputParasOfSwitchImagesFun();
+					input1[0].buffer = convertImage(bitmap1);
+					input1[0].width = bitmap1.getWidth();
+					input1[0].height = bitmap1.getHeight();
+					input1[0].stride = bitmap1.getWidth() * 4;
+					input1[0].format = EnumImagePixelFormat.IPF_ARGB_8888;
+					input1[0].domainOfImgX = bitmap1.getWidth();
+					input1[0].domainOfImgY = bitmap1.getHeight();
+					BarcodeRecognitionResult[] bar1 = new BarcodeRecognitionResult[textResults1.length];
+					for (int a = 0; a < textResults1.length; a++) {
+						TextResult textResult = textResults1[a];
+						BarcodeRecognitionResult barcodeRecognitionResult = bar1[a] = new BarcodeRecognitionResult();
+						barcodeRecognitionResult.barcodeBytes = textResult.barcodeBytes;
+						barcodeRecognitionResult.barcodeText = textResult.barcodeText;
+						barcodeRecognitionResult.pts = textResult.localizationResult.resultPoints;
+						barcodeRecognitionResult.format = textResult.barcodeFormat;
+					}
+					input1[0].barcodeRecognitionResults = bar1;
+
+					input1[1] = new InputParasOfSwitchImagesFun();
+					input1[1].buffer = convertImage(bitmap3);
+					input1[1].width = bitmap3.getWidth();
+					input1[1].height = bitmap3.getHeight();
+					input1[1].stride = bitmap3.getWidth() * 4;
+					input1[1].format = EnumImagePixelFormat.IPF_ARGB_8888;
+					input1[1].domainOfImgX = bitmap3.getWidth();
+					input1[1].domainOfImgY = bitmap3.getHeight();
+					input1[1].barcodeRecognitionResults = localizationResults;
+					StitchImageResult result = AfterProcess.stitchImages(input1);
+					if (result != null){
+						bitmap3 = result.image;
+						localizationResults = result.resultArr;
+					}
+					/*switch (result.basedImg) {
 						case 0:
 							break;
 						case 1:
-							break;
-						case 2:
 							bitmap3 = bitmap1;
 							localizationResults = new BarcodeRecognitionResult[textResults1.length];
 							BarcodeRecognitionResult recognitionResult1;
@@ -185,6 +282,8 @@ public class ResultActivity extends AppCompatActivity {
 								localizationResults[j] = recognitionResult1;
 							}
 							break;
+						case 2:
+							break;
 						case 3:
 							bitmap3 = result.image;
 							localizationResults = result.resultArr;
@@ -194,8 +293,8 @@ public class ResultActivity extends AppCompatActivity {
 					}
 				}
 			}
-		}*/
-		return null;
+		}
+		return bitmap3;*/
 	}
 
 	private Bitmap decodeFile(String fileName) {
