@@ -34,6 +34,7 @@ import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.EnumImagePixelFormat;
 import com.dynamsoft.barcode.LocalizationResult;
 import com.dynamsoft.barcode.PublicParameterSettings;
+import com.dynamsoft.barcode.Point;
 import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
@@ -115,6 +116,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	ListView lvBarcodeList;
 	@BindView(R.id.btn_capture)
 	Button btnCapture;
+	@BindView(R.id.btn_start)
+	Button btnStart;
+	@BindView(R.id.btn_finish)
+	Button btnFinish;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	String templateType;
@@ -122,6 +127,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private boolean isCameraStarted = false;
 	private boolean isDrawerExpand = false;
 	private boolean isSingleMode = false;
+	private boolean detectStart = false;
 	private DBRCache mCache;
 	private DBRCache mSettingCache;
 	private DBRSetting mSetting;
@@ -478,6 +484,20 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 		});
 		setupSlidingDrawer();
+		btnStart.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				detectStart = true;
+			}
+		});
+		btnFinish.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				detectStart = false;
+				startActivity(new Intent(MainActivity.this, StitchImageActivity.class));
+			}
+		});
 	}
 
 	private void switchToMulti() {
@@ -511,7 +531,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
-				if (isDetected && !isDrawerExpand && !isSingleMode) {
+				if (isDetected && !isDrawerExpand && !isSingleMode && detectStart) {
 					isDetected = false;
 					if (previewSize == null) {
 						Message obtainPreviewMsg = handler.obtainMessage();
@@ -707,26 +727,38 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						fileOutputStream.close();
 						ArrayList<String> codeFormatList = new ArrayList<>();
 						ArrayList<String> codeTextList = new ArrayList<>();
+						ArrayList<byte[]> codeBytes = new ArrayList<>();
+						ArrayList<com.dynamsoft.barcode.Point[]> codePointList = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
 						for (TextResult result1 : yuvInfo.textResult) {
 							codeFormatList.add(result1.barcodeFormat + "");
 							codeTextList.add(result1.barcodeText);
+							codePointList.add(result1.localizationResult.resultPoints);
+							codeBytes.add(result1.barcodeBytes);
 						}
 						ArrayList<String> newCodeFormatList = new ArrayList<>();
 						ArrayList<String> newCodeTextList = new ArrayList<>();
 						ArrayList<RectPoint[]> newPointList = new ArrayList<>();
+						ArrayList<Point[]> newCodePointList = new ArrayList<>();
+						ArrayList<byte[]> newCodeBytes = new ArrayList<>();
 						Iterator it1 = codeFormatList.iterator();
 						Iterator it2 = codeTextList.iterator();
 						Iterator it3 = pointList.iterator();
+						Iterator it4 = codePointList.iterator();
+						Iterator it5 = codeBytes.iterator();
 						while (it1.hasNext()){
 							Object t1 = it1.next();
 							Object t2 = it2.next();
 							Object t3 = it3.next();
+							Object t4 = it4.next();
+							Object t5 = it5.next();
 							if((!newCodeFormatList.contains(t1)) && (!newCodeTextList.contains(t2))){
 								newCodeFormatList.add((String)t1);
 								newCodeTextList.add((String)t2);
 								newPointList.add((RectPoint[])t3);
+								newCodePointList.add((Point[])t4);
+								newCodeBytes.add((byte[])t5);
 							}
 						}
 						DBRImage dbrImage = new DBRImage();
@@ -734,6 +766,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						dbrImage.setCodeFormat(newCodeFormatList);
 						dbrImage.setCodeText(newCodeTextList);
 						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
+						dbrImage.setCodePoint(newCodePointList);
+						dbrImage.setCodeBytes(newCodeBytes);
 						RectCoordinate rectCoordinate = new RectCoordinate();
 						rectCoordinate.setRectCoord(newPointList);
 						String rectCoord = LoganSquare.serialize(rectCoordinate);

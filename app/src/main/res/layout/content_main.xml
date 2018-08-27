@@ -39,7 +39,20 @@
 		android:layout_marginLeft="16dp"
 		android:layout_marginTop="60dp"
 		android:background="@drawable/flash"/>
-
+	<Button
+		android:id="@+id/btn_start"
+		android:layout_width="wrap_content"
+		android:layout_height="40dp"
+		android:layout_marginLeft="300dp"
+		android:layout_marginTop="60dp"
+		android:text="start"/>
+	<Button
+		android:id="@+id/btn_finish"
+		android:layout_width="wrap_content"
+		android:layout_height="40dp"
+		android:layout_marginLeft="300dp"
+		android:layout_marginTop="150dp"
+		android:text="finish"/>
 	<Button
 		android:id="@+id/btn_capture"
 		android:layout_width="70dp"

@@ -1,5 +1,7 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean;
 
+import com.dynamsoft.barcode.Point;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -15,6 +17,11 @@ public class DBRImage extends LitePalSupport {
 	private ArrayList<String> codeFormat = new ArrayList<>();
 
 	private ArrayList<String> codeText = new ArrayList<>();
+
+	private ArrayList<Point[]> codePoint = new ArrayList<>();
+
+	private ArrayList<byte[]> codeBytes = new ArrayList<>();
+
 
 	private long decodeTime = 0;
 
@@ -79,4 +86,19 @@ public class DBRImage extends LitePalSupport {
 		this.codeText = codeText;
 	}
 
+	public ArrayList<Point[]> getCodePoint() {
+		return codePoint;
+	}
+
+	public void setCodePoint(ArrayList<Point[]> codePoint) {
+		this.codePoint = codePoint;
+	}
+
+	public ArrayList<byte[]> getCodeBytes() {
+		return codeBytes;
+	}
+
+	public void setCodeBytes(ArrayList<byte[]> codeBytes) {
+		this.codeBytes = codeBytes;
+	}
 }
