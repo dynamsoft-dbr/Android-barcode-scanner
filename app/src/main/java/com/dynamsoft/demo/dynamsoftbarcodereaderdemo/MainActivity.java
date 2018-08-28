@@ -728,61 +728,26 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						ArrayList<String> codeFormatList = new ArrayList<>();
 						ArrayList<String> codeTextList = new ArrayList<>();
 						ArrayList<byte[]> codeBytes = new ArrayList<>();
-						ArrayList<com.dynamsoft.barcode.Point[]> codePointList = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
 						for (TextResult result1 : yuvInfo.textResult) {
-							codeFormatList.add(result1.barcodeFormat + "");
-							codeTextList.add(result1.barcodeText);
-							codePointList.add(result1.localizationResult.resultPoints);
-							codeBytes.add(result1.barcodeBytes);
-						}
-						ArrayList<String> newCodeFormatList = new ArrayList<>();
-						ArrayList<String> newCodeTextList = new ArrayList<>();
-						ArrayList<RectPoint[]> newPointList = new ArrayList<>();
-						ArrayList<Point[]> newCodePointList = new ArrayList<>();
-						ArrayList<byte[]> newCodeBytes = new ArrayList<>();
-						Iterator it1 = codeFormatList.iterator();
-						Iterator it2 = codeTextList.iterator();
-						Iterator it3 = pointList.iterator();
-						Iterator it4 = codePointList.iterator();
-						Iterator it5 = codeBytes.iterator();
-						while (it1.hasNext()){
-							Object t1 = it1.next();
-							Object t2 = it2.next();
-							Object t3 = it3.next();
-							Object t4 = it4.next();
-							Object t5 = it5.next();
-							if((!newCodeFormatList.contains(t1)) && (!newCodeTextList.contains(t2))){
-								newCodeFormatList.add((String)t1);
-								newCodeTextList.add((String)t2);
-								newPointList.add((RectPoint[])t3);
-								newCodePointList.add((Point[])t4);
-								newCodeBytes.add((byte[])t5);
+							if (!codeTextList.contains(result1.barcodeText)){
+								codeFormatList.add(result1.barcodeFormat + "");
+								codeTextList.add(result1.barcodeText);
+								codeBytes.add(result1.barcodeBytes);
 							}
 						}
 						DBRImage dbrImage = new DBRImage();
 						dbrImage.setFileName(yuvInfo.cacheName);
-						dbrImage.setCodeFormat(newCodeFormatList);
-						dbrImage.setCodeText(newCodeTextList);
+						dbrImage.setCodeFormat(codeFormatList);
+						dbrImage.setCodeText(codeTextList);
 						dbrImage.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
-						dbrImage.setCodePoint(newCodePointList);
-						dbrImage.setCodeBytes(newCodeBytes);
 						RectCoordinate rectCoordinate = new RectCoordinate();
-						rectCoordinate.setRectCoord(newPointList);
+						rectCoordinate.setRectCoord(pointList);
 						String rectCoord = LoganSquare.serialize(rectCoordinate);
 						dbrImage.setRectCoord(rectCoord);
 						dbrImage.setDecodeTime(duringTime);
 						dbrImage.save();
-			/*		    HistoryItemBean itemBean = new HistoryItemBean();
-						itemBean.setFileName(yuvInfo.cacheName);
-						itemBean.setCodeFormat(codeFormatList);
-						itemBean.setCodeText(codeTextList);
-						itemBean.setCodeImgPath(path + "/" + yuvInfo.cacheName + ".jpg");
-						itemBean.setRectCoord(pointList);
-						itemBean.setDecodeTime(duringTime);
-						String jsonResult = LoganSquare.serialize(itemBean);
-						mCache.put(yuvInfo.cacheName, jsonResult);*/
 						long endSaveFile = System.currentTimeMillis();
 						//Logger.d("save file time : " + (endSaveFile - startSaveFile));
 					} catch (IOException e) {
