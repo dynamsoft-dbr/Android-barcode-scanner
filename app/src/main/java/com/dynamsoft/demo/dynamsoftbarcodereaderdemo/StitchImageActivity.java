@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.dynamsoft.barcode.Point;
 import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
 import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
 import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
@@ -24,6 +26,8 @@ import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.EnumImagePixelFormat;
 import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 
 import junit.framework.Assert;
 
@@ -80,30 +84,42 @@ public class StitchImageActivity extends AppCompatActivity {
     }
 
     private Bitmap readImage() {
-        InputParasOfSwitchImagesFun[] input = new InputParasOfSwitchImagesFun[dbrImageList.size()];
-        for (int i = 0; i < dbrImageList.size(); i++) {
-            Bitmap bitmap = decodeFile(dbrImageList.get(i).getCodeImgPath());
-
-            input[i] = new InputParasOfSwitchImagesFun();
-            input[i].buffer = convertImage(bitmap);
-            input[i].width = bitmap.getWidth();
-            input[i].height = bitmap.getHeight();
-            input[i].format = EnumImagePixelFormat.IPF_ARGB_8888;
-            input[i].stride = bitmap.getWidth() * 4;
-            input[i].domainOfImgX = bitmap.getWidth();
-            input[i].domainOfImgY = bitmap.getHeight();
-            BarcodeRecognitionResult[] b = new BarcodeRecognitionResult[dbrImageList.get(i).getCodeText().size()];
-            for (int j = 0; j < dbrImageList.get(i).getCodeText().size(); j++) {
-                BarcodeRecognitionResult barcodeRecognitionResult = b[j] = new BarcodeRecognitionResult();
-                barcodeRecognitionResult.barcodeBytes = dbrImageList.get(i).getCodeBytes().get(j);
-                barcodeRecognitionResult.format = Integer.valueOf(dbrImageList.get(i).getCodeFormat().get(j));
-                barcodeRecognitionResult.barcodeText = dbrImageList.get(i).getCodeText().get(j);
-                barcodeRecognitionResult.pts = dbrImageList.get(i).getCodePoint().get(j);
+        try {
+            InputParasOfSwitchImagesFun[] input = new InputParasOfSwitchImagesFun[dbrImageList.size()];
+            for (int i = 0; i < dbrImageList.size(); i++) {
+                Bitmap bitmap = decodeFile(dbrImageList.get(i).getCodeImgPath());
+                ArrayList<RectPoint[]> rectPoints = LoganSquare.parse(dbrImageList.get(i).getRectCoord(), RectCoordinate.class).getRectCoord();
+                input[i] = new InputParasOfSwitchImagesFun();
+                input[i].buffer = convertImage(bitmap);
+                input[i].width = bitmap.getWidth();
+                input[i].height = bitmap.getHeight();
+                input[i].format = EnumImagePixelFormat.IPF_ARGB_8888;
+                input[i].stride = bitmap.getWidth() * 4;
+                input[i].domainOfImgX = bitmap.getWidth();
+                input[i].domainOfImgY = bitmap.getHeight();
+                BarcodeRecognitionResult[] b = new BarcodeRecognitionResult[dbrImageList.get(i).getCodeText().size()];
+                for (int j = 0; j < dbrImageList.get(i).getCodeText().size(); j++) {
+                    BarcodeRecognitionResult barcodeRecognitionResult = b[j] = new BarcodeRecognitionResult();
+                    barcodeRecognitionResult.barcodeBytes = dbrImageList.get(i).getCodeText().get(j).getBytes();
+                    barcodeRecognitionResult.format = Integer.valueOf(dbrImageList.get(i).getCodeFormat().get(j));
+                    barcodeRecognitionResult.barcodeText = dbrImageList.get(i).getCodeText().get(j);
+                    Point[] points = new Point[rectPoints.get(j).length];
+                    for (int k = 0; k < rectPoints.get(j).length; k++) {
+                        points[k] = new Point();
+                        points[k].x = (int) rectPoints.get(j)[k].x;
+                        points[k].y = (int) rectPoints.get(j)[k].y;
+                    }
+                    barcodeRecognitionResult.pts = points;
+                }
+                input[i].barcodeRecognitionResults = b;
             }
-            input[i].barcodeRecognitionResults = b;
+            StitchImageResult result = AfterProcess.stitchImages(input);
+            return result.image;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
-        StitchImageResult result = AfterProcess.stitchImages(input);
-        return result.image;
+
 		/*Bitmap bitmap1;
 		Bitmap bitmap2;
 		Bitmap bitmap3 = null;
