@@ -95,10 +95,10 @@ public class StitchImageActivity extends AppCompatActivity {
             BarcodeRecognitionResult[] b = new BarcodeRecognitionResult[dbrImageList.get(i).getCodeText().size()];
             for (int j = 0; j < dbrImageList.get(i).getCodeText().size(); j++) {
                 BarcodeRecognitionResult barcodeRecognitionResult = b[j] = new BarcodeRecognitionResult();
-                barcodeRecognitionResult.barcodeBytes = dbrImageList.get(i).getCodeBytes().get(j);
+                //barcodeRecognitionResult.barcodeBytes = dbrImageList.get(i).getCodeBytes().get(j);
                 barcodeRecognitionResult.format = Integer.valueOf(dbrImageList.get(i).getCodeFormat().get(j));
                 barcodeRecognitionResult.barcodeText = dbrImageList.get(i).getCodeText().get(j);
-                barcodeRecognitionResult.pts = dbrImageList.get(i).getCodePoint().get(j);
+                //barcodeRecognitionResult.pts = dbrImageList.get(i).getCodePoint().get(j);
             }
             input[i].barcodeRecognitionResults = b;
         }

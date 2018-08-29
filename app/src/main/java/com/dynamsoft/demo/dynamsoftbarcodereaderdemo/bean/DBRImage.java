@@ -18,11 +18,6 @@ public class DBRImage extends LitePalSupport {
 
 	private ArrayList<String> codeText = new ArrayList<>();
 
-	private ArrayList<Point[]> codePoint = new ArrayList<>();
-
-	private ArrayList<byte[]> codeBytes = new ArrayList<>();
-
-
 	private long decodeTime = 0;
 
 	private int scaleValue = -1;
@@ -86,19 +81,4 @@ public class DBRImage extends LitePalSupport {
 		this.codeText = codeText;
 	}
 
-	public ArrayList<Point[]> getCodePoint() {
-		return codePoint;
-	}
-
-	public void setCodePoint(ArrayList<Point[]> codePoint) {
-		this.codePoint = codePoint;
-	}
-
-	public ArrayList<byte[]> getCodeBytes() {
-		return codeBytes;
-	}
-
-	public void setCodeBytes(ArrayList<byte[]> codeBytes) {
-		this.codeBytes = codeBytes;
-	}
 }
