@@ -13,26 +13,34 @@
 		android:id="@+id/btn_history"
 		android:layout_width="28dp"
 		android:layout_height="28dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginRight="16dp"
+		android:layout_marginLeft="32dp"
 		android:layout_marginTop="24dp"
 		android:background="@drawable/icon_history"
-		android:textColor="#000000"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"/>
+
+	<TextView
+		android:id="@+id/tv_history"
+		android:layout_width="wrap_content"
+		android:layout_height="28dp"
+		android:layout_marginTop="24dp"
+		android:layout_marginLeft="72dp"
+		android:text="History"
+		android:gravity="center"
+		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"/>
 
 	<TextView
 		android:id="@+id/tv_startup_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginLeft="24dp"
-		android:layout_marginStart="24dp"
 		android:layout_marginTop="75dp"
 		android:text="Barcode Scanner X"
 		android:textColor="@android:color/black"
 		android:textSize="20sp"
 		android:textStyle="bold"
 		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent"/>
 
 	<Button
@@ -76,10 +84,10 @@
 		android:layout_marginLeft="32dp"
 		android:layout_marginStart="32dp"
 		android:layout_marginTop="68dp"
-		android:background="@drawable/ico_balancedmode"
+		android:background="@drawable/ico_overlap"
 		android:onClick="onClick"
 		android:paddingTop="74dp"
-		android:text="@string/multi_barcodes_balanced_mode"
+		android:text="@string/overlap"
 		android:textAllCaps="false"
 		android:textColor="#000000"
 		android:textSize="12sp"
@@ -93,10 +101,10 @@
 		android:layout_marginEnd="32dp"
 		android:layout_marginRight="32dp"
 		android:layout_marginTop="68dp"
-		android:background="@drawable/ico_balancedmode"
+		android:background="@drawable/ico_panorama"
 		android:onClick="onClick"
 		android:paddingTop="74dp"
-		android:text="@string/multi_barcodes_balanced_mode"
+		android:text="@string/panorma"
 		android:textAllCaps="false"
 		android:textColor="#000000"
 		android:textSize="12sp"
@@ -104,16 +112,15 @@
 		app:layout_constraintTop_toBottomOf="@+id/btn_general" />
 
 	<TextView
-		android:id="@+id/tv_history"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="16dp"
+		android:layout_marginLeft="32dp"
 		android:text="Dynamsoft Barcode Scanner X"
 		android:textColor="#BEBFC0"
 		android:textStyle="bold"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"/>
+		app:layout_constraintStart_toStartOf="parent" />
 
 	<View
 		android:layout_width="395dp"
@@ -123,5 +130,18 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"/>
+
+	<ImageView
+		android:id="@+id/imageView2"
+		android:layout_width="20dp"
+		android:layout_height="20dp"
+		app:srcCompat="@drawable/icon_arrow_in"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		android:layout_marginBottom="14dp"
+		android:layout_marginRight="32dp"
+		/>
+
+
 
 </android.support.constraint.ConstraintLayout>

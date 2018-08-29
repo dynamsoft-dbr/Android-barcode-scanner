@@ -100,6 +100,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int RESPONSE_GENERAL_SETTING = 0x0001;
 	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
 	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
+	private final int RESPONSE_PANORMA_SETTING = 0x0004;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -368,6 +369,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 			if (resultCode == RESPONSE_MULTIBAL_SETTING) {
 				setting = mSettingCache.getAsString("MultiBalSetting");
+			}
+			if (requestCode == RESPONSE_PANORMA_SETTING) {
+				setting = mSettingCache.getAsString("PanormaSetting");
 			}
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
