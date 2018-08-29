@@ -58,7 +58,7 @@
 		android:layout_height="@dimen/btn_startup_size"
 		android:layout_marginEnd="32dp"
 		android:layout_marginRight="32dp"
-		android:layout_marginTop="144dp"
+		android:layout_marginTop="50dp"
 		android:background="@drawable/ico_multibarcodesbestcoverage"
 		android:onClick="onClick"
 		android:paddingTop="74dp"
@@ -85,6 +85,23 @@
 		android:textSize="12sp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/btn_general"/>
+
+	<Button
+		android:id="@+id/btn_panorama"
+		android:layout_width="@dimen/btn_startup_size"
+		android:layout_height="@dimen/btn_startup_size"
+		android:layout_marginEnd="32dp"
+		android:layout_marginRight="32dp"
+		android:layout_marginTop="68dp"
+		android:background="@drawable/ico_balancedmode"
+		android:onClick="onClick"
+		android:paddingTop="74dp"
+		android:text="@string/multi_barcodes_balanced_mode"
+		android:textAllCaps="false"
+		android:textColor="#000000"
+		android:textSize="12sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/btn_general" />
 
 	<TextView
 		android:id="@+id/tv_history"

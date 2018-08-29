@@ -31,6 +31,8 @@ public class StartupActivity extends AppCompatActivity {
 	Button btnMultiBest;
 	@BindView(R.id.btn_multi_bal)
 	Button btnMultiBal;
+	@BindView(R.id.btn_panorama)
+	Button btnPanorma;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class StartupActivity extends AppCompatActivity {
 		ButterKnife.bind(this);
 	}
 
-	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal})
+	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.btn_panorama})
 	public void onViewClicked(View view) {
 		mCache = DBRCache.get(this, "SettingCache");
 		switch (view.getId()) {
@@ -47,20 +49,20 @@ public class StartupActivity extends AppCompatActivity {
 				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
 			case R.id.btn_general:
-				Intent intentGeneral = new Intent(StartupActivity.this, MainActivity.class);
 				mCache.put("templateType", "GeneralSetting");
-				startActivity(intentGeneral);
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.btn_multi_best:
-				Intent intentMultiBest = new Intent(StartupActivity.this, MainActivity.class);
 				mCache.put("templateType", "MultiBestSetting");
-				startActivity(intentMultiBest);
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.btn_multi_bal:
-				Intent intentMultiBal = new Intent(StartupActivity.this, MainActivity.class);
 				mCache.put("templateType", "MultiBalSetting");
-				startActivity(intentMultiBal);
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
+			case R.id.btn_panorama:
+				mCache.put("templateType","PanormaSetting");
+				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 			default:
 				break;
 		}
