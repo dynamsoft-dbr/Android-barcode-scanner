@@ -80,5 +80,4 @@ public class DBRImage extends LitePalSupport {
 	public void setCodeText(ArrayList<String> codeText) {
 		this.codeText = codeText;
 	}
-
 }

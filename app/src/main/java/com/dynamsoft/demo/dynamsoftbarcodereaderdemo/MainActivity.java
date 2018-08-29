@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -99,6 +100,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int RESPONSE_GENERAL_SETTING = 0x0001;
 	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
 	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
+	private final int RESPONSE_PANORMA_SETTING = 0x0004;
 
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
@@ -235,6 +237,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					mSettingCache.put("GeneralSetting", LoganSquare.serialize(generalSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(generalSetting), 2);
 				}
+				btnStart.setVisibility(View.GONE);
+				btnFinish.setVisibility(View.GONE);
+				detectStart = true;
 			} else if ("MultiBestSetting".equals(templateType)) {
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
@@ -244,6 +249,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				multiBest.setImageParameter(multiBestImgP);
 				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
+				btnStart.setVisibility(View.GONE);
+				btnFinish.setVisibility(View.GONE);
+				detectStart = true;
 			} else if ("MultiBalSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
@@ -257,14 +265,36 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					add("FullImageAsBarcodeZone");
 				}});
 				multiBal.setImageParameter(multiBalImgP);
+				btnFinish.setVisibility(View.GONE);
 				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(multiBal));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
+				btnStart.setVisibility(View.GONE);
+				detectStart = true;
+			} else if ("PanormaSetting".equals(templateType)){
+				DBRSetting panorma = new DBRSetting();
+				DBRSetting.ImageParameter panormaImgP = new DBRSetting.ImageParameter();
+				panormaImgP.setAntiDamageLevel(7);
+				panormaImgP.setDeblurLevel(9);
+				panormaImgP.setScaleDownThreshold(1000);
+				panorma.setImageParameter(panormaImgP);
+				mSettingCache.put("PanormaSetting", LoganSquare.serialize(panorma));
+				reader.initRuntimeSettingsWithString(LoganSquare.serialize(panorma), 2);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if ("PanormaSetting".equals(templateType)) {
+			menu.findItem(R.id.menu_share).setVisible(false);
+			menu.findItem(R.id.menu_capture).setVisible(false);
+			menu.findItem(R.id.menu_file).setVisible(false);
+			menu.findItem(R.id.menu_scanning).setVisible(false);
+			menu.findItem(R.id.menu_Setting).setVisible(true);
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
 	private void setupSlidingDrawer() {
 		slidingDrawer.addSlideListener(new SlidingDrawer.OnSlideListener() {
 			@Override
@@ -339,6 +369,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 			if (resultCode == RESPONSE_MULTIBAL_SETTING) {
 				setting = mSettingCache.getAsString("MultiBalSetting");
+			}
+			if (requestCode == RESPONSE_PANORMA_SETTING) {
+				setting = mSettingCache.getAsString("PanormaSetting");
 			}
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));

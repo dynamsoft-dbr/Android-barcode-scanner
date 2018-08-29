@@ -56,8 +56,9 @@ public class SettingActivity extends BaseActivity {
 	private final int RESPONSE_ONED_SETTING = 0x0001;
 	private final int RESPONSE_ALGORITHM_SETTING = 0x0002;
 	private final int RESPONSE_GENERAL_SETTING = 0x0001;
-	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
-	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
+	private final int RESPONSE_MULTIBEST_SETTING = 0x0002;
+	private final int RESPONSE_MULTIBAL_SETTING = 0x0003;
+	private final int RESPONSE_PANORMA_SETTING = 0x0004;
 	@BindView(R.id.setoned)
 	ImageView ivSetOned;
 	@BindView(R.id.ckbpdf417)
@@ -392,6 +393,10 @@ public class SettingActivity extends BaseActivity {
 				if ("MultiBalSetting".equals(templateType)) {
 					mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_MULTIBAL_SETTING);
+				}
+				if ("PanormaSetting".equals(templateType)) {
+					mSettingCache.put("PanormaSetting", LoganSquare.serialize(mSetting));
+					setResult(RESPONSE_PANORMA_SETTING);
 				}
 			}
 			catch (Exception ex){
