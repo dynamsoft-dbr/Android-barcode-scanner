@@ -760,14 +760,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						fileOutputStream.close();
 						ArrayList<String> codeFormatList = new ArrayList<>();
 						ArrayList<String> codeTextList = new ArrayList<>();
-						ArrayList<byte[]> codeBytes = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
 						for (TextResult result1 : yuvInfo.textResult) {
 							if (!codeTextList.contains(result1.barcodeText)){
 								codeFormatList.add(result1.barcodeFormat + "");
 								codeTextList.add(result1.barcodeText);
-								codeBytes.add(result1.barcodeBytes);
 							}
 						}
 						DBRImage dbrImage = new DBRImage();
