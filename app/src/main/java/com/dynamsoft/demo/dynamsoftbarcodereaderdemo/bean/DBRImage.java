@@ -22,6 +22,10 @@ public class DBRImage extends LitePalSupport {
 
 	private int scaleValue = -1;
 
+
+	@Column(defaultValue = "")
+	private String templateType;
+
 	public int getScaleValue() {
 		return scaleValue;
 	}
@@ -79,5 +83,13 @@ public class DBRImage extends LitePalSupport {
 
 	public void setCodeText(ArrayList<String> codeText) {
 		this.codeText = codeText;
+	}
+
+	public String getTemplateType() {
+		return templateType;
+	}
+
+	public void setTemplateType(String templateType) {
+		this.templateType = templateType;
 	}
 }

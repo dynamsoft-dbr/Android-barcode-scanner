@@ -383,19 +383,19 @@ public class SettingActivity extends BaseActivity {
 			mSetting.setImageParameter(mImageParameter);
 			try {
 				if ("GeneralSetting".equals(templateType)) {
-					mSettingCache.put("GeneralSetting", LoganSquare.serialize(mSetting));
+					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_GENERAL_SETTING);
 				}
 				if ("MultiBestSetting".equals(templateType)) {
-					mSettingCache.put("MultiBestSetting", LoganSquare.serialize(mSetting));
+					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_MULTIBEST_SETTING);
 				}
-				if ("MultiBalSetting".equals(templateType)) {
-					mSettingCache.put("MultiBalSetting", LoganSquare.serialize(mSetting));
+				if ("OverlapSetting".equals(templateType)) {
+					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_MULTIBAL_SETTING);
 				}
 				if ("PanormaSetting".equals(templateType)) {
-					mSettingCache.put("PanormaSetting", LoganSquare.serialize(mSetting));
+					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_PANORMA_SETTING);
 				}
 			}

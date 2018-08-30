@@ -252,7 +252,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				btnStart.setVisibility(View.GONE);
 				btnFinish.setVisibility(View.GONE);
 				detectStart = true;
-			} else if ("MultiBalSetting".equals(templateType)) {
+			} else if ("OverlapSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
 				multiBalImgP.setAntiDamageLevel(5);
@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				}});
 				multiBal.setImageParameter(multiBalImgP);
 				btnFinish.setVisibility(View.GONE);
-				mSettingCache.put("MultiBalSetting", LoganSquare.serialize(multiBal));
+				mSettingCache.put("OverlapSetting", LoganSquare.serialize(multiBal));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
 				btnStart.setVisibility(View.GONE);
 				detectStart = true;
@@ -368,9 +368,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				setting = mSettingCache.getAsString("MultiBestSetting");
 			}
 			if (resultCode == RESPONSE_MULTIBAL_SETTING) {
-				setting = mSettingCache.getAsString("MultiBalSetting");
+				setting = mSettingCache.getAsString("OverlapSetting");
 			}
-			if (requestCode == RESPONSE_PANORMA_SETTING) {
+			if (resultCode == RESPONSE_PANORMA_SETTING) {
 				setting = mSettingCache.getAsString("PanormaSetting");
 			}
 			try {
@@ -770,6 +770,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						String rectCoord = LoganSquare.serialize(rectCoordinate);
 						dbrImage.setRectCoord(rectCoord);
 						dbrImage.setDecodeTime(duringTime);
+						dbrImage.setTemplateType(templateType);
 						dbrImage.save();
 						long endSaveFile = System.currentTimeMillis();
 						//Logger.d("save file time : " + (endSaveFile - startSaveFile));

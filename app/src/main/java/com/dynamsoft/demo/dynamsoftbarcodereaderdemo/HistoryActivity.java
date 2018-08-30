@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -47,15 +48,16 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	@BindView(R.id.tl_2)
 	SlidingTabLayout overlapTab;
 
-
+	private Handler handler;
 	private HistoryContentPagerAdapter historyContentPagerAdapter;
-
+	private final int PAGE_TYPE = 0x0001;
 	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap", "Panorama"};
 	@Override
 	protected int getLayoutId() {
 		return R.layout.activity_history;
 	}
 
+	private String pageTitle;
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
@@ -85,7 +87,7 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
-		builder.setMessage("Clear the history list?");
+		builder.setMessage("Clear the history list of "+pageTitle + "?");
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i) {
@@ -95,7 +97,6 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i) {
-				//progressBar.setVisibility(View.VISIBLE);
 				clearHistoryList();
 			}
 		});
@@ -108,32 +109,51 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				List<DBRImage> imageList = LitePal.findAll(DBRImage.class);
-				if (imageList != null && imageList.size() > 0) {
+				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+				ArrayList<DBRImage> imageList = new ArrayList<>();
+				String type = "";
+				if (pageTitle.equals("General Scan")) {
+					type = "GeneralSetting";
+				} else if (pageTitle.equals("Best Coverage")) {
+					type = "MultiBestSetting";
+				} else if (pageTitle.equals("Overlap")) {
+					type = "OverlapSetting";
+				} else if (pageTitle.equals("Panorama")){
+					type = "PanoramaSetting";
+				}
+				for (DBRImage dbrImage : allImageList) {
+					if (dbrImage.getTemplateType().equals(type) && imageList.size() < 16) {
+						imageList.add(dbrImage);
+					}
+				}
+				if (imageList != null && imageList.size() > 0){
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
-					File file = new File(path);
-					String[] fileNames = file.list();
-					if (fileNames != null && fileNames.length > 0) {
-						for (int i = 0; i < fileNames.length; i++) {
-							File temp = new File(path, fileNames[i]);
-							if (temp.isFile()) {
-								temp.delete();
-							}
+					for (int i = 0; i < imageList.size(); i++){
+						File temp = new File(path, imageList.get(i).getFileName());
+						if (temp.isFile()){
+							temp.delete();
 						}
 					}
-					LitePal.deleteAll(DBRImage.class);
+					LitePal.deleteAll(DBRImage.class, "templateType=?", type);
 				}
-				//handler.sendEmptyMessage(0);
+				Message message = handler.obtainMessage();
+				message.what = PAGE_TYPE;
+				message.obj = type;
+				handler.sendMessage(message);
 			}
 		}).start();
 	}
 
 	@Override
 	public void onTabSelect(int position) {
+		pageTitle = String.valueOf(historyContentPagerAdapter.getPageTitle(position));
 	}
 
 	@Override
 	public void onTabReselect(int position) {
 
+	}
+	public void setHandler(Handler handler){
+		this.handler = handler;
 	}
 }

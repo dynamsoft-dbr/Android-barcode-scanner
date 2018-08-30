@@ -73,7 +73,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private String[] fileNames;
 	private int intentPosition;
 	private ArrayList<HistoryItemBean> listItem;
-	private List<DBRImage> imageList;
+	private ArrayList<DBRImage> imageList;
 	private HistoryDetailViewPagerAdapter adapter;
 	private SimpleAdapter simpleAdapter;
 	private List<Map<String, String>> recentCodeList = new ArrayList<>();
@@ -205,10 +205,13 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				e.printStackTrace();
 			}
 		}*/
-		imageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(imageList);
-		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 16);
+		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(allImageList);
+		imageList = new ArrayList<>();
+		for (DBRImage dbrImage : allImageList) {
+			if (dbrImage.getTemplateType().equals(getIntent().getStringExtra("templateType")) && imageList.size() < 16) {
+				imageList.add(dbrImage);
+			}
 		}
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);

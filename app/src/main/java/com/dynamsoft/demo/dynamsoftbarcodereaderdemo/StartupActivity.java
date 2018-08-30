@@ -60,7 +60,7 @@ public class StartupActivity extends AppCompatActivity {
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.btn_multi_bal:
-				mCache.put("templateType", "MultiBalSetting");
+				mCache.put("templateType", "OverlapSetting");
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;
 			case R.id.btn_panorama:
