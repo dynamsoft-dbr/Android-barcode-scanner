@@ -18,7 +18,6 @@ public class DBRImage extends LitePalSupport {
 
 	private ArrayList<String> codeText = new ArrayList<>();
 
-
 	private long decodeTime = 0;
 
 	private int scaleValue = -1;

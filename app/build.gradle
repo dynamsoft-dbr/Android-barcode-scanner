@@ -42,4 +42,5 @@ dependencies {
     implementation 'io.fotoapparat.fotoapparat:library:2.3.1'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation 'org.litepal.android:core:2.0.0'
+    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
 }

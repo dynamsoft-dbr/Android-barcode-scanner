@@ -84,6 +84,7 @@ public class StitchImageActivity extends AppCompatActivity {
     }
 
     private Bitmap readImage() {
+
         try {
             InputParasOfSwitchImagesFun[] input = new InputParasOfSwitchImagesFun[dbrImageList.size()];
             for (int i = 0; i < dbrImageList.size(); i++) {

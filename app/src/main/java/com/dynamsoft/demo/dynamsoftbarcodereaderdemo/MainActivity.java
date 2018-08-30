@@ -667,40 +667,33 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										yuvInfoList.set(0, yuvInfoList.get(1));
 										break;
 									case 1:
-										TextResult[] newResultBase1 = new TextResult[result.length+ coordsMapResult.resultArr.length];
-										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
-											if (i < result.length) {
-												newResultBase1[i] = result[i];
-											} else {
-												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
-												textResult = new TextResult();
-												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
-												newResultBase1[i] = textResult;
-											}
+										TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
+										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+
+											localizationResult = new LocalizationResult();
+											localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											textResult = new TextResult();
+											textResult.localizationResult = localizationResult;
+											textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+											textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+											textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+											newResultBase1[i] = textResult;
 										}
 										yuvInfo.textResult = newResultBase1;
 										yuvInfoList.set(0, yuvInfo);
 										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
 										break;
 									case 2:
-										TextResult[] newResultBase2 = new TextResult[result.length + coordsMapResult.resultArr.length];
-										for (int i = 0; i < result.length + coordsMapResult.resultArr.length; i++) {
-											if (i < result.length) {
-												newResultBase2[i] = result[i];
-											} else {
-												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i - result.length].pts;
-												textResult = new TextResult();
-												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i - result.length].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i - result.length].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i - result.length].format;
-												newResultBase2[i] = textResult;
-											}
+										TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
+										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+											localizationResult = new LocalizationResult();
+											localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+											textResult = new TextResult();
+											textResult.localizationResult = localizationResult;
+											textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+											textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+											textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+											newResultBase2[i] = textResult;
 										}
 										yuvInfo.textResult = newResultBase2;
 										yuvInfoList.set(0, yuvInfo);
@@ -762,11 +755,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						ArrayList<String> codeTextList = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
+						ArrayList<RectPoint[]> newPointList = new ArrayList<>();
 						for (TextResult result1 : yuvInfo.textResult) {
-							if (!codeTextList.contains(result1.barcodeText)){
-								codeFormatList.add(result1.barcodeFormat + "");
-								codeTextList.add(result1.barcodeText);
-							}
+							codeFormatList.add(result1.barcodeFormat + "");
+							codeTextList.add(result1.barcodeText);
 						}
 						DBRImage dbrImage = new DBRImage();
 						dbrImage.setFileName(yuvInfo.cacheName);
