@@ -196,7 +196,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		askForPermissions();
 		setToolbarBackgroud("#000000");
 		setToolbarNavIcon(R.drawable.ic_action_back_dark);
-		setToolbarTitle("Scan Barcode");
 		setToolbarTitleColor("#ffffff");
 		initTemplate();
 		initUI();
@@ -240,6 +239,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				btnStart.setVisibility(View.GONE);
 				btnFinish.setVisibility(View.GONE);
 				detectStart = true;
+				setToolbarTitle("General Scan");
 			} else if ("MultiBestSetting".equals(templateType)) {
 				DBRSetting multiBest = new DBRSetting();
 				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
@@ -252,6 +252,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				btnStart.setVisibility(View.GONE);
 				btnFinish.setVisibility(View.GONE);
 				detectStart = true;
+				setToolbarTitle("Best Coverage");
 			} else if ("OverlapSetting".equals(templateType)) {
 				DBRSetting multiBal = new DBRSetting();
 				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
@@ -270,6 +271,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
 				btnStart.setVisibility(View.GONE);
 				detectStart = true;
+				setToolbarTitle("Overlap");
 			} else if ("PanormaSetting".equals(templateType)){
 				DBRSetting panorma = new DBRSetting();
 				DBRSetting.ImageParameter panormaImgP = new DBRSetting.ImageParameter();
@@ -279,6 +281,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				panorma.setImageParameter(panormaImgP);
 				mSettingCache.put("PanormaSetting", LoganSquare.serialize(panorma));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(panorma), 2);
+				setToolbarTitle("Panorma");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -528,7 +531,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onClick(View v) {
 				detectStart = false;
-				startActivity(new Intent(MainActivity.this, StitchImageActivity.class));
+				Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
+				intent.putExtra("page_type", 3);
+				startActivity(intent);
 			}
 		});
 	}
@@ -595,127 +600,46 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
 						coordMessage.obj = rectCoord;
-						if (frameTime == 0) {
-							yuvInfo = new YuvInfo();
-							yuvInfo.cacheName = System.currentTimeMillis() + "";
-							yuvInfo.yuvImage = yuvImage;
-							yuvInfo.textResult = result;
-							yuvInfoList.add(yuvInfo);
-							handleImage(yuvInfo, null);
-							frameTime++;
-						} else if (frameTime == 1) {
-							yuvInfo = new YuvInfo();
-							yuvInfo.textResult = result;
-							yuvInfo.yuvImage = yuvImage;
-							yuvInfo.cacheName = System.currentTimeMillis() + "";
-							if (yuvInfoList.size() == 1) {
+						if ("OverlapSetting".equals(templateType) || "PanoramaSetting".equals(templateType)) {
+							if (frameTime == 0) {
+								yuvInfo = new YuvInfo();
+								yuvInfo.cacheName = System.currentTimeMillis() + "";
+								yuvInfo.yuvImage = yuvImage;
+								yuvInfo.textResult = result;
 								yuvInfoList.add(yuvInfo);
+								handleImage(yuvInfo, null);
+								frameTime++;
+							} else if (frameTime == 1) {
+								yuvInfo = new YuvInfo();
+								yuvInfo.textResult = result;
+								yuvInfo.yuvImage = yuvImage;
+								yuvInfo.cacheName = System.currentTimeMillis() + "";
+								if (yuvInfoList.size() == 1) {
+									yuvInfoList.add(yuvInfo);
+								} else {
+									yuvInfoList.set(1, yuvInfo);
+								}
+
 							} else {
-								yuvInfoList.set(1, yuvInfo);
+								isDetected = true;
 							}
-							//Logger.d("1st size : " + yuvInfoList.get(0).textResult.length + " 2nd size : " + arrayLength1);
-							CoordsMapResult coordsMapResult = AfterProcess.coordsMap
-									(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
-							/*for(int i = 0; i < coordsMapResult.resultArr.length; i++){
-								Point one =coordsMapResult.resultArr[i].pts[0];
-								Point two =coordsMapResult.resultArr[i].pts[1];
-								Point three =coordsMapResult.resultArr[i].pts[2];
-								Point four =coordsMapResult.resultArr[i].pts[3];
-
-								double length1 = Math.sqrt((one.x - two.x)* (one.x - two.x) + (one.y - two.y) * (one.y - two.y));
-								double length2 = Math.sqrt((three.x - two.x) * (three.x - two.x) + (three.y - two.y) * (three.y - two.y));
-
-								double ratio = length1 > length2 ? (length1 / length2) : (length2 / length1);
-								Log.e("Ratio: ", String.valueOf(ratio));
-								if(ratio > 20)
-								{
-									File file1 = new File(path + "po1.jpg");
-									File file2 = new File(path + "po2.jpg");
-									try {
-										FileOutputStream fileOutputStream1 = new FileOutputStream(file1);
-										YuvImage y1 = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfoList.get(0).yuvImage.getYuvData(),
-												yuvInfoList.get(0).yuvImage.getWidth(), yuvInfoList.get(0).yuvImage.getHeight()), ImageFormat.NV21, yuvInfoList.get(0).yuvImage.getHeight(), yuvInfoList.get(0).yuvImage.getWidth(), null);
-										y1.compressToJpeg(new Rect(0, 0, y1.getWidth(), y1.getHeight()), 100, fileOutputStream1);
-										fileOutputStream1.flush();
-										fileOutputStream1.close();
-										FileOutputStream fileOutputStream2 = new FileOutputStream(file2);
-										YuvImage y2 = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfoList.get(1).yuvImage.getYuvData(),
-												yuvInfoList.get(1).yuvImage.getWidth(), yuvInfoList.get(1).yuvImage.getHeight()), ImageFormat.NV21, yuvInfoList.get(1).yuvImage.getHeight(), yuvInfoList.get(1).yuvImage.getWidth(), null);
-										y2.compressToJpeg(new Rect(0, 0, y2.getWidth(), y2.getHeight()), 100, fileOutputStream2);
-										fileOutputStream2.flush();
-										fileOutputStream2.close();
-									}
-									catch (Exception ex){
-										ex.printStackTrace();
-									}
-								}
-								/*
-								if((Math.abs(coordsMapResult.resultArr[i].pts[0].x - coordsMapResult.resultArr[i].pts[1].x) / Math.abs(coordsMapResult.resultArr[i].pts[2].y - coordsMapResult.resultArr[i].pts[1].y)) > 20){
-									Logger.d("  ");
-								}
-								if((Math.abs(coordsMapResult.resultArr[i].pts[2].x - coordsMapResult.resultArr[i].pts[1].x) / Math.abs(coordsMapResult.resultArr[i].pts[0].y - coordsMapResult.resultArr[i].pts[1].y)) > 20){
-									Logger.d("  ");
-								}
-
-							}*/
-							if (coordsMapResult != null) {
-								LocalizationResult localizationResult;
-								TextResult textResult;
-								switch (coordsMapResult.basedImg) {
-									case 0:
-										handleImage(yuvInfoList.get(1), null);
-										yuvInfoList.set(0, yuvInfoList.get(1));
-										break;
-									case 1:
-										TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
-										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-
-											localizationResult = new LocalizationResult();
-											localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
-											textResult = new TextResult();
-											textResult.localizationResult = localizationResult;
-											textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
-											textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
-											textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
-											newResultBase1[i] = textResult;
-										}
-										yuvInfo.textResult = newResultBase1;
-										yuvInfoList.set(0, yuvInfo);
-										handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
-										break;
-									case 2:
-										TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
-										for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-											localizationResult = new LocalizationResult();
-											localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
-											textResult = new TextResult();
-											textResult.localizationResult = localizationResult;
-											textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
-											textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
-											textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
-											newResultBase2[i] = textResult;
-										}
-										yuvInfo.textResult = newResultBase2;
-										yuvInfoList.set(0, yuvInfo);
-										handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
-										break;
-									case -1:
-										break;
-									default:
-										break;
-								}
-							}
+							coordMessage.what = BARCODE_RECT_COORD;
+							handler.sendMessage(coordMessage);
+							coordMap(wid, hgt);
+						} else if ("GeneralSetting".equals(templateType) || "MultiBestSetting".equals(templateType)) {
+							yuvInfo = new YuvInfo();
+							yuvInfo.cacheName = System.currentTimeMillis() + "";
+							yuvInfo.yuvImage = yuvImage;
+							yuvInfo.textResult = result;
+							handleImage(yuvInfo, null);
 						}
-
-					} else {
-						isDetected = true;
 					}
-					coordMessage.what = BARCODE_RECT_COORD;
-					handler.sendMessage(coordMessage);
 				}
-			} catch (BarcodeReaderException e) {
+			} catch(BarcodeReaderException e) {
 				e.printStackTrace();
 			}
+
+
 		}
 
 		private void deleteErroCache(String name) {
@@ -728,6 +652,57 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (previewFile.exists()) {
 					previewFile.delete();
 					LitePal.deleteAll(DBRImage.class, "fileName = ?", name);
+				}
+			}
+		}
+		private void coordMap(int wid, int hgt){
+			CoordsMapResult coordsMapResult = AfterProcess.coordsMap
+					(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
+			if (coordsMapResult != null) {
+				LocalizationResult localizationResult;
+				TextResult textResult;
+				switch (coordsMapResult.basedImg) {
+					case 0:
+						handleImage(yuvInfoList.get(1), null);
+						yuvInfoList.set(0, yuvInfoList.get(1));
+						break;
+					case 1:
+						TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
+						for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+
+							localizationResult = new LocalizationResult();
+							localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+							textResult = new TextResult();
+							textResult.localizationResult = localizationResult;
+							textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+							textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+							textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+							newResultBase1[i] = textResult;
+						}
+						yuvInfo.textResult = newResultBase1;
+						yuvInfoList.set(0, yuvInfo);
+						handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
+						break;
+					case 2:
+						TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
+						for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+							localizationResult = new LocalizationResult();
+							localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+							textResult = new TextResult();
+							textResult.localizationResult = localizationResult;
+							textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+							textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+							textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+							newResultBase2[i] = textResult;
+						}
+						yuvInfo.textResult = newResultBase2;
+						yuvInfoList.set(0, yuvInfo);
+						handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
+						break;
+					case -1:
+						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -755,7 +730,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						ArrayList<String> codeTextList = new ArrayList<>();
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
-						ArrayList<RectPoint[]> newPointList = new ArrayList<>();
 						for (TextResult result1 : yuvInfo.textResult) {
 							codeFormatList.add(result1.barcodeFormat + "");
 							codeTextList.add(result1.barcodeText);

@@ -141,6 +141,7 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 					handler.sendMessage(message);
 				}
 			}
+
 		}).start();
 	}
 

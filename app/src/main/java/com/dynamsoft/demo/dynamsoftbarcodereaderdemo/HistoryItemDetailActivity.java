@@ -26,7 +26,13 @@ import android.widget.Toast;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.barcode.BarcodeReader;
 import com.dynamsoft.barcode.BarcodeReaderException;
+import com.dynamsoft.barcode.EnumImagePixelFormat;
+import com.dynamsoft.barcode.Point;
 import com.dynamsoft.barcode.TextResult;
+import com.dynamsoft.barcode.afterprocess.jni.AfterProcess;
+import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
+import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
+import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
@@ -43,6 +49,7 @@ import org.litepal.LitePal;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,6 +90,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private Long decodeTime;
 	private int angle;
 	private int scaleValue = -1;
+	private List<DBRImage> dbrImageList;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
@@ -135,10 +143,65 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			case 2:
 				fromCamera(2);
 				break;
+			case 3:
+				stitchImage();
+				break;
 			default:
 		}
 	}
-
+	private void stitchImage(){
+		try {
+			List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+			Collections.reverse(allImageList);
+			imageList = new ArrayList<>();
+			for (DBRImage dbrImage : allImageList) {
+				if (dbrImage.getTemplateType().equals("PanoramaSetting")) {
+					imageList.add(dbrImage);
+				}
+			}
+			InputParasOfSwitchImagesFun[] input = new InputParasOfSwitchImagesFun[dbrImageList.size()];
+			for (int i = 0; i < dbrImageList.size(); i++) {
+				Bitmap bitmap = decodeFile(dbrImageList.get(i).getCodeImgPath());
+				ArrayList<RectPoint[]> rectPoints = LoganSquare.parse(dbrImageList.get(i).getRectCoord(), RectCoordinate.class).getRectCoord();
+				input[i] = new InputParasOfSwitchImagesFun();
+				input[i].buffer = convertImage(bitmap);
+				input[i].width = bitmap.getWidth();
+				input[i].height = bitmap.getHeight();
+				input[i].format = EnumImagePixelFormat.IPF_ARGB_8888;
+				input[i].stride = bitmap.getWidth() * 4;
+				input[i].domainOfImgX = bitmap.getWidth();
+				input[i].domainOfImgY = bitmap.getHeight();
+				BarcodeRecognitionResult[] b = new BarcodeRecognitionResult[dbrImageList.get(i).getCodeText().size()];
+				for (int j = 0; j < dbrImageList.get(i).getCodeText().size(); j++) {
+					BarcodeRecognitionResult barcodeRecognitionResult = b[j] = new BarcodeRecognitionResult();
+					barcodeRecognitionResult.barcodeBytes = dbrImageList.get(i).getCodeText().get(j).getBytes();
+					barcodeRecognitionResult.format = Integer.valueOf(dbrImageList.get(i).getCodeFormat().get(j));
+					barcodeRecognitionResult.barcodeText = dbrImageList.get(i).getCodeText().get(j);
+					Point[] points = new Point[rectPoints.get(j).length];
+					for (int k = 0; k < rectPoints.get(j).length; k++) {
+						points[k] = new Point();
+						points[k].x = (int) rectPoints.get(j)[k].x;
+						points[k].y = (int) rectPoints.get(j)[k].y;
+					}
+					barcodeRecognitionResult.pts = points;
+				}
+				input[i].barcodeRecognitionResults = b;
+			}
+			StitchImageResult result = AfterProcess.stitchImages(input);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	private Bitmap decodeFile(String fileName) {
+		File file = new File(fileName);
+		return BitmapFactory.decodeFile(file.getAbsolutePath());
+	}
+	private byte[] convertImage(Bitmap bitmap) {
+		int bytes = bitmap.getByteCount();
+		ByteBuffer buf = ByteBuffer.allocate(bytes);
+		bitmap.copyPixelsToBuffer(buf);
+		return buf.array();
+	}
 	private void fromCamera(int imgLocation) {
 		pbProgress.setVisibility(View.VISIBLE);
 		drawRectOnImg(imgLocation);

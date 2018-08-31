@@ -5,119 +5,201 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="#ffffff"
+	android:background="#fff1f2f7"
 	android:onClick="onViewClicked"
 	tools:layout_editor_absoluteY="25dp">
 
 	<Button
 		android:id="@+id/btn_history"
-		android:layout_width="28dp"
-		android:layout_height="28dp"
-		android:layout_marginLeft="32dp"
-		android:layout_marginTop="24dp"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginTop="48dp"
 		android:background="@drawable/icon_history"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.914"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"/>
-
-	<TextView
-		android:id="@+id/tv_history"
-		android:layout_width="wrap_content"
-		android:layout_height="28dp"
-		android:layout_marginTop="24dp"
-		android:layout_marginLeft="72dp"
-		android:text="History"
-		android:gravity="center"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"/>
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
 		android:id="@+id/tv_startup_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="75dp"
+		android:layout_marginTop="42dp"
 		android:text="Barcode Scanner X"
 		android:textColor="@android:color/black"
-		android:textSize="20sp"
+		android:textSize="30sp"
 		android:textStyle="bold"
-		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toTopOf="parent"/>
-
-	<Button
-		android:id="@+id/btn_general"
-		android:layout_width="@dimen/btn_startup_size"
-		android:layout_height="@dimen/btn_startup_size"
-		android:layout_marginLeft="32dp"
-		android:layout_marginStart="32dp"
-		android:layout_marginTop="50dp"
-		android:background="@drawable/ico_generalscan"
-		android:onClick="onClick"
-		android:paddingTop="70dp"
-		android:text="@string/general_scan"
-		android:textAllCaps="false"
-		android:textColor="#000000"
-		android:textSize="12sp"
+		app:layout_constraintHorizontal_bias="0.32"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title"/>
+		app:layout_constraintTop_toTopOf="parent" />
 
+	<LinearLayout
+		android:layout_width="360dp"
+		android:layout_height="100dp"
+		android:layout_marginTop="120dp"
+		android:orientation="horizontal"
+		android:background="#ffffff"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<Button
+			android:id="@+id/btn_general"
+			android:layout_width="@dimen/btn_startup_size"
+			android:layout_height="@dimen/btn_startup_size"
+			android:layout_marginLeft="20dp"
+			android:layout_gravity="center_vertical"
+			android:background="@drawable/icon_GeneralScan"
+			android:onClick="onClick"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="25dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:text="@string/general_scan"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:textColor="#ffb8b8bf"
+				android:text="@string/one_off_scan"/>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="360dp"
+		android:layout_height="100dp"
+		android:layout_marginTop="240dp"
+		android:orientation="horizontal"
+		android:background="#ffffff"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 	<Button
 		android:id="@+id/btn_multi_best"
 		android:layout_width="@dimen/btn_startup_size"
 		android:layout_height="@dimen/btn_startup_size"
-		android:layout_marginEnd="32dp"
-		android:layout_marginRight="32dp"
-		android:layout_marginTop="50dp"
-		android:background="@drawable/ico_multibarcodesbestcoverage"
+		android:layout_marginLeft="20dp"
+		android:layout_gravity="center_vertical"
+		android:background="@drawable/icon_BestCoverage"
 		android:onClick="onClick"
-		android:paddingTop="74dp"
-		android:text="@string/multi_barcodes_best_coverage"
-		android:textAllCaps="false"
-		android:textColor="#000000"
-		android:textSize="12sp"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title"/>
-
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="25dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:text="@string/multi_barcodes_best_coverage"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:textColor="#ffb8b8bf"
+				android:text="@string/one_off_scan_with_a_thorough_search"/>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="360dp"
+		android:layout_height="100dp"
+		android:layout_marginTop="360dp"
+		android:orientation="horizontal"
+		android:background="#ffffff"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 	<Button
 		android:id="@+id/btn_multi_bal"
 		android:layout_width="@dimen/btn_startup_size"
 		android:layout_height="@dimen/btn_startup_size"
-		android:layout_marginLeft="32dp"
-		android:layout_marginStart="32dp"
-		android:layout_marginTop="68dp"
-		android:background="@drawable/ico_overlap"
+		android:layout_marginLeft="20dp"
+		android:layout_gravity="center_vertical"
+		android:background="@drawable/icon_Overlap"
 		android:onClick="onClick"
-		android:paddingTop="74dp"
-		android:text="@string/overlap"
-		android:textAllCaps="false"
-		android:textColor="#000000"
-		android:textSize="12sp"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/btn_general"/>
-
+		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="25dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:text="@string/overlap"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:textColor="#ffb8b8bf"
+				android:text="@string/continuous_scan_filter_duplicates"/>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="360dp"
+		android:layout_height="100dp"
+		android:layout_marginTop="480dp"
+		android:orientation="horizontal"
+		android:background="#ffffff"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 	<Button
 		android:id="@+id/btn_panorama"
 		android:layout_width="@dimen/btn_startup_size"
 		android:layout_height="@dimen/btn_startup_size"
-		android:layout_marginEnd="32dp"
-		android:layout_marginRight="32dp"
-		android:layout_marginTop="68dp"
-		android:background="@drawable/ico_panorama"
+		android:layout_marginLeft="20dp"
+		android:layout_gravity="center_vertical"
+		android:background="@drawable/icon_Panorama"
 		android:onClick="onClick"
-		android:paddingTop="74dp"
-		android:text="@string/panorma"
-		android:textAllCaps="false"
-		android:textColor="#000000"
-		android:textSize="12sp"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/btn_general" />
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="25dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:text="@string/panorma"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:textColor="#ffb8b8bf"
+				android:text="@string/continuous_scan_stitch_video_frames"/>
+		</LinearLayout>
+	</LinearLayout>
 
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="16dp"
-		android:layout_marginLeft="32dp"
-		android:text="Dynamsoft Barcode Scanner X"
-		android:textColor="#BEBFC0"
+		android:layout_marginLeft="170dp"
+		android:text="Dynamsoft Barcode Reader"
+		android:textColor="#ff3e82f9"
 		android:textStyle="bold"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
@@ -135,7 +217,7 @@
 		android:id="@+id/imageView2"
 		android:layout_width="20dp"
 		android:layout_height="20dp"
-		app:srcCompat="@drawable/icon_arrow_in"
+		app:srcCompat="@drawable/arrow_blue"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		android:layout_marginBottom="14dp"
