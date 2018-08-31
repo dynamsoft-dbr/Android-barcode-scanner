@@ -3,6 +3,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 
 import org.litepal.LitePal;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,33 +36,25 @@ import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 public class OverlapHistoryFragment extends BaseFragment {
 	private RecyclerView rlvHistory;
 	private ProgressBar progressBar;
-	private HistoryActivity historyActivity;
 
 	private HistoryListAdapter historyListAdapter;
-	private ArrayList<DBRImage> imageList;
+	private List<DBRImage> imageList;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.obj.toString().equals("OverlapSetting")) {
-				if (imageList != null && imageList.size() > 0) {
-					historyListAdapter.clear();
-				}
+			if (imageList != null && imageList.size() > 0) {
+				historyListAdapter.clear();
 			}
 			progressBar.setVisibility(View.GONE);
 		}
 	};
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		historyActivity = (HistoryActivity)context;
-		historyActivity.setHandler(handler);
-	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_history_item, null);
-		rlvHistory=v.findViewById(R.id.rl_history);
-		progressBar=v.findViewById(R.id.pb_progress);
+		rlvHistory = v.findViewById(R.id.rl_history);
+		progressBar = v.findViewById(R.id.pb_progress);
 		return v;
 	}
 
@@ -73,13 +67,10 @@ public class OverlapHistoryFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(allImageList);
-		imageList = new ArrayList<>();
-		for (DBRImage dbrImage : allImageList){
-			if (dbrImage.getTemplateType().equals("OverlapSetting") && imageList.size() < 16){
-				imageList.add(dbrImage);
-			}
+		imageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
@@ -87,9 +78,35 @@ public class OverlapHistoryFragment extends BaseFragment {
 		rlvHistory.setAdapter(historyListAdapter);
 	}
 
+	public void clearHistoryList() {
+		progressBar.setVisibility(View.VISIBLE);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				List<DBRImage> imageList = LitePal.findAll(DBRImage.class);
+				if (imageList != null && imageList.size() > 0) {
+					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
+					File file = new File(path);
+					String[] fileNames = file.list();
+					if (fileNames != null && fileNames.length > 0) {
+						for (int i = 0; i < fileNames.length; i++) {
+							File temp = new File(path, fileNames[i]);
+							if (temp.isFile()) {
+								temp.delete();
+							}
+						}
+					}
+					LitePal.deleteAll(DBRImage.class);
+				}
+				handler.sendEmptyMessage(0);
+			}
+		}).start();
+	}
+
 	private RecyclerView.LayoutManager getLinearLayoutManager() {
 		return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 	}
+
 	@Override
 	public void onItemChildClick(ViewGroup parent, View childView, int position) {
 		switch (childView.getId()) {

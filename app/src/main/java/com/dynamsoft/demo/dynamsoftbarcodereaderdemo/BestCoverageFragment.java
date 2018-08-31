@@ -44,7 +44,7 @@ public class BestCoverageFragment extends BaseFragment{
 	}
 
 	private HistoryListAdapter historyListAdapter;
-	private ArrayList<DBRImage> imageList;
+	private List<DBRImage> imageList;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -75,13 +75,10 @@ public class BestCoverageFragment extends BaseFragment{
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(allImageList);
-		imageList = new ArrayList<>();
-		for (DBRImage dbrImage : allImageList) {
-			if (dbrImage.getTemplateType().equals("MultiBestSetting") && imageList.size() < 16) {
-				imageList.add(dbrImage);
-			}
+		imageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());

@@ -21,16 +21,12 @@ import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
  */
 public class HistoryContentPagerAdapter extends FragmentPagerAdapter {
 	private String[] mTitles;
-	private List<BaseFragment> mFragmentList = Arrays.asList(
-			new GeneralScanFragment(),
-			new BestCoverageFragment(),
-			new OverlapHistoryFragment(),
-			new PanoramaFragment()
-	);
+	private List<Fragment> mFragmentList;
 
-	public HistoryContentPagerAdapter(FragmentManager fm, String[] mTitles) {
+	public HistoryContentPagerAdapter(FragmentManager fm, String[] mTitles, List<Fragment> mFragmentList) {
 		super(fm);
 		this.mTitles = mTitles;
+		this.mFragmentList = mFragmentList;
 	}
 
 	@Override

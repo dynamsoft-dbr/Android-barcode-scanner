@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,12 +19,10 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 
 import org.litepal.LitePal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import cn.bingoogolapple.baseadapter.BGADivider;
-import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 
 /**
  * Created by Elemen on 2018/8/29.
@@ -36,7 +33,7 @@ public class PanoramaFragment extends BaseFragment {
 	private HistoryActivity historyActivity;
 
 	private HistoryListAdapter historyListAdapter;
-	private ArrayList<DBRImage> imageList;
+	private List<DBRImage> imageList;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -72,13 +69,10 @@ public class PanoramaFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(allImageList);
-		imageList = new ArrayList<>();
-		for (DBRImage dbrImage : allImageList) {
-			if (dbrImage.getTemplateType().equals("PanormaSetting") && imageList.size() < 16) {
-				imageList.add(dbrImage);
-			}
+		imageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());

@@ -41,14 +41,11 @@ public class StartupActivity extends AppCompatActivity {
 		ButterKnife.bind(this);
 	}
 
-	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.btn_panorama, R.id.tv_history})
+	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.btn_panorama})
 	public void onViewClicked(View view) {
 		mCache = DBRCache.get(this, "SettingCache");
 		switch (view.getId()) {
 			case R.id.btn_history:
-				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
-				break;
-			case R.id.tv_history:
 				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
 			case R.id.btn_general:
