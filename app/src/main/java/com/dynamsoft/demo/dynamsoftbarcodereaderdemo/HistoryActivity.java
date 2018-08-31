@@ -70,7 +70,7 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		vpHistoryContent.setAdapter(historyContentPagerAdapter);
 		overlapTab.setOnTabSelectListener(this);
 		overlapTab.setViewPager(vpHistoryContent);
-
+		pageTitle = mTitles[0];
 	}
 
 	@Override
@@ -112,13 +112,13 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
 				ArrayList<DBRImage> imageList = new ArrayList<>();
 				String type = "";
-				if (pageTitle.equals("General Scan")) {
+				if (pageTitle.equals(mTitles[0])) {
 					type = "GeneralSetting";
-				} else if (pageTitle.equals("Best Coverage")) {
+				} else if (pageTitle.equals(mTitles[1])) {
 					type = "MultiBestSetting";
-				} else if (pageTitle.equals("Overlap")) {
+				} else if (pageTitle.equals(mTitles[2])) {
 					type = "OverlapSetting";
-				} else if (pageTitle.equals("Panorama")){
+				} else if (pageTitle.equals(mTitles[3])){
 					type = "PanoramaSetting";
 				}
 				for (DBRImage dbrImage : allImageList) {
@@ -135,11 +135,11 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 						}
 					}
 					LitePal.deleteAll(DBRImage.class, "templateType=?", type);
+					Message message = handler.obtainMessage();
+					message.what = PAGE_TYPE;
+					message.obj = type;
+					handler.sendMessage(message);
 				}
-				Message message = handler.obtainMessage();
-				message.what = PAGE_TYPE;
-				message.obj = type;
-				handler.sendMessage(message);
 			}
 		}).start();
 	}
@@ -151,7 +151,7 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 
 	@Override
 	public void onTabReselect(int position) {
-
+		pageTitle = String.valueOf(historyContentPagerAdapter.getPageTitle(position));
 	}
 	public void setHandler(Handler handler){
 		this.handler = handler;
