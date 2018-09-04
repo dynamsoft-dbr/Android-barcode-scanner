@@ -394,7 +394,7 @@ public class SettingActivity extends BaseActivity {
 					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_MULTIBAL_SETTING);
 				}
-				if ("PanormaSetting".equals(templateType)) {
+				if ("PanoramaSetting".equals(templateType)) {
 					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_PANORMA_SETTING);
 				}

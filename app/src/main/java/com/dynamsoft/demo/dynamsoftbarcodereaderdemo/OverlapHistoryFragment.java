@@ -68,10 +68,13 @@ public class OverlapHistoryFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		imageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(imageList);
-		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 16);
+		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(allImageList);
+		imageList = new ArrayList<>();
+		for (DBRImage dbrImage : allImageList) {
+			if (dbrImage.getTemplateType().equals("OverlapSetting") && imageList.size() < 16) {
+				imageList.add(dbrImage);
+			}
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
@@ -84,20 +87,21 @@ public class OverlapHistoryFragment extends BaseFragment {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				List<DBRImage> imageList = LitePal.findAll(DBRImage.class);
+				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+				for (DBRImage dbrImage : allImageList) {
+					if (dbrImage.getTemplateType().equals("OverlapSetting")) {
+						imageList.add(dbrImage);
+					}
+				}
 				if (imageList != null && imageList.size() > 0) {
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
-					File file = new File(path);
-					String[] fileNames = file.list();
-					if (fileNames != null && fileNames.length > 0) {
-						for (int i = 0; i < fileNames.length; i++) {
-							File temp = new File(path, fileNames[i]);
-							if (temp.isFile()) {
-								temp.delete();
-							}
+					for (int i = 0; i < imageList.size(); i++){
+						File temp = new File(path, imageList.get(i).getFileName());
+						if(temp.isFile()){
+							temp.delete();
 						}
 					}
-					LitePal.deleteAll(DBRImage.class);
+					LitePal.deleteAll(DBRImage.class, "templateType = ?", "OverlapSetting");
 				}
 				handler.sendEmptyMessage(0);
 			}

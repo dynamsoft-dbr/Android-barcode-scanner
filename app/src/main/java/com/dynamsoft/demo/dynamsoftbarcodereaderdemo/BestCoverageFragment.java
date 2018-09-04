@@ -3,6 +3,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 
 import org.litepal.LitePal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,23 +38,15 @@ public class BestCoverageFragment extends BaseFragment{
 	private ProgressBar progressBar;
 	private HistoryActivity historyActivity;
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		historyActivity = (HistoryActivity)context;
-		historyActivity.setHandler(handler);
-	}
-
 	private HistoryListAdapter historyListAdapter;
 	private List<DBRImage> imageList;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.obj.toString().equals("MultiBestSetting")) {
-				if (imageList != null && imageList.size() > 0) {
-					historyListAdapter.clear();
-				}
+			if (imageList != null && imageList.size() > 0) {
+				historyListAdapter.clear();
+				historyListAdapter.notifyDataSetChanged();
 			}
 			progressBar.setVisibility(View.GONE);
 		}
@@ -75,17 +69,44 @@ public class BestCoverageFragment extends BaseFragment{
 	}
 
 	private void fillHistoryList() {
-		imageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(imageList);
-		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 16);
+		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(allImageList);
+		imageList = new ArrayList<>();
+		for (DBRImage dbrImage : allImageList) {
+			if (dbrImage.getTemplateType().equals("MultiBestSetting") && imageList.size() < 16) {
+				imageList.add(dbrImage);
+			}
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
 		rlvHistory.setLayoutManager(getLinearLayoutManager());
 		rlvHistory.setAdapter(historyListAdapter);
 	}
-
+	public void clearHistoryList() {
+		progressBar.setVisibility(View.VISIBLE);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+				for (DBRImage dbrImage : allImageList) {
+					if (dbrImage.getTemplateType().equals("MultiBestSetting")) {
+						imageList.add(dbrImage);
+					}
+				}
+				if (imageList != null && imageList.size() > 0) {
+					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
+					for (int i = 0; i < imageList.size(); i++){
+						File temp = new File(path, imageList.get(i).getFileName());
+						if(temp.isFile()){
+							temp.delete();
+						}
+					}
+					LitePal.deleteAll(DBRImage.class, "templateType = ?", "MultiBestSetting");
+				}
+				handler.sendEmptyMessage(0);
+			}
+		}).start();
+	}
 	private RecyclerView.LayoutManager getLinearLayoutManager() {
 		return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 	}

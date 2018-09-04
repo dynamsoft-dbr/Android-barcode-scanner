@@ -47,17 +47,16 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	@BindView(R.id.vp_history_content)
 	ViewPager vpHistoryContent;
 	@BindView(R.id.tl_2)
-	SlidingTabLayout overlapTab;
-
+	SlidingTabLayout generalScanTab;
 	private Handler handler;
 	private HistoryContentPagerAdapter historyContentPagerAdapter;
 	private final int PAGE_TYPE = 0x0001;
-	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap", "Panorama"};
+	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap"};
 	private List<Fragment> mFragmentList = new ArrayList<>();
 	private OverlapHistoryFragment overLapFg;
 	private GeneralScanFragment generalSanFg;
 	private BestCoverageFragment bestCoverageFg;
-	private PanoramaFragment panoramaFg;
+	//private PanoramaFragment panoramaFg;
 
 	@Override
 	protected int getLayoutId() {
@@ -77,16 +76,16 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		overLapFg = new OverlapHistoryFragment();
 		generalSanFg = new GeneralScanFragment();
 		bestCoverageFg = new BestCoverageFragment();
-		panoramaFg = new PanoramaFragment();
-		mFragmentList.add(overLapFg);
+		//panoramaFg = new PanoramaFragment();
 		mFragmentList.add(generalSanFg);
 		mFragmentList.add(bestCoverageFg);
-		mFragmentList.add(panoramaFg);
+		mFragmentList.add(overLapFg);
+		//mFragmentList.add(panoramaFg);
 
 		historyContentPagerAdapter = new HistoryContentPagerAdapter(getSupportFragmentManager(), mTitles, mFragmentList);
 		vpHistoryContent.setAdapter(historyContentPagerAdapter);
-		overlapTab.setOnTabSelectListener(this);
-		overlapTab.setViewPager(vpHistoryContent);
+		generalScanTab.setOnTabSelectListener(this);
+		generalScanTab.setViewPager(vpHistoryContent);
 		pageTitle = mTitles[0];
 	}
 
@@ -125,14 +124,17 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	private void clearHistoryList() {
 		switch (vpHistoryContent.getCurrentItem()) {
 			case 0:
+				generalSanFg.clearHistoryList();
 				break;
 			case 1:
+				bestCoverageFg.clearHistoryList();
 				break;
 			case 2:
 				overLapFg.clearHistoryList();
 				break;
-			case 3:
-				break;
+			/*case 3:
+				overLapFg.clearHistoryList();
+				break;*/
 			default:
 				break;
 		}

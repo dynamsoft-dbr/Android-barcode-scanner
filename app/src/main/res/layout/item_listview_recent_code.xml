@@ -4,22 +4,40 @@
               android:layout_height="match_parent"
               android:gravity="center_vertical"
               android:orientation="vertical"
-              android:padding="18dp">
-
-	<TextView
-		android:id="@+id/tv_code_format"
-		android:layout_width="wrap_content"
+              android:padding="10dp">
+	<LinearLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="code format"
-		android:textColor="#000000"
-		android:textStyle="bold"/>
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Format: "
+			android:textColor="#000000"/>
+		<TextView
+			android:id="@+id/tv_code_format"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="code format"
+			android:textColor="#000000"/>
 
-	<TextView
-		android:id="@+id/tv_code_text"
-		android:layout_width="wrap_content"
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="18dp"
-		android:text="code text"
-		android:textColor="#000000"
-		android:textStyle="bold"/>
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Text: "
+			android:layout_marginTop="5dp"
+			android:textColor="#000000"/>
+		<TextView
+			android:id="@+id/tv_code_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="code text"
+			android:layout_marginTop="5dp"
+			android:textColor="#000000"/>
+	</LinearLayout>
 </LinearLayout>

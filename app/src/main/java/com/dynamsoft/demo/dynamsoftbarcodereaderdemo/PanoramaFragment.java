@@ -3,6 +3,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -19,6 +20,8 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 
 import org.litepal.LitePal;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,10 +41,9 @@ public class PanoramaFragment extends BaseFragment {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if(msg.obj.toString().equals("PanormaSetting")) {
-				if (imageList != null && imageList.size() > 0) {
-					historyListAdapter.clear();
-				}
+			if (imageList != null && imageList.size() > 0) {
+				historyListAdapter.clear();
+				historyListAdapter.notifyDataSetChanged();
 			}
 			progressBar.setVisibility(View.GONE);
 		}
@@ -69,17 +71,48 @@ public class PanoramaFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		imageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(imageList);
-		if (imageList.size() > 16) {
-			imageList = imageList.subList(0, 16);
+		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(allImageList);
+		imageList = new ArrayList<>();
+		for (DBRImage dbrImage : allImageList) {
+			if (dbrImage.getTemplateType().equals("PanoramaSetting") && imageList.size() < 16) {
+				imageList.add(dbrImage);
+			}
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
 		rlvHistory.setLayoutManager(getLinearLayoutManager());
 		rlvHistory.setAdapter(historyListAdapter);
 	}
-
+	public void clearHistoryList() {
+		progressBar.setVisibility(View.VISIBLE);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
+				for (DBRImage dbrImage : allImageList) {
+					if (dbrImage.getTemplateType().equals("PanoramaSetting")) {
+						imageList.add(dbrImage);
+					}
+				}
+				if (imageList != null && imageList.size() > 0) {
+					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
+					File file = new File(path);
+					String[] fileNames = file.list();
+					if (fileNames != null && fileNames.length > 0) {
+						for (int i = 0; i < fileNames.length; i++) {
+							File temp = new File(path, fileNames[i]);
+							if (temp.isFile()) {
+								temp.delete();
+							}
+						}
+					}
+					LitePal.deleteAll(DBRImage.class, "templateType = ?", "PanoramaSetting");
+				}
+				handler.sendEmptyMessage(0);
+			}
+		}).start();
+	}
 	private RecyclerView.LayoutManager getLinearLayoutManager() {
 		return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 	}
@@ -90,7 +123,7 @@ public class PanoramaFragment extends BaseFragment {
 				Intent intent = new Intent(getActivity(), HistoryItemDetailActivity.class);
 				intent.putExtra("page_type", 1);
 				intent.putExtra("position", position);
-				intent.putExtra("templateType", "PanormaSetting");
+				intent.putExtra("templateType", "PanoramaSetting");
 				startActivity(intent);
 				break;
 			default:
