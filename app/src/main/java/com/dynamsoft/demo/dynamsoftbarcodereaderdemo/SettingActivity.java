@@ -85,10 +85,10 @@ public class SettingActivity extends BaseActivity {
 	TextView tvBinarizationBlockSize;
 	@BindView(R.id.et_binarization_block_size)
 	EditText etBinarizationBlockSize;
-	@BindView(R.id.tv_max_dimof_full_image_as_barcode_zone)
-	TextView tvMaxDimofFullImageAsBarcodeZone;
-	@BindView(R.id.et_max_dimof_full_image_as_barcode_zone)
-	EditText etMaxDimofFullImageAsBarcodeZone;
+	//@BindView(R.id.tv_max_dimof_full_image_as_barcode_zone)
+	//TextView tvMaxDimofFullImageAsBarcodeZone;
+	//@BindView(R.id.et_max_dimof_full_image_as_barcode_zone)
+	//EditText etMaxDimofFullImageAsBarcodeZone;
 	@BindView(R.id.tv_max_barcode_count)
 	TextView tvMaxBarcodeCount;
 	@BindView(R.id.et_max_barcode_count)
@@ -129,7 +129,7 @@ public class SettingActivity extends BaseActivity {
 		etTimeout.setOnEditorActionListener(onEditFinish);
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
 		etBinarizationBlockSize.setOnEditorActionListener(onEditFinish);
-		etMaxDimofFullImageAsBarcodeZone.setOnEditorActionListener(onEditFinish);
+		//etMaxDimofFullImageAsBarcodeZone.setOnEditorActionListener(onEditFinish);
 		etMaxBarcodeCount.setOnEditorActionListener(onEditFinish);
 		etScaleDownThreshold.setOnEditorActionListener(onEditFinish);
 		scEnableFillBinaryVacancy.setOnCheckedChangeListener(onSCCheckedChange);
@@ -183,11 +183,11 @@ public class SettingActivity extends BaseActivity {
 				tvBinarizationBlockSize.setVisibility(View.GONE);
 				etBinarizationBlockSize.setVisibility(View.VISIBLE);
 				break;
-			case R.id.tv_max_dimof_full_image_as_barcode_zone:
+			/*case R.id.tv_max_dimof_full_image_as_barcode_zone:
 				etMaxDimofFullImageAsBarcodeZone.setText(tvMaxDimofFullImageAsBarcodeZone.getText());
 				tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.GONE);
 				etMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
-				break;
+				break;*/
 			case R.id.tv_max_barcode_count:
 				etMaxBarcodeCount.setText(tvMaxBarcodeCount.getText());
 				tvMaxBarcodeCount.setVisibility(View.GONE);
@@ -339,7 +339,7 @@ public class SettingActivity extends BaseActivity {
 			spTextureDetectionSensitivity.setSelection(mImageParameter.getTextureDetectionSensitivity());
 			tvBinarizationBlockSize.setText(String.valueOf(mImageParameter.getBinarizationBlockSize()));
 
-			tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mImageParameter.getMaxDimOfFullImageAsBarcodeZone()));
+			//tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mImageParameter.getMaxDimOfFullImageAsBarcodeZone()));
 			tvMaxBarcodeCount.setText(String.valueOf(mImageParameter.getMaxBarcodesCount()));
 			scEnableFillBinaryVacancy.setChecked(mImageParameter.isEnableFillBinaryVacancy());
 			ArrayList<String> formats = mImageParameter.getBarcodeFormatIds();
@@ -594,7 +594,7 @@ public class SettingActivity extends BaseActivity {
 						etBinarizationBlockSize.setVisibility(View.GONE);
 						tvBinarizationBlockSize.setVisibility(View.VISIBLE);
 						break;
-					case R.id.et_max_dimof_full_image_as_barcode_zone:
+					/*case R.id.et_max_dimof_full_image_as_barcode_zone:
 						try {
 							imm.hideSoftInputFromWindow(etMaxDimofFullImageAsBarcodeZone.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etMaxDimofFullImageAsBarcodeZone.getText().toString());
@@ -611,7 +611,7 @@ public class SettingActivity extends BaseActivity {
 						tvMaxDimofFullImageAsBarcodeZone.setText(String.valueOf(mImageParameter.getMaxDimOfFullImageAsBarcodeZone()));
 						etMaxDimofFullImageAsBarcodeZone.setVisibility(View.GONE);
 						tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
-						break;
+						break;*/
 					case R.id.et_max_barcode_count:
 						try{
 							imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);

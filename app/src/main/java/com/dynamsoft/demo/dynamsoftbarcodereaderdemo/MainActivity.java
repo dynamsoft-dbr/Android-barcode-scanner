@@ -20,11 +20,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -465,7 +468,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		resultTime.setText("Total time spent: " + String.valueOf(duringTime) + "ms");
 		ArrayList<Map<String, String>> resultMapList = new ArrayList<>();
 		for (int i = 0; i < results.length; i++){
-			resultMapList.clear();
 			Map<String, String> temp = new HashMap<>();
 			temp.put("Barcode: ", String.valueOf(i + 1));
 			temp.put("Format: ", DBRUtil.getCodeFormat(results[i].barcodeFormat + ""));
@@ -476,8 +478,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				new String[]{"Barcode: ", "Format: ", "Text: "}, new int[]{R.id.tv_result_index, R.id.tv_result_format, R.id.tv_result_text});
 		resultAdapter.notifyDataSetChanged();
 		resultListView.setAdapter(resultAdapter);
-		resultListView.setSelection(0);
-		android.support.v7.app.AlertDialog.Builder resultBuilder = new android.support.v7.app.AlertDialog.Builder(this);
+		final AlertDialog resultBuilder = new AlertDialog.Builder(MainActivity.this).create();
 		resultBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
@@ -485,7 +486,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 		});
 		resultBuilder.setView(dialogView);
-		resultBuilder.create().show();
+		WindowManager windowManager = getWindowManager();
+		Display display = windowManager.getDefaultDisplay();
+		WindowManager.LayoutParams layoutParams = resultBuilder.getWindow().getAttributes();
+		layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+		layoutParams.width = display.getWidth();
+		resultBuilder.getWindow().setAttributes(layoutParams);
+		resultBuilder.show();
 		Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
 		vibrator.vibrate(500);
 	}

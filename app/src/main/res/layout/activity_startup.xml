@@ -6,7 +6,6 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="#fff1f2f7"
-	android:onClick="onViewClicked"
 	tools:layout_editor_absoluteY="25dp">
 
 	<Button
@@ -65,7 +64,6 @@
 			android:layout_marginLeft="20dp"
 			android:layout_gravity="center_vertical"
 			android:background="@drawable/icon_generalscan"
-			android:onClick="onClick"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />

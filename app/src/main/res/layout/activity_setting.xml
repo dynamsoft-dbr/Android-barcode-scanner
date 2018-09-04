@@ -16,20 +16,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/textview_width">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:gravity="start|center_vertical"
-                    android:text="@string/template_name"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-            </RelativeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -597,49 +583,6 @@
                     android:onClick="onClicked"
                     android:scaleType="fitEnd"
                     android:src="@drawable/arrowright" />
-            </RelativeLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/borden_height"
-                android:background="#fff3f3f3" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/textview_width">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:gravity="start|center_vertical"
-                    android:text="@string/max_dimof_full_image_as_barcode_zone"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/tv_max_dimof_full_image_as_barcode_zone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    android:gravity="center"
-                    android:onClick="onClicked"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/et_max_dimof_full_image_as_barcode_zone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    android:inputType="number"
-                    android:singleLine="true"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp"
-                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
