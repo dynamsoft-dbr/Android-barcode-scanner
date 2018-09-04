@@ -2,7 +2,9 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
@@ -17,11 +19,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -95,6 +100,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int DETECT_BARCODE = 0x0001;
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
 	private final int BARCODE_RECT_COORD = 0x0003;
+	private final int BARCODE_RESULT = 0x0004;
 	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
 	private final int REQUEST_SETTING = 0x0002;
 	private final int RESPONSE_GENERAL_SETTING = 0x0001;
@@ -178,6 +184,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				case OBTAIN_PREVIEW_SIZE:
 					obtainPreviewScale();
 					break;
+				case BARCODE_RESULT:
+					showResults((TextResult[])msg.obj);
 				default:
 					break;
 			}
@@ -437,6 +445,44 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
 	}
+	private void showResults(TextResult[] results){
+		View dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog, null);
+		ListView resultListView = (ListView)dialogView.findViewById(R.id.lv_result_list);
+		TextView resultTime = (TextView)dialogView.findViewById(R.id.tv_result_decode_time);
+		resultTime.setText("Total time spent: " + String.valueOf(duringTime) + "ms");
+		ArrayList<Map<String, String>> resultMapList = new ArrayList<>();
+		for (int i = 0; i < results.length; i++){
+			resultMapList.clear();
+			Map<String, String> temp = new HashMap<>();
+			temp.put("Barcode: ", String.valueOf(i + 1));
+			temp.put("Format: ", DBRUtil.getCodeFormat(results[i].barcodeFormat + ""));
+			temp.put("Text: ", results[i].barcodeText);
+			resultMapList.add(temp);
+		}
+		SimpleAdapter resultAdapter = new SimpleAdapter(MainActivity.this, resultMapList, R.layout.item_listview_result_list,
+				new String[]{"Barcode: ", "Format: ", "Text: "}, new int[]{R.id.tv_result_index, R.id.tv_result_format, R.id.tv_result_text});
+		resultAdapter.notifyDataSetChanged();
+		resultListView.setAdapter(resultAdapter);
+		resultListView.setSelection(0);
+		/*int height = 0;
+		for (int i = 0;i < resultAdapter.getCount(); i++){
+			View listItem = resultAdapter.getView(i, null, resultListView);
+			listItem.measure(0, 0);
+			height += listItem.getMeasuredHeight();
+		}
+		ViewGroup.LayoutParams layoutParams = resultListView.getLayoutParams();
+		layoutParams.height = height + (resultListView.getDividerHeight() * (resultAdapter.getCount() - 1));
+		resultListView.setLayoutParams(layoutParams);*/
+		android.support.v7.app.AlertDialog.Builder resultBuilder = new android.support.v7.app.AlertDialog.Builder(this);
+		resultBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+			  detectStart = true;
+			}
+		});
+		resultBuilder.setView(dialogView);
+		resultBuilder.create().show();
+	}
 
 	private void obtainPreviewScale() {
 		if (hudView.getWidth() == 0 || hudView.getHeight() == 0) {
@@ -591,7 +637,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							resultArrayList.add(result[i]);
 						}
 					}
+
 					result = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
+					LocalizationResult[] r = reader.getAllLocalizationResults();
 					Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
@@ -599,8 +647,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						message.obj = result;
 						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
-						coordMessage.obj = rectCoord;
-						if ("OverlapSetting".equals(templateType) || "PanoramaSetting".equals(templateType)) {
+						if ("OverlapSetting".equals(templateType)) {
 							if (frameTime == 0) {
 								yuvInfo = new YuvInfo();
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
@@ -619,27 +666,83 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								} else {
 									yuvInfoList.set(1, yuvInfo);
 								}
+								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
+										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
+								if (coordsMapResult != null) {
+									LocalizationResult localizationResult;
+									TextResult textResult;
+									switch (coordsMapResult.basedImg) {
+										case 0:
+											handleImage(yuvInfoList.get(1), null);
+											yuvInfoList.set(0, yuvInfoList.get(1));
+											break;
+										case 1:
+											TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
+											for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
 
-							} else {
-								isDetected = true;
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+												newResultBase1[i] = textResult;
+											}
+											yuvInfo.textResult = newResultBase1;
+											coordMessage.obj = frameUtil.handlePoints(yuvInfo.textResult, previewScale, hgt, wid);
+											yuvInfoList.set(0, yuvInfo);
+											handleImage(yuvInfoList.get(0), yuvInfoList.get(1).cacheName);
+											break;
+										case 2:
+											TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
+											for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
+												localizationResult = new LocalizationResult();
+												localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
+												textResult = new TextResult();
+												textResult.localizationResult = localizationResult;
+												textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+												textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+												textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
+												newResultBase2[i] = textResult;
+											}
+											yuvInfo.textResult = newResultBase2;
+											coordMessage.obj = frameUtil.handlePoints(yuvInfo.textResult, previewScale, hgt, wid);
+											yuvInfoList.set(0, yuvInfo);
+											handleImage(yuvInfoList.get(1), yuvInfoList.get(0).cacheName);
+											break;
+										case -1:
+											break;
+										default:
+											break;
+									}
+								}
 							}
-							coordMessage.what = BARCODE_RECT_COORD;
-							handler.sendMessage(coordMessage);
-							coordMap(wid, hgt);
-						} else if ("GeneralSetting".equals(templateType) || "MultiBestSetting".equals(templateType)) {
+						}
+						if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)){
+							Message resultMessage = handler.obtainMessage();
+							resultMessage.what = BARCODE_RESULT;
+							resultMessage.obj = result;
+							handler.sendMessage(resultMessage);
+							detectStart = false;
+							coordMessage.obj = rectCoord;
 							yuvInfo = new YuvInfo();
-							yuvInfo.cacheName = System.currentTimeMillis() + "";
-							yuvInfo.yuvImage = yuvImage;
 							yuvInfo.textResult = result;
+							yuvInfo.yuvImage = yuvImage;
+							yuvInfo.cacheName = System.currentTimeMillis() + "";
 							handleImage(yuvInfo, null);
 						}
+
+					} else {
+
+						isDetected = true;
 					}
+					coordMessage.what = BARCODE_RECT_COORD;
+					handler.sendMessage(coordMessage);
 				}
-			} catch(BarcodeReaderException e) {
+			} catch (BarcodeReaderException e) {
 				e.printStackTrace();
 			}
-
-
 		}
 
 		private void deleteErroCache(String name) {

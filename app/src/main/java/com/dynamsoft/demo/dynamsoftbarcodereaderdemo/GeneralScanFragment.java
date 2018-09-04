@@ -36,7 +36,7 @@ public class GeneralScanFragment extends BaseFragment {
 	private HistoryActivity historyActivity;
 
 	private HistoryListAdapter historyListAdapter;
-	private ArrayList<DBRImage> imageList;
+	private List<DBRImage> imageList;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -72,13 +72,10 @@ public class GeneralScanFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-		imageList = new ArrayList<>();
-		Collections.reverse(allImageList);
-		for (DBRImage dbrImage : allImageList) {
-			if (dbrImage.getTemplateType().equals("GeneralSetting") && imageList.size() < 16) {
-				imageList.add(dbrImage);
-			}
+		imageList = LitePal.findAll(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());

@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,12 +53,19 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	private HistoryContentPagerAdapter historyContentPagerAdapter;
 	private final int PAGE_TYPE = 0x0001;
 	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap", "Panorama"};
+	private List<Fragment> mFragmentList = new ArrayList<>();
+	private OverlapHistoryFragment overLapFg;
+	private GeneralScanFragment generalSanFg;
+	private BestCoverageFragment bestCoverageFg;
+	private PanoramaFragment panoramaFg;
+
 	@Override
 	protected int getLayoutId() {
 		return R.layout.activity_history;
 	}
 
 	private String pageTitle;
+
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
@@ -66,7 +74,16 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		setToolbarTitleColor("#000000");
 		setToolbarNavIcon(R.drawable.ic_action_back);
 
-		historyContentPagerAdapter = new HistoryContentPagerAdapter(getSupportFragmentManager(), mTitles);
+		overLapFg = new OverlapHistoryFragment();
+		generalSanFg = new GeneralScanFragment();
+		bestCoverageFg = new BestCoverageFragment();
+		panoramaFg = new PanoramaFragment();
+		mFragmentList.add(overLapFg);
+		mFragmentList.add(generalSanFg);
+		mFragmentList.add(bestCoverageFg);
+		mFragmentList.add(panoramaFg);
+
+		historyContentPagerAdapter = new HistoryContentPagerAdapter(getSupportFragmentManager(), mTitles, mFragmentList);
 		vpHistoryContent.setAdapter(historyContentPagerAdapter);
 		overlapTab.setOnTabSelectListener(this);
 		overlapTab.setViewPager(vpHistoryContent);
@@ -87,7 +104,7 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
-		builder.setMessage("Clear the history list of "+pageTitle + "?");
+		builder.setMessage("Clear the history list of " + pageTitle + "?");
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i) {
@@ -106,43 +123,19 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	}
 
 	private void clearHistoryList() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-				ArrayList<DBRImage> imageList = new ArrayList<>();
-				String type = "";
-				if (pageTitle.equals(mTitles[0])) {
-					type = "GeneralSetting";
-				} else if (pageTitle.equals(mTitles[1])) {
-					type = "MultiBestSetting";
-				} else if (pageTitle.equals(mTitles[2])) {
-					type = "OverlapSetting";
-				} else if (pageTitle.equals(mTitles[3])){
-					type = "PanoramaSetting";
-				}
-				for (DBRImage dbrImage : allImageList) {
-					if (dbrImage.getTemplateType().equals(type) && imageList.size() < 16) {
-						imageList.add(dbrImage);
-					}
-				}
-				if (imageList != null && imageList.size() > 0){
-					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
-					for (int i = 0; i < imageList.size(); i++){
-						File temp = new File(path, imageList.get(i).getFileName());
-						if (temp.isFile()){
-							temp.delete();
-						}
-					}
-					LitePal.deleteAll(DBRImage.class, "templateType=?", type);
-					Message message = handler.obtainMessage();
-					message.what = PAGE_TYPE;
-					message.obj = type;
-					handler.sendMessage(message);
-				}
-			}
-
-		}).start();
+		switch (vpHistoryContent.getCurrentItem()) {
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				overLapFg.clearHistoryList();
+				break;
+			case 3:
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Override
@@ -154,7 +147,8 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	public void onTabReselect(int position) {
 		pageTitle = String.valueOf(historyContentPagerAdapter.getPageTitle(position));
 	}
-	public void setHandler(Handler handler){
+
+	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}
 }
