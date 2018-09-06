@@ -14,13 +14,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryListAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 
 import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +41,10 @@ public class BestCoverageFragment extends BaseFragment{
 	private RecyclerView rlvHistory;
 	private ProgressBar progressBar;
 	private HistoryActivity historyActivity;
+	private ImageView ivEmpty;
+	private TextView tvNoFiles;
+	private TextView tvStart;
+	private Button btnAddNow;
 
 	private HistoryListAdapter historyListAdapter;
 	private List<DBRImage> imageList;
@@ -49,6 +57,10 @@ public class BestCoverageFragment extends BaseFragment{
 				historyListAdapter.notifyDataSetChanged();
 			}
 			progressBar.setVisibility(View.GONE);
+			btnAddNow.setVisibility(View.VISIBLE);
+			tvStart.setVisibility(View.VISIBLE);
+			tvNoFiles.setVisibility(View.VISIBLE);
+			ivEmpty.setVisibility(View.VISIBLE);
 		}
 	};
 
@@ -57,6 +69,18 @@ public class BestCoverageFragment extends BaseFragment{
 		View v = inflater.inflate(R.layout.fragment_history_item, null);
 		rlvHistory = v.findViewById(R.id.rl_history);
 		progressBar = v.findViewById(R.id.pb_progress);
+		ivEmpty = v.findViewById(R.id.iv_empty);
+		tvNoFiles = v.findViewById(R.id.tv_no_files);
+		tvStart = v.findViewById(R.id.tv_start);
+		btnAddNow = v.findViewById(R.id.btn_add_now);
+		btnAddNow.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DBRCache mCache = DBRCache.get(getActivity(), "SettingCache");
+				mCache.put("templateType", "MultiBestSetting");
+				startActivity(new Intent(getActivity(), MainActivity.class));
+			}
+		});
 		return v;
 	}
 
@@ -69,13 +93,21 @@ public class BestCoverageFragment extends BaseFragment{
 	}
 
 	private void fillHistoryList() {
-		List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
-		Collections.reverse(allImageList);
-		imageList = new ArrayList<>();
-		for (DBRImage dbrImage : allImageList) {
-			if (dbrImage.getTemplateType().equals("MultiBestSetting") && imageList.size() < 16) {
-				imageList.add(dbrImage);
-			}
+		imageList = DataSupport.where("templateType = ?", "MultiBestSetting").find(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
+		}
+		if (imageList.isEmpty()){
+			btnAddNow.setVisibility(View.VISIBLE);
+			tvStart.setVisibility(View.VISIBLE);
+			tvNoFiles.setVisibility(View.VISIBLE);
+			ivEmpty.setVisibility(View.VISIBLE);
+		} else {
+			btnAddNow.setVisibility(View.GONE);
+			tvStart.setVisibility(View.GONE);
+			tvNoFiles.setVisibility(View.GONE);
+			ivEmpty.setVisibility(View.GONE);
 		}
 		historyListAdapter.setData(imageList);
 		rlvHistory.addItemDecoration(BGADivider.newShapeDivider());
@@ -89,7 +121,7 @@ public class BestCoverageFragment extends BaseFragment{
 			public void run() {
 				List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
 				for (DBRImage dbrImage : allImageList) {
-					if (dbrImage.getTemplateType().equals("MultiBestSetting")) {
+					if ("MultiBestSetting".equals(dbrImage.getTemplateType())) {
 						imageList.add(dbrImage);
 					}
 				}

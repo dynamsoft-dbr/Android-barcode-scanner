@@ -27,17 +27,17 @@
 		android:id="@+id/menu_scanning"
 		android:icon="@drawable/icon_scanning_selected"
 		android:orderInCategory="100"
-		android:title="Scanning"
+		android:title="Video"
 		app:showAsAction="never"/>
 	<item
 		android:id="@+id/menu_capture"
-		android:icon="@drawable/icon_camera_selected"
+		android:icon="@drawable/icon_camera_unselected"
 		android:orderInCategory="100"
 		android:title="Capture"
 		app:showAsAction="never"/>
 	<item
 		android:id="@+id/menu_file"
-		android:icon="@drawable/icon_file_selected"
+		android:icon="@drawable/icon_file_unselected"
 		android:orderInCategory="100"
 		android:title="File"
 		app:showAsAction="never"/>

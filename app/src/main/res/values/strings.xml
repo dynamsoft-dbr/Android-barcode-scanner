@@ -69,4 +69,7 @@
     <string name="one_off_scan_with_a_thorough_search">One-off scan with a thorough search</string>
     <string name="continuous_scan_filter_duplicates">Continuous scan; filter duplicates</string>
     <string name="continuous_scan_stitch_video_frames">Continuous scan; stitch video frames</string>
+    <string name="add_now">Add Now</string>
+    <string name="start_to_scan_some_barcodes">Start to scan some barcodes</string>
+    <string name="you_have_no_files">You have no files</string>
 </resources>

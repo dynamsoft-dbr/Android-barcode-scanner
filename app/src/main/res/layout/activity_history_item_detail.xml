@@ -51,7 +51,7 @@
 		android:layoutAnimation="@anim/listview_layout_anim"
 		android:dividerHeight="1dp"
 		android:layout_width="match_parent"
-		android:layout_height="200dp"/>
+		android:layout_height="160dp"/>
 
 	<ProgressBar
 		android:visibility="gone"

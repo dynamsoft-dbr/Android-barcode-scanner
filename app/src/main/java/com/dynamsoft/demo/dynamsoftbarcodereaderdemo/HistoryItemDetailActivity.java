@@ -1,6 +1,10 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,6 +93,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private int pageType;
 	private ShareUtil shareUtil;
 	private Long decodeTime;
+	private String spentTime;
 	private int angle;
 	private int scaleValue = -1;
 	private List<DBRImage> dbrImageList;
@@ -239,13 +245,33 @@ public class HistoryItemDetailActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Bitmap shotBitmap = shareUtil.getScreenShot(this);
-		if (shotBitmap != null) {
-			ArrayList<Uri> imageUris = new ArrayList<>();
-			Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
-			imageUris.add(uri);
-			shareUtil.shareMultiImages(imageUris, this);
-		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+		builder.setMessage("Do you want to share this picture or barcode text?");
+		builder.setNegativeButton("Share picture", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Bitmap shotBitmap = shareUtil.getScreenShot(HistoryItemDetailActivity.this);
+				if (shotBitmap != null) {
+					ArrayList<Uri> imageUris = new ArrayList<>();
+					Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
+					imageUris.add(uri);
+					shareUtil.shareMultiImages(imageUris, HistoryItemDetailActivity.this);
+				}
+			}
+		});
+		builder.setPositiveButton("Share text", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String shareText = spentTime + " QTY: " + String.valueOf(recentCodeList.size()) + "\n";
+				for (Map<String, String> item : recentCodeList){
+					shareText += item.get("index") + " Format: " + item.get("format") + " Text: " + item.get("text") + "\n";
+				}
+				shareUtil.shareText(null, null, shareText, null, null);
+
+			}
+		});
+		builder.create();
+		builder.show();
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -272,7 +298,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		Collections.reverse(allImageList);
 		imageList = new ArrayList<>();
 		for (DBRImage dbrImage : allImageList) {
-			if (dbrImage.getTemplateType().equals(getIntent().getStringExtra("templateType")) && imageList.size() < 16) {
+			if (getIntent().getStringExtra("templateType").equals(dbrImage.getTemplateType()) && imageList.size() < 16) {
 				imageList.add(dbrImage);
 			}
 		}
@@ -292,7 +318,8 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				item.put("text", imageList.get(position).getCodeText().get(i));
 				recentCodeList.add(item);
 			}
-			tvDecodeTime.setText("Total time spent: " + String.valueOf(imageList.get(position).getDecodeTime()) + "ms");
+			spentTime = "Total time spent: " + String.valueOf(imageList.get(position).getDecodeTime()) + "ms";
+			tvDecodeTime.setText(spentTime);
 			tvBarcodeCount.setText("QTY: " + String.valueOf(recentCodeList.size()));
 			simpleAdapter.notifyDataSetChanged();
 			lvCodeList.startLayoutAnimation();

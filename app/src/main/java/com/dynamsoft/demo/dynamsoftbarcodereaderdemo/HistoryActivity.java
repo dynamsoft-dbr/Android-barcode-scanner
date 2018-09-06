@@ -149,8 +149,4 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	public void onTabReselect(int position) {
 		pageTitle = String.valueOf(historyContentPagerAdapter.getPageTitle(position));
 	}
-
-	public void setHandler(Handler handler) {
-		this.handler = handler;
-	}
 }

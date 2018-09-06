@@ -49,12 +49,6 @@ public class PanoramaFragment extends BaseFragment {
 		}
 	};
 	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		historyActivity = (HistoryActivity)context;
-		historyActivity.setHandler(handler);
-	}
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_history_item, null);
 		rlvHistory = v.findViewById(R.id.rl_history);

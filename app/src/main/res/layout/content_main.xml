@@ -62,8 +62,23 @@
 		android:layout_marginBottom="50dp"
 		android:background="@drawable/icon_capture"
 		android:visibility="gone"/>
-
-
+	<RelativeLayout
+		android:id="@+id/line_done"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:background="#55000000">
+		<Button
+			android:id="@+id/btn_done"
+			android:layout_width="100dp"
+			android:layout_height="50dp"
+			android:textAllCaps="false"
+			android:textSize="20sp"
+			android:layout_alignParentRight="true"
+			android:layout_marginRight="10dp"
+			android:text="Done"
+			android:background="@color/transparent"/>
+	</RelativeLayout>
 	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
 		android:id="@+id/sliding_drawer"
 		xmlns:android="http://schemas.android.com/apk/res/android"
@@ -95,12 +110,14 @@
 				android:layout_height="match_parent"
 				android:layout_marginTop="40dp"
 				android:layoutAnimation="@anim/listview_layout_anim"/>
-			<LinearLayout
+			<TableRow
 				android:id="@+id/drag_view"
 				android:layout_width="match_parent"
 				android:layout_height="50dp"
 				android:background="#fff1f2f6"
-				android:orientation="horizontal">
+				android:orientation="horizontal"
+				android:descendantFocusability="blocksDescendants"
+				android:focusableInTouchMode="true">
 				<TextView
 					android:id="@+id/tv_drag_qty"
 					android:layout_width="60dp"
@@ -109,24 +126,66 @@
 					android:textSize="16sp"
 					android:textColor="#ff7c7c7c"
 					android:layout_marginLeft="20dp"
-					android:gravity="center_vertical"/>
+					android:gravity="center_vertical"
+					android:clickable="true"
+					android:focusable="true"
+					android:duplicateParentState="true"/>
+				<ImageButton
+					android:layout_width="50dp"
+					android:layout_height="50dp"
+					android:duplicateParentState="true"
+					android:clickable="true"
+					android:focusable="true"
+					android:scaleType="centerInside"
+					android:background="@color/transparent"
+					android:layout_gravity="center_vertical"
+					android:gravity="center"/>
 				<TextView
 					android:id="@+id/drag_text"
-					android:layout_width="wrap_content"
+					android:layout_width="195dp"
 					android:layout_height="match_parent"
-					android:layout_marginLeft="50dp"
-					android:layout_marginRight="10dp"
+					android:duplicateParentState="true"
 					android:clickable="true"
-					android:gravity="center_vertical|right"
+					android:focusable="true"
+					android:gravity="center"
 					android:text="Pull up to see more results"
 					android:textColor="#ff7c7c7c"
 					android:textSize="16sp"/>
-				<ImageView
-					android:id="@+id/iv_pull"
-					android:layout_width="20dp"
-					android:layout_height="12dp"
-					android:layout_marginTop="18dp"/>
-			</LinearLayout>
+				<LinearLayout
+					android:layout_height="50dp"
+					android:layout_width="100dp"
+					android:orientation="vertical"
+					android:duplicateParentState="true"
+					android:clickable="true"
+					android:focusable="true">
+					<ImageButton
+						android:layout_width="100dp"
+						android:layout_height="19dp"
+						android:duplicateParentState="true"
+						android:clickable="true"
+						android:focusable="true"
+						android:background="@color/transparent"/>
+					<ImageButton
+						android:id="@+id/iv_pull"
+						android:layout_width="20dp"
+						android:layout_height="12dp"
+						android:duplicateParentState="true"
+						android:clickable="true"
+						android:focusable="true"
+						android:scaleType="fitXY"
+						android:src="@drawable/arrow_down"
+						android:background="@color/transparent"
+						android:layout_gravity="center_vertical"
+						android:gravity="center"/>
+					<ImageButton
+						android:layout_width="100dp"
+						android:layout_height="19dp"
+						android:duplicateParentState="true"
+						android:clickable="true"
+						android:focusable="true"
+						android:background="@color/transparent"/>
+				</LinearLayout>
+			</TableRow>
 		</FrameLayout>
 	</com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer>
 </RelativeLayout>

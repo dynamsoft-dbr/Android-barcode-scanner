@@ -205,38 +205,40 @@
 				android:text="@string/continuous_scan_stitch_video_frames"/>
 		</LinearLayout>
 	</LinearLayout>-->
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="20dp"
-		app:srcCompat="@drawable/logo"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		android:layout_marginBottom="16dp"
-		android:layout_marginRight="190dp"
-		/>
-	<TextView
-		android:id="@+id/tv_url"
-		android:layout_width="wrap_content"
+	<RelativeLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="16dp"
-		android:textSize="16sp"
-		android:layout_marginLeft="160dp"
-		android:text="Dynamsoft Barcode Reader"
-		android:textColor="#ff3e82f9"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
-
-
-	<ImageView
-		android:id="@+id/imageView2"
-		android:layout_width="20dp"
-		android:layout_height="20dp"
-		app:srcCompat="@drawable/arrow_blue"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		android:layout_marginBottom="16dp"
-		android:layout_marginRight="32dp"
-		/>
+		android:layout_marginBottom="10dp">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="20dp"
+			app:srcCompat="@drawable/logo"
+			android:layout_marginBottom="16dp"
+			android:layout_marginRight="242dp"
+			/>
+		<TextView
+			android:id="@+id/tv_url"
+			android:layout_width="200dp"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:textSize="16sp"
+			android:layout_marginRight="42dp"
+			android:layout_alignParentRight="true"
+			android:text="Dynamsoft Barcode Reader"
+			android:textColor="#ff3e82f9" />
+
+		<ImageView
+			android:id="@+id/imageView2"
+			android:layout_width="20dp"
+			android:layout_height="20dp"
+			app:srcCompat="@drawable/arrow_blue"
+			android:layout_marginBottom="16dp"
+			android:layout_marginRight="22dp"
+			android:layout_alignParentRight="true"
+			/>
+	</RelativeLayout>
 
 
 
