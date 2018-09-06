@@ -229,7 +229,7 @@ public class ShareUtil {
 		dView.setDrawingCacheEnabled(true);
 		dView.buildDrawingCache();
 		Bitmap bitmap = Bitmap.createBitmap(dView.getDrawingCache());
-
+		dView.destroyDrawingCache();
 		return bitmap;
 	}
 

@@ -131,7 +131,7 @@ public class OverlapHistoryFragment extends BaseFragment {
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 					for (int i = 0; i < imageList.size(); i++){
 						File temp = new File(path, imageList.get(i).getFileName());
-						if(temp.isFile()){
+						if(temp.exists()){
 							temp.delete();
 						}
 					}

@@ -25,21 +25,21 @@
 
 	<item
 		android:id="@+id/menu_scanning"
-		android:icon="@drawable/icon_scanning_selected"
+		android:icon="@mipmap/video_able"
 		android:orderInCategory="100"
-		android:title="Video"
-		app:showAsAction="never"/>
+		app:showAsAction="never"
+		android:title=""/>
 	<item
 		android:id="@+id/menu_capture"
-		android:icon="@drawable/icon_camera_unselected"
+		android:icon="@mipmap/capture_unable"
 		android:orderInCategory="100"
-		android:title="Capture"
-		app:showAsAction="never"/>
+		app:showAsAction="never"
+		android:title="" />
 	<item
 		android:id="@+id/menu_file"
-		android:icon="@drawable/icon_file_unselected"
+		android:icon="@mipmap/file_unable"
 		android:orderInCategory="100"
-		android:title="File"
-		app:showAsAction="never"/>
+		app:showAsAction="never"
+		android:title=""/>
 
 </menu>

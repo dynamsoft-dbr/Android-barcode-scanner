@@ -128,8 +128,8 @@ public class BestCoverageFragment extends BaseFragment{
 				if (imageList != null && imageList.size() > 0) {
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 					for (int i = 0; i < imageList.size(); i++){
-						File temp = new File(path, imageList.get(i).getFileName());
-						if(temp.isFile()){
+						File temp = new File(path, imageList.get(i).getFileName() + ".jpg");
+						if(temp.exists()){
 							temp.delete();
 						}
 					}

@@ -111,7 +111,7 @@ import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
 public class MainActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
 	private final int DETECT_BARCODE = 0x0001;
 	private final int OBTAIN_PREVIEW_SIZE = 0x0002;
-	private final int BARCODE_RECT_COORD = 0x0003;
+	//private final int BARCODE_RECT_COORD = 0x0003;
 	private final int BARCODE_RESULT = 0x0004;
 	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
 	private final int REQUEST_SETTING = 0x0002;
@@ -150,6 +150,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	Button btnDone;
 	@BindView(R.id.line_done)
 	RelativeLayout lineDone;
+	//@BindView(R.id.tv_first_text)
+	//TextView tvFirstText;
+	//@BindView(R.id.tv_first_format)
+	//TextView tvFirstFormat;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	String templateType;
@@ -179,6 +183,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 	private long duringTime;
 	private Menu mMenu;
+	private int hgt;
+	private int wid;
+	private int flag = 0;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -202,14 +209,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							mScanCount.setText(count + " Barcode Scanned");
 						}
 						tvQTY.setText("QTY: " + result.length);
+						drawDocumentBox(frameUtil.handlePoints(result, previewScale, hgt, wid));
+						//tvFirstFormat.setText(DBRUtil.getCodeFormat(result[0].barcodeFormat + ""));
+						//tvFirstText.setText(result[0].barcodeText);
 					}
 					else {
 						tvQTY.setText("QTY: 0");
+						hudView.clear();
 					}
 					break;
-				case BARCODE_RECT_COORD:
+				/*case BARCODE_RECT_COORD:
 					drawDocumentBox((ArrayList<RectPoint[]>) msg.obj);
-					break;
+					break;*/
 				case OBTAIN_PREVIEW_SIZE:
 					obtainPreviewScale();
 					break;
@@ -350,6 +361,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			menu.findItem(R.id.menu_scanning).setVisible(false);
 			menu.findItem(R.id.menu_Setting).setVisible(true);
 		}
+		if ("OverlapSetting".equals(templateType)) {
+			menu.findItem(R.id.menu_file).setVisible(false);
+			menu.findItem(R.id.menu_capture).setVisible(false);
+			menu.findItem(R.id.menu_scanning).setVisible(false);
+		}
 		mMenu = menu;
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -393,13 +409,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		MenuItem capture = mMenu.findItem(R.id.menu_capture);
 		switch (item.getItemId()) {
 			case R.id.menu_scanning:
-				item.setIcon(R.drawable.icon_scanning_selected);
-				capture.setIcon(R.drawable.icon_camera_unselected);
+				item.setIcon(R.mipmap.video_able);
+				capture.setIcon(R.mipmap.capture_unable);
 				switchToMulti();
 				break;
 			case R.id.menu_capture:
-				item.setIcon(R.drawable.icon_camera_selected);
-				scan.setIcon(R.drawable.icon_scanning_unselected);
+				item.setIcon(R.mipmap.capture_able);
+				scan.setIcon(R.mipmap.video_unable);
 				switchToSingle();
 				break;
 			case R.id.menu_file:
@@ -652,7 +668,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnDone.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+				Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+				intent.putExtra("templateType", templateType);
+				startActivity(intent);
 			}
 		});
 	}
@@ -704,8 +722,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					}
 					YuvImage yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
 							frame.getSize().width, frame.getSize().height, null);
-					int wid = frame.getSize().width;
-					int hgt = frame.getSize().height;
+					wid = frame.getSize().width;
+					hgt = frame.getSize().height;
 					startDetectTime = System.currentTimeMillis();
 					result = reader.decodeBuffer(yuvImage.getYuvData(), wid, hgt,
 							yuvImage.getStrides()[0], EnumImagePixelFormat.IPF_NV21, "Custom");
@@ -719,7 +737,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					}
 					result = resultArrayList.toArray(new TextResult[resultArrayList.size()]);
 					LocalizationResult[] r = reader.getAllLocalizationResults();
-					Message coordMessage = handler.obtainMessage();
+					//Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					if (result != null && result.length > 0) {
 						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
@@ -749,7 +767,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									TextResult textResult;
 									switch (coordsMapResult.basedImg) {
 										case 0:
-											coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
+											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
+											message.obj = yuvInfoList.get(1).textResult;
 											handleImage(yuvInfoList.get(0), null);
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
@@ -767,13 +786,20 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												newResultBase1[i] = textResult;
 											}
 											if (coordsMapResult.isAllCodeMapped) {
-												yuvInfoList.get(0).textResult = newResultBase1;
-												coordMessage.obj = frameUtil.handlePoints(newResultBase1, previewScale, hgt, wid);
-												message.obj = newResultBase1;
+												flag++;
+												if (flag > 5){
+													flag = 0;
+													message.obj = yuvInfoList.get(1).textResult;
+													yuvInfoList.set(0, yuvInfoList.get(1));
+												} else {
+													yuvInfoList.get(0).textResult = newResultBase1;
+													//coordMessage.obj = frameUtil.handlePoints(newResultBase1, previewScale, hgt, wid);
+													message.obj = newResultBase1;
+												}
 											} else {
 												yuvInfoList.get(0).textResult = newResultBase1;
 												handleImage(yuvInfoList.get(0), null);
-												coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
+												//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
 												message.obj = yuvInfoList.get(1).textResult;
 												yuvInfoList.set(0, yuvInfo);
 											}
@@ -792,19 +818,19 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											}
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(1).textResult = newResultBase2;
-												coordMessage.obj = frameUtil.handlePoints(newResultBase2, previewScale, hgt, wid);
+												//coordMessage.obj = frameUtil.handlePoints(newResultBase2, previewScale, hgt, wid);
 												message.obj = newResultBase2;
 												yuvInfoList.set(0, yuvInfoList.get(1));
 											} else {
 												yuvInfoList.get(1).textResult = newResultBase2;
 												handleImage(yuvInfoList.get(0), null);
-												coordMessage.obj = frameUtil.handlePoints(newResultBase2, previewScale, hgt, wid);
+												//coordMessage.obj = frameUtil.handlePoints(newResultBase2, previewScale, hgt, wid);
 												message.obj = newResultBase2;
 												yuvInfoList.set(0, yuvInfoList.get(1));
 											}
 											break;
 										case -1:
-											coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
+											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
 											message.obj = yuvInfoList.get(1).textResult;
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
@@ -814,7 +840,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								}
 							}
 						}
-						if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)){
+						if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)) {
 							Message resultMessage = handler.obtainMessage();
 							resultMessage.what = BARCODE_RESULT;
 							resultMessage.obj = result;
@@ -826,15 +852,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvInfo.cacheName = System.currentTimeMillis() + "";
 							handleImage(yuvInfo, null);
 						}
-
+						//coordMessage.what = BARCODE_RECT_COORD;
+						//handler.sendMessage(coordMessage);
+						message.what = DETECT_BARCODE;
+						handler.sendMessage(message);
 					} else {
-
-						isDetected = true;
+						message.obj = null;
+						message.what = DETECT_BARCODE;
+						handler.sendMessage(message);
 					}
-					coordMessage.what = BARCODE_RECT_COORD;
-					handler.sendMessage(coordMessage);
-					message.what = DETECT_BARCODE;
-					handler.sendMessage(message);
+
+				} else {
+					isDetected = true;
 				}
 			} catch (BarcodeReaderException e) {
 				e.printStackTrace();

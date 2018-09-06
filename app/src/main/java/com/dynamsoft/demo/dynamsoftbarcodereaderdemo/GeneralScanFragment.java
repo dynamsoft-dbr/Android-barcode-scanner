@@ -92,7 +92,7 @@ public class GeneralScanFragment extends BaseFragment {
 	}
 
 	private void fillHistoryList() {
-		imageList = DataSupport.where("templateType = ?", "MultiBestSetting").find(DBRImage.class);
+		imageList = DataSupport.where("templateType = ?", "GeneralSetting").find(DBRImage.class);
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
 			imageList = imageList.subList(0, 16);
@@ -128,7 +128,7 @@ public class GeneralScanFragment extends BaseFragment {
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 					for (int i = 0; i < imageList.size(); i++){
 						File temp = new File(path, imageList.get(i).getFileName());
-						if(temp.isFile()){
+						if(temp.exists()){
 							temp.delete();
 						}
 					}

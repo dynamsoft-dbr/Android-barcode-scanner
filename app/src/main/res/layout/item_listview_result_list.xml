@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:descendantFocusability="blocksDescendants">
     <RelativeLayout
@@ -41,7 +41,7 @@
             android:cursorVisible="true"
             android:gravity="center_vertical"/>
     </RelativeLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp">
         <TextView
@@ -54,19 +54,22 @@
             android:text="Text: "/>
         <TextView
             android:id="@+id/tv_result_text"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
             android:textColor="#000000"
+            android:maxLines="2"
             android:clickable="true"
             android:cursorVisible="true"
-            android:layout_marginLeft="20dp"/>
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="76dp"/>
         <TextView
-            android:layout_width="60dp"
+            android:layout_width="33dp"
             android:layout_height="30dp"
             android:textColor="#ff3e82f9"
-            android:text="copy text"
+            android:text="copy"
             android:textAllCaps="false"
             android:background="@android:color/transparent"
-            android:layout_marginLeft="15dp"/>
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="40dp"/>
+    </RelativeLayout>
 </LinearLayout>

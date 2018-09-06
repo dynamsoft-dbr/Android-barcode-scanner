@@ -84,9 +84,18 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 
 		historyContentPagerAdapter = new HistoryContentPagerAdapter(getSupportFragmentManager(), mTitles, mFragmentList);
 		vpHistoryContent.setAdapter(historyContentPagerAdapter);
+		String type = getIntent().getStringExtra("templateType");
+		if (type != null) {
+			if (type.equals("GeneralSetting")) {
+				vpHistoryContent.setCurrentItem(0);
+			} else if (type.equals("MultiBestSetting")) {
+				vpHistoryContent.setCurrentItem(1);
+			} else if (type.equals("OverlapSetting")) {
+				vpHistoryContent.setCurrentItem(2);
+			}
+		}
 		generalScanTab.setOnTabSelectListener(this);
 		generalScanTab.setViewPager(vpHistoryContent);
-		pageTitle = mTitles[0];
 	}
 
 	@Override

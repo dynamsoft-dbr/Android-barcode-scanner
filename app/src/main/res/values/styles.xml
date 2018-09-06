@@ -58,7 +58,8 @@
 		<item name="android:textColorPrimary">@android:color/white</item>
 		<item name="android:textColorSecondary">#ffffff</item>
 		<item name="overlapAnchor">false</item>
-		<item name="android:dropDownWidth">50dp</item>
+		<item name="android:paddingLeft">5dp</item>
+		<item name="android:dropDownWidth">20dp</item>
 		<item name="android:popupBackground">@drawable/bg_popmenu_black</item>
 	</style>
 
