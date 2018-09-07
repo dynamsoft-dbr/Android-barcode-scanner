@@ -4,7 +4,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/cl_item_history"
 	android:layout_width="match_parent"
-	android:layout_height="100dp">
+	android:layout_height="90dp">
 
 	<ImageView
 		android:id="@+id/iv_codeimg"
@@ -21,31 +21,18 @@
 		android:id="@+id/tv_codetext"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="16dp"
+		android:layout_marginBottom="35dp"
 		android:layout_marginEnd="8dp"
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="8dp"
 		android:layout_marginStart="16dp"
-		android:layout_marginTop="16dp"
 		android:maxLength="20"
 		android:text="text"
 		android:textColor="#000000"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintHorizontal_bias="0.0"
-		app:layout_constraintStart_toEndOf="@+id/iv_codeimg"
-		app:layout_constraintTop_toBottomOf="@+id/tv_codeformat"/>
-
-	<TextView
-		android:id="@+id/tv_codeformat"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="24dp"
-		android:maxLength="20"
-		android:text="code format"
-		android:textColor="#000000"
-		app:layout_constraintStart_toStartOf="@+id/tv_codetext"
-		app:layout_constraintTop_toTopOf="parent"/>
+		app:layout_constraintStart_toEndOf="@+id/iv_codeimg"/>
 
 	<ImageView
 		android:id="@+id/imageView"

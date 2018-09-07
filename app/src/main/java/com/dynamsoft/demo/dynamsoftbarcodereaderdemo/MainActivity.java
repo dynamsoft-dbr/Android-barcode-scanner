@@ -787,9 +787,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											}
 											if (coordsMapResult.isAllCodeMapped) {
 												flag++;
-												if (flag > 5){
+												if (flag > 2){
 													flag = 0;
 													message.obj = yuvInfoList.get(1).textResult;
+													handleImage(yuvInfoList.get(0), null
+													);
 													yuvInfoList.set(0, yuvInfoList.get(1));
 												} else {
 													yuvInfoList.get(0).textResult = newResultBase1;
@@ -834,6 +836,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											message.obj = yuvInfoList.get(1).textResult;
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
+										case -2:
+											message.obj = yuvInfoList.get(1).textResult;
+											handleImage(yuvInfoList.get(1), null);
+											yuvInfoList.set(0, yuvInfoList.get(1));
 										default:
 											break;
 									}

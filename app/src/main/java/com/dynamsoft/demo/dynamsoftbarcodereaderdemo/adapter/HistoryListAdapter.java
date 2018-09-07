@@ -29,7 +29,7 @@ public class HistoryListAdapter extends BGARecyclerViewAdapter<DBRImage> {
 	@Override
 	protected void fillData(BGAViewHolderHelper helper, int position, DBRImage model) {
 		Glide.with(mContext).load(model.getCodeImgPath()).into(helper.getImageView(R.id.iv_codeimg));
-		helper.setText(R.id.tv_codeformat, model.getFileName());
+		//helper.setText(R.id.tv_codeformat, model.getFileName());
 		long modifyDate = new File(model.getCodeImgPath()).lastModified();
 		SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
