@@ -91,8 +91,31 @@ public class GeneralScanFragment extends BaseFragment {
 		fillHistoryList();
 	}
 
+	@Override
+	public void onResume() {
+		imageList = LitePal.where("templateType = ?", "GeneralSetting").find(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
+		}
+		if (imageList.isEmpty()){
+			btnAddNow.setVisibility(View.VISIBLE);
+			tvStart.setVisibility(View.VISIBLE);
+			tvNoFiles.setVisibility(View.VISIBLE);
+			ivEmpty.setVisibility(View.VISIBLE);
+		} else {
+			btnAddNow.setVisibility(View.GONE);
+			tvStart.setVisibility(View.GONE);
+			tvNoFiles.setVisibility(View.GONE);
+			ivEmpty.setVisibility(View.GONE);
+		}
+		historyListAdapter.setData(imageList);
+		historyListAdapter.notifyDataSetChanged();
+		super.onResume();
+	}
+
 	private void fillHistoryList() {
-		imageList = DataSupport.where("templateType = ?", "GeneralSetting").find(DBRImage.class);
+		imageList = LitePal.where("templateType = ?", "GeneralSetting").find(DBRImage.class);
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
 			imageList = imageList.subList(0, 16);
@@ -127,7 +150,7 @@ public class GeneralScanFragment extends BaseFragment {
 				if (imageList != null && imageList.size() > 0) {
 					String path = Environment.getExternalStorageDirectory() + "/dbr-preview-img";
 					for (int i = 0; i < imageList.size(); i++){
-						File temp = new File(path, imageList.get(i).getFileName());
+						File temp = new File(path, imageList.get(i).getFileName() + ".jpg");
 						if(temp.exists()){
 							temp.delete();
 						}

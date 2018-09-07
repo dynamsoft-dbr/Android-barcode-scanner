@@ -43,6 +43,7 @@ public class SettingActivity extends BaseActivity {
 	private DBRCache mSettingCache;
 	private DBRSetting.ImageParameter mImageParameter;
 	private String templateType;
+	private boolean beepSoundEnable = true;
 	private List<String> one2Ten = new ArrayList<>();
 	private List<String> colourImageConvertMode = new ArrayList<>();
 	private List<String> barcodeInvertMode = new ArrayList<>();
@@ -99,6 +100,8 @@ public class SettingActivity extends BaseActivity {
 	SwitchCompat scRegionPredetectionMode;
 	@BindView(R.id.sc_text_filter_mode)
 	SwitchCompat scTextFilterMode;
+	@BindView(R.id.sc_beep_sound)
+	SwitchCompat scBeepSound;
 	@BindView(R.id.sp_deblur_level)
 	Spinner spDeblurLevel;
 	@BindView(R.id.sp_anti_damage_level)
@@ -135,6 +138,7 @@ public class SettingActivity extends BaseActivity {
 		scEnableFillBinaryVacancy.setOnCheckedChangeListener(onSCCheckedChange);
 		scRegionPredetectionMode.setOnCheckedChangeListener(onSCCheckedChange);
 		scTextFilterMode.setOnCheckedChangeListener(onSCCheckedChange);
+		scBeepSound.setOnCheckedChangeListener(onSCCheckedChange);
 		mDataMatrix.setOnCheckedChangeListener(onCKBCheckedChange);
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
@@ -306,6 +310,7 @@ public class SettingActivity extends BaseActivity {
 	}
 	private void initSetting(){
 		mSettingCache = DBRCache.get(this, "SettingCache");
+		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
 		templateType = mSettingCache.getAsString("templateType");
 		try {
 			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
@@ -382,6 +387,7 @@ public class SettingActivity extends BaseActivity {
 		if (mImageParameter.getBarcodeFormatIds().size() > 0){
 			mSetting.setImageParameter(mImageParameter);
 			try {
+				mSettingCache.put("beepSound", String.valueOf(beepSoundEnable));
 				if ("GeneralSetting".equals(templateType)) {
 					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					setResult(RESPONSE_GENERAL_SETTING);
@@ -426,18 +432,23 @@ public class SettingActivity extends BaseActivity {
 				case R.id.sc_region_predetection_mode:
 					if(scRegionPredetectionMode.isChecked()) {
 						mImageParameter.setRegionPredetectionMode("Enable");
-					}
-					else {
+					} else {
 						mImageParameter.setRegionPredetectionMode("Disable");
 					}
 					break;
 				case R.id.sc_text_filter_mode:
 					if(scTextFilterMode.isChecked()) {
 						mImageParameter.setTextFilterMode("Enable");
-					}else {
+					} else {
 						mImageParameter.setTextFilterMode("Disable");
 					}
 					break;
+				case R.id.sc_beep_sound:
+					if (scBeepSound.isChecked()) {
+						beepSoundEnable = true;
+					} else {
+						beepSoundEnable = false;
+					}
 				default:
 					break;
 			}

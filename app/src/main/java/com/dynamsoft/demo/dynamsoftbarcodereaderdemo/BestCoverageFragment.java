@@ -92,8 +92,30 @@ public class BestCoverageFragment extends BaseFragment{
 		fillHistoryList();
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		imageList = LitePal.where("templateType = ?", "MultiBestSetting").find(DBRImage.class);
+		Collections.reverse(imageList);
+		if (imageList.size() > 16) {
+			imageList = imageList.subList(0, 16);
+		}
+		if (imageList.isEmpty()){
+			btnAddNow.setVisibility(View.VISIBLE);
+			tvStart.setVisibility(View.VISIBLE);
+			tvNoFiles.setVisibility(View.VISIBLE);
+			ivEmpty.setVisibility(View.VISIBLE);
+		} else {
+			btnAddNow.setVisibility(View.GONE);
+			tvStart.setVisibility(View.GONE);
+			tvNoFiles.setVisibility(View.GONE);
+			ivEmpty.setVisibility(View.GONE);
+		}
+		historyListAdapter.setData(imageList);
+	}
+
 	private void fillHistoryList() {
-		imageList = DataSupport.where("templateType = ?", "MultiBestSetting").find(DBRImage.class);
+		imageList = LitePal.where("templateType = ?", "MultiBestSetting").find(DBRImage.class);
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
 			imageList = imageList.subList(0, 16);

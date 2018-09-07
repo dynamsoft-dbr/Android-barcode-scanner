@@ -36,7 +36,7 @@
 		android:id="@+id/tv_startup_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="85dp"
+		android:layout_marginTop="70dp"
 		android:text="Barcode Scanner X"
 		android:textColor="@android:color/black"
 		android:textSize="30sp"
@@ -49,7 +49,7 @@
 		android:id="@+id/btn_general"
 		android:layout_width="360dp"
 		android:layout_height="100dp"
-		android:layout_marginTop="180dp"
+		android:layout_marginTop="160dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -90,7 +90,7 @@
 		android:id="@+id/btn_multi_best"
 		android:layout_width="360dp"
 		android:layout_height="100dp"
-		android:layout_marginTop="310dp"
+		android:layout_marginTop="285dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -130,7 +130,7 @@
 		android:id="@+id/btn_multi_bal"
 		android:layout_width="360dp"
 		android:layout_height="100dp"
-		android:layout_marginTop="440dp"
+		android:layout_marginTop="410dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -210,7 +210,7 @@
 		android:layout_height="wrap_content"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		android:layout_marginBottom="10dp">
+		android:layout_marginBottom="8dp">
 		<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="20dp"
@@ -227,13 +227,14 @@
 			android:layout_marginRight="42dp"
 			android:layout_alignParentRight="true"
 			android:text="Dynamsoft Barcode Reader"
-			android:textColor="#ff3e82f9" />
+			android:textColor="#999999" />
 
 		<ImageView
 			android:id="@+id/imageView2"
 			android:layout_width="20dp"
 			android:layout_height="20dp"
-			app:srcCompat="@drawable/arrow_blue"
+			android:background="#ffffff"
+			app:srcCompat="@drawable/icon_arrow_in"
 			android:layout_marginBottom="16dp"
 			android:layout_marginRight="22dp"
 			android:layout_alignParentRight="true"

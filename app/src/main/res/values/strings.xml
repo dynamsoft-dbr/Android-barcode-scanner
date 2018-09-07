@@ -23,6 +23,7 @@
     <string name="qrcode">QRCode</string>
     <string name="pdf417">PDF417</string>
     <string name="datamatrix">DataMatrix</string>
+    <string name="beep_sound">Beep Sound</string>
     <string name="dynamsoft_website_url">https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx</string>
     <string name="dbr_license">f0068MgAAAN/HXxKkeMu0Wnn8QMpX8TmOsFzoFCc6nZt/UbYAc1AuNRp7aVacH/Huwj4HaGVi4p1WOPb/VtrtLU9HAc/ejPU=</string>
     <string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
