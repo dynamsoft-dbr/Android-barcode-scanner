@@ -91,11 +91,12 @@
 		<LinearLayout
 			android:id="@id/non_slidable_view"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="300dp">
 
 			<TextView
+				android:id="@+id/tv_border"
 				android:layout_width="match_parent"
-				android:layout_height="300dp"/>
+				android:layout_height="match_parent"/>
 		</LinearLayout>
 
 		<FrameLayout
@@ -120,9 +121,9 @@
 				android:focusableInTouchMode="true">
 				<TextView
 					android:id="@+id/tv_drag_qty"
-					android:layout_width="60dp"
+					android:layout_width="90dp"
 					android:layout_height="match_parent"
-					android:text="QTY: 0"
+					android:text="Quantity: 0"
 					android:textSize="16sp"
 					android:textColor="#ff7c7c7c"
 					android:layout_marginLeft="20dp"
@@ -131,7 +132,7 @@
 					android:focusable="true"
 					android:duplicateParentState="true"/>
 				<ImageButton
-					android:layout_width="50dp"
+					android:layout_width="25dp"
 					android:layout_height="50dp"
 					android:duplicateParentState="true"
 					android:clickable="true"
