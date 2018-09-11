@@ -57,7 +57,7 @@ public class DBRSetting implements Serializable {
 		@JsonField
 		private int expectedBarcodesCount = 0;
 		@JsonField
-		private int timeout = 10000;
+		private int timeout = 2000;
 		@JsonField
 		private int deblurLevel = 9;
 		@JsonField

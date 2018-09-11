@@ -178,14 +178,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private ExecutorService threadManager = Executors.newSingleThreadExecutor();
 	private boolean hasCameraPermission;
 	private Fotoapparat fotoapparat;
-	private YuvInfo yuvInfo;
-	private YuvInfo readySaveYuvInfo;
-	private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 	private long duringTime;
 	private Menu mMenu;
 	private int hgt;
 	private int wid;
-	private int flag = 0;
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -203,17 +199,17 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									allResultText.add(aResult.barcodeText);
 								}
 							}
-							tvQTY.setText("Quantity: " + allResultText.size());
+							tvQTY.setText("Total: " + allResultText.size());
 							if (result.length <= 1) {
-								mScanCount.setText(result.length + " Barcode Scanned");
+								mScanCount.setText(result.length + "");
 							} else {
-								mScanCount.setText(result.length + " Barcodes Scanned");
+								mScanCount.setText(result.length + "");
 							}
 							drawDocumentBox(frameUtil.handlePoints(result, previewScale, hgt, wid));
 							//tvFirstFormat.setText(DBRUtil.getCodeFormat(result[0].barcodeFormat + ""));
 							//tvFirstText.setText(result[0].barcodeText);
 						} else {
-							mScanCount.setText("0 Barcode Scanned");
+							mScanCount.setText("");
 							hudView.clear();
 						}
 					}
@@ -754,7 +750,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		startActivityForResult(intent, REQUEST_SETTING);
 	}
 	private int i = 1;
+	private String errorCache;
+	private byte[] saveData;
 	class CodeFrameProcesser implements FrameProcessor {
+		YuvImage yuvImage;
+		private YuvInfo yuvInfo;
+		private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
@@ -765,8 +766,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
 						handler.sendMessage(obtainPreviewMsg);
 					}
-
-					YuvImage yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
+					byte[] t = new byte[frame.getImage().length];
+					System.arraycopy(frame.getImage(), 0, t, 0, frame.getImage().length);
+					yuvImage = new YuvImage(t, ImageFormat.NV21,
 							frame.getSize().width, frame.getSize().height, null);
 					wid = frame.getSize().width;
 					hgt = frame.getSize().height;
@@ -815,8 +817,26 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					result = textResults.toArray(new TextResult[textResults.size()]);
 					//Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
+					message.what = DETECT_BARCODE;
 					if (result != null && result.length > 0) {
-						ArrayList<RectPoint[]> rectCoord = frameUtil.handlePoints(result, previewScale, hgt, wid);
+						/*try {
+							YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
+									yuvImage.getWidth(), yuvInfo.yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
+							File previewFile = new File(path + "/" + i + ".jpg");
+							Log.e("iiiii", i + "");
+							if (!previewFile.exists()) {
+								previewFile.getParentFile().mkdirs();
+								previewFile.createNewFile();
+							}
+							FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
+							newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
+							fileOutputStream.flush();
+							fileOutputStream.close();
+							i++;
+						}
+						catch (Exception ex){
+							ex.printStackTrace();
+						}*/
 						if ("OverlapSetting".equals(templateType)) {
 							if (frameTime == 0) {
 								yuvInfo = new YuvInfo();
@@ -838,41 +858,58 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
 								if (coordsMapResult != null) {
-									LocalizationResult localizationResult;
-									TextResult textResult;
+									LocalizationResult localizationResult1;
+									TextResult textResult1;
+									LocalizationResult localizationResult2;
+									TextResult textResult2;
+									Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
 									switch (coordsMapResult.basedImg) {
 										case 0:
 											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
 											message.obj = yuvInfoList.get(1).textResult;
-											handleImage(yuvInfoList.get(0), null);
+											handler.sendMessage(message);
+											//handleImage(yuvInfoList.get(0), null);
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										case 1:
 											TextResult[] mapResultInImage2 = new TextResult[coordsMapResult.mapResultInImageTwo.length];
 											TextResult[] newResultBase1 = new TextResult[coordsMapResult.resultArr.length];
 											for (int i = 0; i < coordsMapResult.mapResultInImageTwo.length; i++){
-												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.mapResultInImageTwo[i].pts;
-												textResult = new TextResult();
-												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.mapResultInImageTwo[i].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.mapResultInImageTwo[i].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.mapResultInImageTwo[i].format;
-												mapResultInImage2[i] = textResult;
+												localizationResult1 = new LocalizationResult();
+												localizationResult1.resultPoints = coordsMapResult.mapResultInImageTwo[i].pts;
+												textResult1 = new TextResult();
+												textResult1.localizationResult = localizationResult1;
+												textResult1.barcodeText = coordsMapResult.mapResultInImageTwo[i].barcodeText;
+												textResult1.barcodeBytes = coordsMapResult.mapResultInImageTwo[i].barcodeBytes;
+												textResult1.barcodeFormat = coordsMapResult.mapResultInImageTwo[i].format;
+												mapResultInImage2[i] = textResult1;
 											}
 											for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-												localizationResult = new LocalizationResult();
-												localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
-												textResult = new TextResult();
-												textResult.localizationResult = localizationResult;
-												textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
-												textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
-												textResult.barcodeFormat = coordsMapResult.resultArr[i].format;
-												newResultBase1[i] = textResult;
+												localizationResult2 = new LocalizationResult();
+												localizationResult2.resultPoints = coordsMapResult.resultArr[i].pts;
+												textResult2 = new TextResult();
+												textResult2.localizationResult = localizationResult2;
+												textResult2.barcodeText = coordsMapResult.resultArr[i].barcodeText;
+												textResult2.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
+												textResult2.barcodeFormat = coordsMapResult.resultArr[i].format;
+												newResultBase1[i] = textResult2;
 											}
 											message.obj = mapResultInImage2;
+											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(0).textResult = newResultBase1;
+												if (saveData == null){
+													saveData = yuvImage.getYuvData();
+												}
+												YuvImage yuvImage1 = new YuvImage(saveData, ImageFormat.NV21, wid, hgt, null);
+												yuvInfo = yuvInfoList.get(0);
+												yuvInfo.yuvImage = yuvImage1;
+//												Log.e("Points: ", yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[0].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[0].y + " " +
+//																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[1].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[1].y + " " +
+//																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[2].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[2].y + " " +
+//																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].y + " " );
+												handleImage(yuvInfo, yuvInfoList.get(0).cacheName);
+												errorCache = null;
 												/*if (readySaveYuvInfo != null) {
 													//coordMapAndSave(readySaveYuvInfo, yuvInfoList.get(0));
 													readySaveYuvInfo = null;
@@ -882,16 +919,18 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												}*/
 											} else {
 												yuvInfoList.get(0).textResult = newResultBase1;
+												yuvInfoList.get(1).textResult = mapResultInImage2;
 												handleImage(yuvInfoList.get(0), null);
+												errorCache = null;
 												yuvInfoList.set(0, yuvInfoList.get(1));
 											}
 											break;
 										case 2:
 											TextResult[] newResultBase2 = new TextResult[coordsMapResult.resultArr.length];
 											for (int i = 0; i < coordsMapResult.resultArr.length; i++) {
-												localizationResult = new LocalizationResult();
+												LocalizationResult localizationResult = new LocalizationResult();
 												localizationResult.resultPoints = coordsMapResult.resultArr[i].pts;
-												textResult = new TextResult();
+												TextResult textResult = new TextResult();
 												textResult.localizationResult = localizationResult;
 												textResult.barcodeText = coordsMapResult.resultArr[i].barcodeText;
 												textResult.barcodeBytes = coordsMapResult.resultArr[i].barcodeBytes;
@@ -899,30 +938,37 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												newResultBase2[i] = textResult;
 											}
 											message.obj = newResultBase2;
+											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(1).textResult = newResultBase2;
 												yuvInfoList.set(0, yuvInfoList.get(1));
+												handleImage(yuvInfoList.get(0), errorCache);
+												errorCache = yuvInfoList.get(0).cacheName;
 											} else {
 												yuvInfoList.get(1).textResult = newResultBase2;
 												handleImage(yuvInfoList.get(0), null);
 												yuvInfoList.set(0, yuvInfoList.get(1));
+												errorCache = null;
 											}
 											break;
 										case -1:
 											message.obj = yuvInfoList.get(1).textResult;
+											handler.sendMessage(message);
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										case -2:
 											message.obj = yuvInfoList.get(1).textResult;
+											handler.sendMessage(message);
 											handleImage(yuvInfoList.get(0), null);
+											errorCache = null;
 											yuvInfoList.set(0, yuvInfoList.get(1));
+											break;
 										default:
 											break;
 									}
 								}
 							}
-						}
-						if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)) {
+						} else if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)) {
 							Message resultMessage = handler.obtainMessage();
 							resultMessage.what = BARCODE_RESULT;
 							resultMessage.obj = result;
@@ -936,11 +982,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						}
 						//coordMessage.what = BARCODE_RECT_COORD;
 						//handler.sendMessage(coordMessage);
-						message.what = DETECT_BARCODE;
-						handler.sendMessage(message);
 					} else {
 						message.obj = null;
-						message.what = DETECT_BARCODE;
 						handler.sendMessage(message);
 					}
 

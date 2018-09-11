@@ -553,13 +553,13 @@ public class SettingActivity extends BaseActivity {
 								mImageParameter.setTimeout(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
-								mImageParameter.setTimeout(10000);
+								mImageParameter.setTimeout(2000);
 							}
 						}
 						catch (Exception ex){
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
-							mImageParameter.setTimeout(10000);
+							mImageParameter.setTimeout(2000);
 						}
 						tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 						etTimeout.setVisibility(View.GONE);
