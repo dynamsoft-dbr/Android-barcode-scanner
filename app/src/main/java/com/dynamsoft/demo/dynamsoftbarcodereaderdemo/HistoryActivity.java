@@ -112,6 +112,9 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+		if (pageTitle == null){
+			pageTitle = "General Scan";
+		}
 		builder.setMessage("Clear the history list of " + pageTitle + "?");
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override

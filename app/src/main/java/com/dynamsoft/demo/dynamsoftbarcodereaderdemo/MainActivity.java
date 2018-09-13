@@ -3,6 +3,7 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -165,7 +166,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private DBRCache mSettingCache;
 	private DBRSetting mSetting;
 	private boolean isFlashOn = false;
-	private ArrayList<String> allResultText = new ArrayList<>();
+	private ArrayList<Map<String, Integer>> allResultText = new ArrayList<>();
 	private float previewScale;
 	private Resolution previewSize = null;
 	private FrameUtil frameUtil;
@@ -194,17 +195,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						TextResult[] result = (TextResult[]) msg.obj;
 						if (result != null) {
 							fulFillRecentList(result);
-							for (TextResult aResult : result) {
-								if (!allResultText.contains(aResult.barcodeText)) {
-									allResultText.add(aResult.barcodeText);
+							for (TextResult aResult: result) {
+								Map<String, Integer> t = new HashMap<>();
+								t.put(aResult.barcodeText, aResult.barcodeFormat);
+								if (!allResultText.contains(t)){
+									allResultText.add(t);
 								}
 							}
 							tvQTY.setText("Total: " + allResultText.size());
-							if (result.length <= 1) {
-								mScanCount.setText(result.length + "");
-							} else {
-								mScanCount.setText(result.length + "");
-							}
+							mScanCount.setText(result.length + "");
 							drawDocumentBox(frameUtil.handlePoints(result, previewScale, hgt, wid));
 							//tvFirstFormat.setText(DBRUtil.getCodeFormat(result[0].barcodeFormat + ""));
 							//tvFirstText.setText(result[0].barcodeText);
@@ -750,12 +749,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		startActivityForResult(intent, REQUEST_SETTING);
 	}
 	private int i = 1;
-	private String errorCache;
-	private byte[] saveData;
+	//private String errorCache;
+	//private byte[] saveData;
 	class CodeFrameProcesser implements FrameProcessor {
 		YuvImage yuvImage;
 		private YuvInfo yuvInfo;
 		private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
+		private ArrayList<YuvInfo> saveCache = new ArrayList<>();
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
@@ -857,18 +857,27 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								}
 								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
+								/*if (coordsMapResult.resultArr.length == 5){
+									Log.e("", "");
+								}*/
 								if (coordsMapResult != null) {
 									LocalizationResult localizationResult1;
 									TextResult textResult1;
 									LocalizationResult localizationResult2;
 									TextResult textResult2;
 									Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
+									Log.e("SavingCacheSize: ", saveCache.size() + "");
 									switch (coordsMapResult.basedImg) {
 										case 0:
 											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
 											message.obj = yuvInfoList.get(1).textResult;
 											handler.sendMessage(message);
-											//handleImage(yuvInfoList.get(0), null);
+											if (saveCache.size() == 0) {
+												saveCache.add(yuvInfoList.get(0).clone());
+												handleImage(yuvInfoList.get(0), null);
+											} else {
+												checkSaveCache(saveCache, yuvInfoList.get(0));
+											}
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										case 1:
@@ -898,30 +907,28 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(0).textResult = newResultBase1;
-												if (saveData == null){
-													saveData = yuvImage.getYuvData();
-												}
-												YuvImage yuvImage1 = new YuvImage(saveData, ImageFormat.NV21, wid, hgt, null);
-												yuvInfo = yuvInfoList.get(0);
-												yuvInfo.yuvImage = yuvImage1;
 //												Log.e("Points: ", yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[0].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[0].y + " " +
 //																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[1].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[1].y + " " +
 //																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[2].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[2].y + " " +
 //																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].y + " " );
-												handleImage(yuvInfo, yuvInfoList.get(0).cacheName);
-												errorCache = null;
-												/*if (readySaveYuvInfo != null) {
-													//coordMapAndSave(readySaveYuvInfo, yuvInfoList.get(0));
-													readySaveYuvInfo = null;
+												//handleImage(yuvInfoList.get(0), yuvInfoList.get(0).cacheName);
+												if (saveCache.size() == 0){
+													YuvInfo yuvInfo1 = new YuvInfo();
+													saveCache.add(yuvInfoList.get(0).clone());
+													handleImage(yuvInfoList.get(0), null);
 												} else {
-													//handleImage(yuvInfoList.get(0), null);
-													readySaveYuvInfo = yuvInfoList.get(0);
-												}*/
+													checkSaveCache(saveCache, yuvInfoList.get(0));
+												}
 											} else {
 												yuvInfoList.get(0).textResult = newResultBase1;
 												yuvInfoList.get(1).textResult = mapResultInImage2;
-												handleImage(yuvInfoList.get(0), null);
-												errorCache = null;
+												if (saveCache.size() == 0){
+													saveCache.add(yuvInfoList.get(0).clone());
+													handleImage(yuvInfoList.get(0), null);
+												} else {
+													checkSaveCache(saveCache, yuvInfoList.get(0));
+												}
+												//errorCache = null;
 												yuvInfoList.set(0, yuvInfoList.get(1));
 											}
 											break;
@@ -941,26 +948,40 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(1).textResult = newResultBase2;
+												//errorCache = yuvInfoList.get(1).cacheName;
 												yuvInfoList.set(0, yuvInfoList.get(1));
-												handleImage(yuvInfoList.get(0), errorCache);
-												errorCache = yuvInfoList.get(0).cacheName;
 											} else {
 												yuvInfoList.get(1).textResult = newResultBase2;
-												handleImage(yuvInfoList.get(0), null);
+												if (saveCache.size() == 0){
+													saveCache.add(yuvInfoList.get(0).clone());
+													handleImage(yuvInfoList.get(0), null);
+												} else {
+													checkSaveCache(saveCache, yuvInfoList.get(0));
+												}
 												yuvInfoList.set(0, yuvInfoList.get(1));
-												errorCache = null;
+												//errorCache = null;
 											}
 											break;
 										case -1:
 											message.obj = yuvInfoList.get(1).textResult;
+											if (saveCache.size() == 0){
+												saveCache.add(yuvInfoList.get(0).clone());
+												handleImage(yuvInfoList.get(0), null);
+											} else {
+												checkSaveCache(saveCache, yuvInfoList.get(0));
+											}
 											handler.sendMessage(message);
-											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
+
 										case -2:
 											message.obj = yuvInfoList.get(1).textResult;
 											handler.sendMessage(message);
-											handleImage(yuvInfoList.get(0), null);
-											errorCache = null;
+											if (saveCache.size() == 0){
+												saveCache.add(yuvInfoList.get(0).clone());
+												handleImage(yuvInfoList.get(0), null);
+											} else {
+												checkSaveCache(saveCache, yuvInfoList.get(0));
+											}
 											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										default:
@@ -995,60 +1016,23 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 		}
 
-		private void coordMapAndSave(YuvInfo yuvInfo1, YuvInfo yuvInfo2){
-			CoordsMapResult result = AfterProcess.coordsMap(yuvInfo1.textResult, yuvInfo2.textResult, wid, hgt);
-			/*TextResult[] mapResultInImage2 = new TextResult[result.mapResultInImageTwo.length];
-			TextResult[] newResultBase1 = new TextResult[result.resultArr.length];
-			for (int i = 0; i < result.mapResultInImageTwo.length; i++){
-				LocalizationResult localizationResult = new LocalizationResult();
-				localizationResult.resultPoints = result.mapResultInImageTwo[i].pts;
-				TextResult textResult = new TextResult();
-				textResult.localizationResult = localizationResult;
-				textResult.barcodeText = result.mapResultInImageTwo[i].barcodeText;
-				textResult.barcodeBytes = result.mapResultInImageTwo[i].barcodeBytes;
-				textResult.barcodeFormat = result.mapResultInImageTwo[i].format;
-				mapResultInImage2[i] = textResult;
-			}
-			for (int i = 0; i < result.resultArr.length; i++) {
-				LocalizationResult localizationResult = new LocalizationResult();
-				localizationResult.resultPoints = result.resultArr[i].pts;
-				TextResult textResult = new TextResult();
-				textResult.localizationResult = localizationResult;
-				textResult.barcodeText = result.resultArr[i].barcodeText;
-				textResult.barcodeBytes = result.resultArr[i].barcodeBytes;
-				textResult.barcodeFormat = result.resultArr[i].format;
-				newResultBase1[i] = textResult;
-			}*/
-			switch (result.basedImg) {
-				case 1:
-					if (!result.isAllCodeMapped){
-						handleImage(yuvInfo2, null);
-						//yuvInfo1.textResult = newResultBase1;
-						//return yuvInfo1;
-					} else {
-						//return yuvInfo2;
-					}
+		private void checkSaveCache(ArrayList<YuvInfo> saveCache, YuvInfo saving){
+			for (int i = saveCache.size() - 1; i >= 0; i--){
+				CoordsMapResult coordsMapResult = AfterProcess.coordsMap(saveCache.get(i).textResult, saving.textResult, wid, hgt);
+				Log.e("Save: ", saveCache.get(i).textResult.length + " " + saving.textResult.length);
+				Log.e("NEW CoordsMapResult", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped);
+				if (coordsMapResult.basedImg == -1 || (coordsMapResult.basedImg == 1 && coordsMapResult.isAllCodeMapped)){
+					Log.e("remove!", "");
 					break;
-				case 2:
-					if (result.isAllCodeMapped){
-						//yuvInfo2.textResult = newResultBase1;
-						handleImage(yuvInfo2, yuvInfo1.cacheName);
-						//return yuvInfo2;
-					} else {
-						handleImage(yuvInfo2, null);
-					}
+				} else if (coordsMapResult.basedImg == 2 && coordsMapResult.isAllCodeMapped){
+					Log.e("delete!", "");
+					handleImage(saving, saveCache.get(i).cacheName);
+					saveCache.remove(saveCache.get(i));
+				} else {
+					handleImage(saving, null);
+					saveCache.add(saving.clone());
 					break;
-				case 0:
-					handleImage(yuvInfo2, null);
-					break;
-				case -1:
-					handleImage(yuvInfo2, yuvInfo1.cacheName);
-					break;
-				case -2:
-					handleImage(yuvInfo2, null);
-					break;
-				default:
-					break;
+				}
 			}
 		}
 		private void deleteErroCache(String name) {
@@ -1057,21 +1041,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			}
 			List<DBRImage> erroImage = LitePal.where("fileName = ?", name).find(DBRImage.class);
 			if (erroImage != null && erroImage.size() > 0) {
+				LitePal.deleteAll(DBRImage.class, "fileName = ?", name);
 				File previewFile = new File(erroImage.get(0).getCodeImgPath());
 				if (previewFile.exists()) {
 					previewFile.delete();
-					LitePal.deleteAll(DBRImage.class, "fileName = ?", name);
 				}
 			}
 		}
 		private void handleImage(final YuvInfo yuvInfo, final String deleCacheName) {
+
 			endDetectTime = System.currentTimeMillis();
 			threadManager.execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						deleteErroCache(deleCacheName);
 						long startSaveFile = System.currentTimeMillis();
+						deleteErroCache(deleCacheName);
 						YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfo.yuvImage.getYuvData(),
 								yuvInfo.yuvImage.getWidth(), yuvInfo.yuvImage.getHeight()), ImageFormat.NV21, yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth(), null);
 						File previewFile = new File(path + "/" + yuvInfo.cacheName + ".jpg");

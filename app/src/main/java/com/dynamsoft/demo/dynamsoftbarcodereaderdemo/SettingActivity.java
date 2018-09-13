@@ -225,10 +225,12 @@ public class SettingActivity extends BaseActivity {
 		spBarcodeInvertMode.setAdapter(barcodeInvertModeSpinnerAdapter);
 		spColourImageConvertMode.setAdapter(colourImageConvertModeSpinnerAdapter);
 		mSettingCache = DBRCache.get(this, "SettingCache");
+		templateType = getIntent().getStringExtra("templateType");
 		try {
-			mSetting = LoganSquare.parse(mSettingCache.getAsString("GeneralSetting"), DBRSetting.class);
+			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
 		}
 		catch (Exception ex){
+
 			ex.printStackTrace();
 
 		}
@@ -311,10 +313,9 @@ public class SettingActivity extends BaseActivity {
 	private void initSetting(){
 		mSettingCache = DBRCache.get(this, "SettingCache");
 		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
-		templateType = mSettingCache.getAsString("templateType");
 		try {
-			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
-			mImageParameter = mSetting.getImageParameter();
+			//mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
+			//mImageParameter = mSetting.getImageParameter();
 			tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
 			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 			spDeblurLevel.setSelection(mImageParameter.getDeblurLevel());

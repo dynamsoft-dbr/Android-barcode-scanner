@@ -6,8 +6,8 @@ android {
         applicationId "com.dynamsoft.demo.dynamsoftbarcodereaderdemo"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 8
-        versionName "6.3.0"
+        versionCode 9
+        versionName "6.3.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -37,11 +37,13 @@ dependencies {
     implementation 'pub.devrel:easypermissions:1.2.0'
     implementation 'com.orhanobut:logger:2.2.0'
     implementation 'com.github.PierfrancescoSoffritti:SlidingDrawer:0.11'
-    implementation(name: 'DynamsoftBarcodeReaderAndroid-debug-9.11-5.41', ext: 'aar',)
+    implementation(name: 'DynamsoftBarcodeReaderAndroid-debug-9.12-2.13', ext: 'aar',)
     annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.6'
     implementation 'com.bluelinelabs:logansquare:1.3.6'
     implementation 'io.fotoapparat.fotoapparat:library:2.3.1'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation 'org.litepal.android:core:2.0.0'
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    testCompile 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 }

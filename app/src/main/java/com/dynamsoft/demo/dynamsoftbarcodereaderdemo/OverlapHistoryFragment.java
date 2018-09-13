@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryListAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
@@ -30,6 +32,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import cn.bingoogolapple.baseadapter.BGADivider;
@@ -94,6 +97,13 @@ public class OverlapHistoryFragment extends BaseFragment {
 
 	private void fillHistoryList() {
 		imageList = LitePal.where("templateType = ?", "OverlapSetting").find(DBRImage.class);
+		for (int i = 0; i < imageList.size() - 1; i++){
+			for (int j = imageList.size() - 1; j > i; j--){
+				if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+					imageList.remove(imageList.get(j));
+				}
+			}
+		}
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
 			imageList = imageList.subList(0, 16);
@@ -144,6 +154,13 @@ public class OverlapHistoryFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		imageList = LitePal.where("templateType = ?", "OverlapSetting").find(DBRImage.class);
+		for (int i = 0; i < imageList.size() - 1; i++){
+			for (int j = imageList.size() - 1; j > i; j--){
+				if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+					imageList.remove(imageList.get(j));
+				}
+			}
+		}
 		Collections.reverse(imageList);
 		if (imageList.size() > 16) {
 			imageList = imageList.subList(0, 16);
