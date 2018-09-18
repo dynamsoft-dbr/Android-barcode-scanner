@@ -22,6 +22,12 @@
 		android:orderInCategory="100"
 		android:title="Gallery"
 		app:showAsAction="always"/>
+	<item
+		android:id="@+id/menu_Done"
+		android:orderInCategory="100"
+		android:visible="false"
+		android:title="Done"
+		app:showAsAction="always"/>
 
 	<item
 		android:id="@+id/menu_scanning"

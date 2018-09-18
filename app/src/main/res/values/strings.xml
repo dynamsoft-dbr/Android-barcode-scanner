@@ -74,4 +74,5 @@
     <string name="add_now">Add Now</string>
     <string name="start_to_scan_some_barcodes">Start to scan some barcodes</string>
     <string name="you_have_no_files">You have no files</string>
+    <string name="title_activity_simple_setting">SimpleSettingActivity</string>
 </resources>

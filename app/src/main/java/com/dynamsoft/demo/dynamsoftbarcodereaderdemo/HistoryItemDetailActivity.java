@@ -300,13 +300,11 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		Collections.reverse(allImageList);
 		imageList = new ArrayList<>();
 		for (DBRImage dbrImage : allImageList) {
-			if (templateType.equals("OverlapSetting") && "OverlapSetting".equals(dbrImage.getTemplateType())){
-				imageList.add(dbrImage);
-			}else if (templateType.equals(dbrImage.getTemplateType()) && imageList.size() < 16) {
+			if (templateType.equals(dbrImage.getTemplateType()) && imageList.size() < 16) {
 				imageList.add(dbrImage);
 			}
 		}
-		if (templateType.equals("OverlapSetting")){
+		/*if (templateType.equals("OverlapSetting")){
 			for (int i = 0; i < imageList.size() - 1; i++){
 				for (int j = imageList.size() - 1; j > i; j--){
 					if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
@@ -317,7 +315,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			if (imageList.size() > 16){
 				imageList.subList(0, 16);
 			}
-		}
+		}*/
 		adapter = new HistoryDetailViewPagerAdapter(this, imageList);
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);

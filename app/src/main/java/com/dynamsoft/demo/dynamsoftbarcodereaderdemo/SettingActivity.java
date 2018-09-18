@@ -13,6 +13,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +32,7 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
@@ -43,7 +45,8 @@ public class SettingActivity extends BaseActivity {
 	private DBRCache mSettingCache;
 	private DBRSetting.ImageParameter mImageParameter;
 	private String templateType;
-	private boolean beepSoundEnable = true;
+	private boolean beepSoundEnable;
+	private boolean overlapEnable;
 	private List<String> one2Ten = new ArrayList<>();
 	private List<String> colourImageConvertMode = new ArrayList<>();
 	private List<String> barcodeInvertMode = new ArrayList<>();
@@ -56,10 +59,7 @@ public class SettingActivity extends BaseActivity {
 	private final int REQUEST_ALGORITHM_SETTING = 0x0002;
 	private final int RESPONSE_ONED_SETTING = 0x0001;
 	private final int RESPONSE_ALGORITHM_SETTING = 0x0002;
-	private final int RESPONSE_GENERAL_SETTING = 0x0001;
-	private final int RESPONSE_MULTIBEST_SETTING = 0x0002;
-	private final int RESPONSE_MULTIBAL_SETTING = 0x0003;
-	private final int RESPONSE_PANORMA_SETTING = 0x0004;
+	private final int RESPONSE_ALLSETTING = 0x0001;
 	@BindView(R.id.setoned)
 	ImageView ivSetOned;
 	@BindView(R.id.ckbpdf417)
@@ -102,6 +102,8 @@ public class SettingActivity extends BaseActivity {
 	SwitchCompat scTextFilterMode;
 	@BindView(R.id.sc_beep_sound)
 	SwitchCompat scBeepSound;
+	@BindView(R.id.sc_overlapEnable)
+	SwitchCompat scOverlap;
 	@BindView(R.id.sp_deblur_level)
 	Spinner spDeblurLevel;
 	@BindView(R.id.sp_anti_damage_level)
@@ -139,6 +141,7 @@ public class SettingActivity extends BaseActivity {
 		scRegionPredetectionMode.setOnCheckedChangeListener(onSCCheckedChange);
 		scTextFilterMode.setOnCheckedChangeListener(onSCCheckedChange);
 		scBeepSound.setOnCheckedChangeListener(onSCCheckedChange);
+		scOverlap.setOnCheckedChangeListener(onSCCheckedChange);
 		mDataMatrix.setOnCheckedChangeListener(onCKBCheckedChange);
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
@@ -152,7 +155,43 @@ public class SettingActivity extends BaseActivity {
 		menu.findItem(R.id.menu_file).setVisible(false);
 		menu.findItem(R.id.menu_scanning).setVisible(false);
 		menu.findItem(R.id.menu_Setting).setVisible(false);
+		menu.findItem(R.id.menu_Done).setVisible(true);
 		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mImageParameter.getBarcodeFormatIds().size() > 0){
+			mSetting.setImageParameter(mImageParameter);
+			try {
+				mSettingCache.put("beepSound", String.valueOf(beepSoundEnable));
+				mSettingCache.put("Overlap", String.valueOf(overlapEnable));
+				if ("CustomSetting".equals(templateType)) {
+					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
+					Intent intent = new Intent(SettingActivity.this, MainActivity.class);
+					intent.putExtra("templateType", templateType);
+					startActivity(intent);
+				} else {
+					mSettingCache.put("Setting", LoganSquare.serialize(mSetting));
+					super.onBackPressed();
+				}
+			}
+			catch (Exception ex){
+				ex.printStackTrace();
+			}
+		} else {
+			final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+			builder.setMessage("You must choose at least one barcode format.");
+			builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialogInterface, int i) {
+					dialogInterface.dismiss();
+				}
+			});
+			builder.create();
+			builder.show();
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void onClicked(View view) {
@@ -201,7 +240,7 @@ public class SettingActivity extends BaseActivity {
 				break;
 		}
 	}
-	private void initSpinner(){
+	private void initSpinner() {
 		barcodeInvertMode.add("DarkOnLight");
 		barcodeInvertMode.add("LightOnDark");
 		barcodeInvertModeSpinnerAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, barcodeInvertMode);
@@ -212,7 +251,7 @@ public class SettingActivity extends BaseActivity {
 		colourImageConvertModeSpinnerAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, colourImageConvertMode);
 		colourImageConvertModeSpinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
-		for(int i = 0; i < 10; i++){
+		for (int i = 0; i < 10; i++) {
 			one2Ten.add(String.valueOf(i));
 		}
 		one2tenSpinnerAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, one2Ten);
@@ -227,19 +266,23 @@ public class SettingActivity extends BaseActivity {
 		mSettingCache = DBRCache.get(this, "SettingCache");
 		templateType = getIntent().getStringExtra("templateType");
 		try {
-			mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
-		}
-		catch (Exception ex){
-
+			mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
+		} catch (Exception ex) {
 			ex.printStackTrace();
-
+		}
+		if (mSetting == null) {
+			mSetting = new DBRSetting();
 		}
 		mImageParameter = mSetting.getImageParameter();
+		initSpinnerDelegate();
+	}
+	private void initSpinnerDelegate() {
 		spDeblurLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mImageParameter.setDeblurLevel(position);
 			}
+
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 
@@ -250,6 +293,7 @@ public class SettingActivity extends BaseActivity {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mImageParameter.setAntiDamageLevel(position);
 			}
+
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 
@@ -280,10 +324,9 @@ public class SettingActivity extends BaseActivity {
 		spBarcodeInvertMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(position == 0){
+				if (position == 0) {
 					mImageParameter.setBarcodeInvertMode(barcodeInvertMode.get(0));
-				}
-				else{
+				} else {
 					mImageParameter.setBarcodeInvertMode(barcodeInvertMode.get(1));
 				}
 			}
@@ -296,10 +339,9 @@ public class SettingActivity extends BaseActivity {
 		spColourImageConvertMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(position ==0){
+				if (position == 0) {
 					mImageParameter.setColourImageConvertMode(colourImageConvertMode.get(0));
-				}
-				else {
+				} else {
 					mImageParameter.setColourImageConvertMode(colourImageConvertMode.get(1));
 				}
 			}
@@ -312,7 +354,12 @@ public class SettingActivity extends BaseActivity {
 	}
 	private void initSetting(){
 		mSettingCache = DBRCache.get(this, "SettingCache");
+		String beepSound = mSettingCache.getAsString("beepSound");
+		if (beepSound == null) {
+			mSettingCache.put("beepSound", "true");
+		}
 		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
+		scOverlap.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("Overlap")));
 		try {
 			//mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
 			//mImageParameter = mSetting.getImageParameter();
@@ -383,46 +430,6 @@ public class SettingActivity extends BaseActivity {
 			ex.printStackTrace();
 		}
 	}
-	@Override
-	public void onBackPressed(){
-		if (mImageParameter.getBarcodeFormatIds().size() > 0){
-			mSetting.setImageParameter(mImageParameter);
-			try {
-				mSettingCache.put("beepSound", String.valueOf(beepSoundEnable));
-				if ("GeneralSetting".equals(templateType)) {
-					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
-					setResult(RESPONSE_GENERAL_SETTING);
-				}
-				if ("MultiBestSetting".equals(templateType)) {
-					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
-					setResult(RESPONSE_MULTIBEST_SETTING);
-				}
-				if ("OverlapSetting".equals(templateType)) {
-					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
-					setResult(RESPONSE_MULTIBAL_SETTING);
-				}
-				if ("PanoramaSetting".equals(templateType)) {
-					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
-					setResult(RESPONSE_PANORMA_SETTING);
-				}
-			}
-			catch (Exception ex){
-				ex.printStackTrace();
-			}
-			super.onBackPressed();
-		} else {
-			final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
-			builder.setMessage("You must choose at least one barcode format.");
-			builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					dialogInterface.dismiss();
-				}
-			});
-			builder.create();
-			builder.show();
-		}
-	}
 	SwitchCompat.OnCheckedChangeListener onSCCheckedChange = new CompoundButton.OnCheckedChangeListener() {
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -445,11 +452,11 @@ public class SettingActivity extends BaseActivity {
 					}
 					break;
 				case R.id.sc_beep_sound:
-					if (scBeepSound.isChecked()) {
-						beepSoundEnable = true;
-					} else {
-						beepSoundEnable = false;
-					}
+					beepSoundEnable = scBeepSound.isChecked();
+					break;
+				case R.id.sc_overlapEnable:
+					overlapEnable = scOverlap.isChecked();
+					break;
 				default:
 					break;
 			}
@@ -522,24 +529,23 @@ public class SettingActivity extends BaseActivity {
 	EditText.OnEditorActionListener onEditFinish = new TextView.OnEditorActionListener() {
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			if(actionId == EditorInfo.IME_ACTION_DONE || actionId == KeyEvent.ACTION_DOWN) {
-			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-			int tempValue;
+			if (actionId == EditorInfo.IME_ACTION_DONE || actionId == KeyEvent.ACTION_DOWN) {
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				int tempValue;
 				switch (v.getId()) {
 					case R.id.et_expected_barcode_count:
 						try {
 							imm.hideSoftInputFromWindow(etExpectedBarcodeCount.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etExpectedBarcodeCount.getText().toString());
-							if (tempValue >= 0 && tempValue <= 100) {
+							if (tempValue >= 0 && tempValue <= 512) {
 								mImageParameter.setExpectedBarcodesCount(tempValue);
 							} else {
-								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 512]", Toast.LENGTH_LONG).show();
 								mImageParameter.setExpectedBarcodesCount(0);
 							}
-						}
-						catch (Exception ex) {
+						} catch (Exception ex) {
 							ex.printStackTrace();
-							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 100]", Toast.LENGTH_LONG).show();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 512]", Toast.LENGTH_LONG).show();
 							mImageParameter.setExpectedBarcodesCount(0);
 						}
 						tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
@@ -556,8 +562,7 @@ public class SettingActivity extends BaseActivity {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
 								mImageParameter.setTimeout(2000);
 							}
-						}
-						catch (Exception ex){
+						} catch (Exception ex) {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 0x7fffffff]", Toast.LENGTH_LONG).show();
 							mImageParameter.setTimeout(2000);
@@ -574,10 +579,9 @@ public class SettingActivity extends BaseActivity {
 								mImageParameter.setScaleDownThreshold(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
-								mImageParameter.setScaleDownThreshold(2300);
+								mImageParameter.setScaleDownThreshold(1000);
 							}
-						}
-						catch (Exception ex){
+						} catch (Exception ex) {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [512, 0x7fffffff]", Toast.LENGTH_LONG).show();
 							mImageParameter.setScaleDownThreshold(1000);
@@ -590,14 +594,13 @@ public class SettingActivity extends BaseActivity {
 						try {
 							imm.hideSoftInputFromWindow(etBinarizationBlockSize.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etBinarizationBlockSize.getText().toString());
-							if (tempValue >= 0 && tempValue <= 1000){
+							if (tempValue >= 0 && tempValue <= 1000) {
 								mImageParameter.setBinarizationBlockSize(tempValue);
 							} else {
 								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
 								mImageParameter.setBinarizationBlockSize(0);
 							}
-						}
-						catch (Exception ex){
+						} catch (Exception ex) {
 							ex.printStackTrace();
 							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [0, 1000]", Toast.LENGTH_LONG).show();
 							mImageParameter.setBinarizationBlockSize(0);
@@ -625,18 +628,17 @@ public class SettingActivity extends BaseActivity {
 						tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
 						break;*/
 					case R.id.et_max_barcode_count:
-						try{
+						try {
 							imm.hideSoftInputFromWindow(etMaxBarcodeCount.getWindowToken(), 0);
 							tempValue = Integer.parseInt(etMaxBarcodeCount.getText().toString());
-							if (tempValue >= 1){
+							if (tempValue >= 1 && tempValue <= 512) {
 								mImageParameter.setMaxBarcodesCount(tempValue);
 							} else {
-								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
+								Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 512]", Toast.LENGTH_LONG).show();
 							}
-						}
-						catch (Exception ex){
+						} catch (Exception ex) {
 							ex.printStackTrace();
-							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 0x7fffffff]", Toast.LENGTH_LONG).show();
+							Toast.makeText(SettingActivity.this, "Input Invalid! Legal value: [1, 512]", Toast.LENGTH_LONG).show();
 						}
 						tvMaxBarcodeCount.setText(String.valueOf(mImageParameter.getMaxBarcodesCount()));
 						etMaxBarcodeCount.setVisibility(View.GONE);

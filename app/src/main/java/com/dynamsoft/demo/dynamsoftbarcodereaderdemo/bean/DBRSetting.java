@@ -67,7 +67,7 @@ public class DBRSetting implements Serializable {
 		@JsonField
 		private String regionPredetectionMode = "Disable";
 		@JsonField
-		private int scaleDownThreshold = 1000;
+		private int scaleDownThreshold = 1024;
 		@JsonField
 		private String colourImageConvertMode = "Auto";
 		@JsonField
@@ -83,7 +83,7 @@ public class DBRSetting implements Serializable {
 		@JsonField
 		private int maxDimOfFullImageAsBarcodeZone = 262144;
 		@JsonField
-		private int maxBarcodesCount = 2147483647;
+		private int maxBarcodesCount = 512;
 		@JsonField
 		private boolean enableFillBinaryVacancy = true;
 

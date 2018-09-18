@@ -32,6 +32,8 @@ public class StartupActivity extends AppCompatActivity {
 	View btnMultiBest;
 	@BindView(R.id.btn_multi_bal)
 	View btnMultiBal;
+	@BindView(R.id.btn_custom)
+	View btnCustom;
 	//@BindView(R.id.btn_panorama)
 	//Button btnPanorma;
 	@BindView(R.id.tv_history)
@@ -44,7 +46,7 @@ public class StartupActivity extends AppCompatActivity {
 		ButterKnife.bind(this);
 	}
 
-	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.tv_history, R.id.tv_url})
+	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.tv_history, R.id.tv_url, R.id.btn_custom})
 	public void onViewClicked(View view) {
 		mCache = DBRCache.get(this, "SettingCache");
 		switch (view.getId()) {
@@ -70,6 +72,10 @@ public class StartupActivity extends AppCompatActivity {
 				mCache.put("templateType","PanoramaSetting");
 				startActivity(new Intent(StartupActivity.this, MainActivity.class));
 				break;*/
+			case R.id.btn_custom:
+				mCache.put("templateType", "CustomSetting");
+				startActivity(new Intent(StartupActivity.this, SettingActivity.class));
+				break;
 			case R.id.tv_url:
 				openUrl();
 				break;

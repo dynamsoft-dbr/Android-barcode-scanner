@@ -13,7 +13,7 @@
 		android:layout_width="25dp"
 		android:layout_height="25dp"
 		android:layout_marginRight="68dp"
-		android:layout_marginTop="28dp"
+		android:layout_marginTop="20dp"
 		android:background="@drawable/icon_history"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintHorizontal_bias="0.914"
@@ -23,11 +23,11 @@
 	<TextView
 		android:id="@+id/tv_history"
 		android:layout_width="wrap_content"
-		android:layout_height="25dp"
+		android:layout_height="23dp"
 		android:text="History"
 		android:textSize="18sp"
-		android:gravity="center_vertical"
-		android:layout_marginTop="28dp"
+		android:gravity="center"
+		android:layout_marginTop="18dp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintHorizontal_bias="0.914"
 		app:layout_constraintStart_toStartOf="parent"
@@ -36,20 +36,20 @@
 		android:id="@+id/tv_startup_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="70dp"
+		android:layout_marginTop="50dp"
 		android:text="Barcode Scanner X"
 		android:textColor="@android:color/black"
-		android:textSize="30sp"
+		android:textSize="28sp"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.32"
+		app:layout_constraintHorizontal_bias="0.22"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<LinearLayout
 		android:id="@+id/btn_general"
 		android:layout_width="360dp"
-		android:layout_height="100dp"
-		android:layout_marginTop="160dp"
+		android:layout_height="90dp"
+		android:layout_marginTop="115dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -89,8 +89,8 @@
 	<LinearLayout
 		android:id="@+id/btn_multi_best"
 		android:layout_width="360dp"
-		android:layout_height="100dp"
-		android:layout_marginTop="285dp"
+		android:layout_height="90dp"
+		android:layout_marginTop="220dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -129,8 +129,8 @@
 	<LinearLayout
 		android:id="@+id/btn_multi_bal"
 		android:layout_width="360dp"
-		android:layout_height="100dp"
-		android:layout_marginTop="410dp"
+		android:layout_height="90dp"
+		android:layout_marginTop="325dp"
 		android:orientation="horizontal"
 		android:background="#ffffff"
 		android:clickable="true"
@@ -147,6 +147,46 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="25dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:text="@string/overlap"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:textColor="#ffb8b8bf"
+				android:text="@string/continuous_scan_filter_duplicates"/>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/btn_custom"
+		android:layout_width="360dp"
+		android:layout_height="90dp"
+		android:layout_marginTop="430dp"
+		android:orientation="horizontal"
+		android:background="#ffffff"
+		android:clickable="true"
+		android:focusable="true"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+		<ImageView
+			android:layout_width="@dimen/btn_startup_size"
+			android:layout_height="@dimen/btn_startup_size"
+			android:layout_marginLeft="20dp"
+			android:layout_gravity="center_vertical"
+			android:background="@drawable/icon_overlap"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/tv_startup_title" />
 		<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
@@ -210,7 +250,7 @@
 		android:layout_height="wrap_content"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		android:layout_marginBottom="8dp">
+		android:layout_marginBottom="3dp">
 		<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="20dp"

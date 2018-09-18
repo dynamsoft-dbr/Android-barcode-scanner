@@ -97,11 +97,18 @@ public class OverlapHistoryFragment extends BaseFragment {
 
 	private void fillHistoryList() {
 		imageList = LitePal.where("templateType = ?", "OverlapSetting").find(DBRImage.class);
+		ArrayList<DBRImage> deleteImage = new ArrayList<>();
 		for (int i = 0; i < imageList.size() - 1; i++){
 			for (int j = imageList.size() - 1; j > i; j--){
 				if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+					deleteImage.add(imageList.get(j));
 					imageList.remove(imageList.get(j));
 				}
+			}
+		}
+		if (deleteImage.size() != 0) {
+			for (DBRImage dbrimage : deleteImage) {
+				LitePal.deleteAll(DBRImage.class, "fileName = ? and decodeTime = ?", dbrimage.getFileName(), String.valueOf(dbrimage.getDecodeTime()));
 			}
 		}
 		Collections.reverse(imageList);
@@ -154,11 +161,18 @@ public class OverlapHistoryFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		imageList = LitePal.where("templateType = ?", "OverlapSetting").find(DBRImage.class);
+		ArrayList<DBRImage> deleteImage = new ArrayList<>();
 		for (int i = 0; i < imageList.size() - 1; i++){
 			for (int j = imageList.size() - 1; j > i; j--){
 				if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+					deleteImage.add(imageList.get(j));
 					imageList.remove(imageList.get(j));
 				}
+			}
+		}
+		if (deleteImage.size() != 0) {
+			for (DBRImage dbrimage : deleteImage) {
+				LitePal.deleteAll(DBRImage.class, "fileName = ? and decodeTime = ?", dbrimage.getFileName(), String.valueOf(dbrimage.getDecodeTime()));
 			}
 		}
 		Collections.reverse(imageList);

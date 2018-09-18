@@ -61,6 +61,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.SimpleSettingActivity;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.YuvInfo;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
@@ -118,10 +119,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int BARCODE_RESULT = 0x0004;
 	private final int REQUEST_CHOOSE_PHOTO = 0x0001;
 	private final int REQUEST_SETTING = 0x0002;
-	private final int RESPONSE_GENERAL_SETTING = 0x0001;
-	private final int RESPONSE_MULTIBEST_SETTING = 0X0002;
-	private final int RESPONSE_MULTIBAL_SETTING = 0X0003;
-	private final int RESPONSE_PANORMA_SETTING = 0x0004;
 	private boolean isDestroy = false;
 	private boolean beepSoundEnabled;
 	@BindView(R.id.cameraView)
@@ -277,15 +274,21 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				mSettingCache.put("beepSound", "true");
 			}
 			if ("GeneralSetting".equals(templateType)) {
-				String setting = mSettingCache.getAsString("GeneralSetting");
+				String setting = mSettingCache.getAsString("Setting");
 				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setExpectedBarcodesCount(0);
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
-					DBRSetting generalSetting = new DBRSetting();
-					DBRSetting.ImageParameter generalImgP = new DBRSetting.ImageParameter();
-					generalSetting.setImageParameter(generalImgP);
-					mSettingCache.put("GeneralSetting", LoganSquare.serialize(generalSetting));
-					reader.initRuntimeSettingsWithString(LoganSquare.serialize(generalSetting), 2);
+					DBRSetting dbrSetting = new DBRSetting();
+					DBRSetting.ImageParameter imgP = new DBRSetting.ImageParameter();
+					imgP.setExpectedBarcodesCount(0);
+					dbrSetting.setImageParameter(imgP);
+					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
+					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
 				}
 				lineDone.setVisibility(View.VISIBLE);
 				btnStart.setVisibility(View.GONE);
@@ -295,14 +298,26 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				mScanCount.setVisibility(View.GONE);
 				setToolbarTitle("General Scan");
 			} else if ("MultiBestSetting".equals(templateType)) {
-				DBRSetting multiBest = new DBRSetting();
-				DBRSetting.ImageParameter multiBestImgP = new DBRSetting.ImageParameter();
-				multiBestImgP.setAntiDamageLevel(7);
-				multiBestImgP.setDeblurLevel(9);
-				multiBestImgP.setScaleDownThreshold(1000);
-				multiBest.setImageParameter(multiBestImgP);
-				mSettingCache.put("MultiBestSetting", LoganSquare.serialize(multiBest));
-				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBest), 2);
+				String setting = mSettingCache.getAsString("Setting");
+				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
+					imgP.setExpectedBarcodesCount(512);
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+				} else {
+					DBRSetting dbrSetting = new DBRSetting();
+					DBRSetting.ImageParameter imgP = new DBRSetting.ImageParameter();
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
+					imgP.setExpectedBarcodesCount(512);
+					dbrSetting.setImageParameter(imgP);
+					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
+					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
+				}
 				lineDone.setVisibility(View.VISIBLE);
 				btnStart.setVisibility(View.GONE);
 				btnFinish.setVisibility(View.GONE);
@@ -311,24 +326,37 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				detectStart = true;
 				setToolbarTitle("Best Coverage");
 			} else if ("OverlapSetting".equals(templateType)) {
-				DBRSetting multiBal = new DBRSetting();
-				DBRSetting.ImageParameter multiBalImgP = new DBRSetting.ImageParameter();
-				multiBalImgP.setAntiDamageLevel(5);
-				multiBalImgP.setDeblurLevel(5);
-				multiBalImgP.setScaleDownThreshold(1000);
-				multiBalImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
-					add("ConnectedBlock");
-					add("Lines");
-					add("Statistics");
-					add("FullImageAsBarcodeZone");
-				}});
-				multiBal.setImageParameter(multiBalImgP);
+				String setting = mSettingCache.getAsString("Setting");
+				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setAntiDamageLevel(5);
+					imgP.setDeblurLevel(5);
+					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+						add("ConnectedBlock");
+						add("Lines");
+						add("Statistics");
+						add("FullImageAsBarcodeZone");
+					}});
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+				} else {
+					DBRSetting dbrSetting = new DBRSetting();
+					DBRSetting.ImageParameter imgP = new DBRSetting.ImageParameter();
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
+					imgP.setExpectedBarcodesCount(512);
+					dbrSetting.setImageParameter(imgP);
+					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
+					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
+				}
 				lineDone.setVisibility(View.GONE);
 				btnFinish.setVisibility(View.GONE);
 				slidingDrawer.setVisibility(View.VISIBLE);
-				mSettingCache.put("OverlapSetting", LoganSquare.serialize(multiBal));
-				reader.initRuntimeSettingsWithString(LoganSquare.serialize(multiBal), 2);
 				btnStart.setVisibility(View.GONE);
+				slidingDrawer.setVisibility(View.VISIBLE);
 				detectStart = true;
 				setToolbarTitle("Overlap");
 			} else if ("PanoramaSetting".equals(templateType)){
@@ -341,6 +369,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				mSettingCache.put("PanoramaSetting", LoganSquare.serialize(panorma));
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(panorma), 2);
 				setToolbarTitle("Panorma");
+			} else if ("CustomSetting".equals(templateType)){
+				String setting = mSettingCache.getAsString("CustomSetting");
+				reader.initRuntimeSettingsWithString(setting, 2);
+				setToolbarTitle("Custom");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -448,18 +480,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			String setting = "";
 			mSettingCache = DBRCache.get(this, "SettingCache");
 			beepSoundEnabled = Boolean.parseBoolean(mSettingCache.getAsString("beepSound"));
-			if (resultCode == RESPONSE_GENERAL_SETTING) {
-				setting = mSettingCache.getAsString("GeneralSetting");
-			}
-			if (resultCode == RESPONSE_MULTIBEST_SETTING) {
-				setting = mSettingCache.getAsString("MultiBestSetting");
-			}
-			if (resultCode == RESPONSE_MULTIBAL_SETTING) {
-				setting = mSettingCache.getAsString("OverlapSetting");
-			}
-			if (resultCode == RESPONSE_PANORMA_SETTING) {
-				setting = mSettingCache.getAsString("PanoramaSetting");
-			}
+			setting = mSettingCache.getAsString("Setting");
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
 				reader.initRuntimeSettingsWithString(setting, 2);
@@ -744,13 +765,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	}
 
 	private void goToSetting() {
-		Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+		Intent intent = new Intent(MainActivity.this, SimpleSettingActivity.class);
 		intent.putExtra("templateType", templateType);
 		startActivityForResult(intent, REQUEST_SETTING);
 	}
-	private int i = 1;
-	//private String errorCache;
-	//private byte[] saveData;
 	class CodeFrameProcesser implements FrameProcessor {
 		YuvImage yuvImage;
 		private YuvInfo yuvInfo;
@@ -766,9 +784,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
 						handler.sendMessage(obtainPreviewMsg);
 					}
-					byte[] t = new byte[frame.getImage().length];
-					System.arraycopy(frame.getImage(), 0, t, 0, frame.getImage().length);
-					yuvImage = new YuvImage(t, ImageFormat.NV21,
+					yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
 							frame.getSize().width, frame.getSize().height, null);
 					wid = frame.getSize().width;
 					hgt = frame.getSize().height;
@@ -815,35 +831,16 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						}
 					}
 					result = textResults.toArray(new TextResult[textResults.size()]);
-					//Message coordMessage = handler.obtainMessage();
 					Message message = handler.obtainMessage();
 					message.what = DETECT_BARCODE;
 					if (result != null && result.length > 0) {
-						/*try {
-							YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
-									yuvImage.getWidth(), yuvInfo.yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
-							File previewFile = new File(path + "/" + i + ".jpg");
-							Log.e("iiiii", i + "");
-							if (!previewFile.exists()) {
-								previewFile.getParentFile().mkdirs();
-								previewFile.createNewFile();
-							}
-							FileOutputStream fileOutputStream = new FileOutputStream(previewFile);
-							newYuv.compressToJpeg(new Rect(0, 0, newYuv.getWidth(), newYuv.getHeight()), 100, fileOutputStream);
-							fileOutputStream.flush();
-							fileOutputStream.close();
-							i++;
-						}
-						catch (Exception ex){
-							ex.printStackTrace();
-						}*/
 						if ("OverlapSetting".equals(templateType)) {
 							if (frameTime == 0) {
 								yuvInfo = new YuvInfo();
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
 								yuvInfo.yuvImage = yuvImage;
 								yuvInfo.textResult = result;
-								yuvInfoList.add(yuvInfo);
+								yuvInfoList.add(yuvInfo.clone());
 								frameTime++;
 							} else if (frameTime == 1) {
 								yuvInfo = new YuvInfo();
@@ -851,9 +848,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								yuvInfo.yuvImage = yuvImage;
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
 								if (yuvInfoList.size() == 1) {
-									yuvInfoList.add(yuvInfo);
+									yuvInfoList.add(yuvInfo.clone());
 								} else {
-									yuvInfoList.set(1, yuvInfo);
+									yuvInfoList.set(1, yuvInfo.clone());
 								}
 								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
@@ -865,8 +862,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									TextResult textResult1;
 									LocalizationResult localizationResult2;
 									TextResult textResult2;
-									Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
-									Log.e("SavingCacheSize: ", saveCache.size() + "");
+									//Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
+									//Log.e("SavingCacheSize: ", saveCache.size() + "");
 									switch (coordsMapResult.basedImg) {
 										case 0:
 											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
@@ -878,7 +875,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											} else {
 												checkSaveCache(saveCache, yuvInfoList.get(0));
 											}
-											yuvInfoList.set(0, yuvInfoList.get(1));
+											yuvInfoList.set(0, yuvInfoList.get(1).clone());
 											break;
 										case 1:
 											TextResult[] mapResultInImage2 = new TextResult[coordsMapResult.mapResultInImageTwo.length];
@@ -928,8 +925,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												} else {
 													checkSaveCache(saveCache, yuvInfoList.get(0));
 												}
-												//errorCache = null;
-												yuvInfoList.set(0, yuvInfoList.get(1));
+												yuvInfoList.set(0, yuvInfoList.get(1).clone());
 											}
 											break;
 										case 2:
@@ -948,8 +944,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(1).textResult = newResultBase2;
-												//errorCache = yuvInfoList.get(1).cacheName;
-												yuvInfoList.set(0, yuvInfoList.get(1));
+												yuvInfoList.set(0, yuvInfoList.get(1).clone());
 											} else {
 												yuvInfoList.get(1).textResult = newResultBase2;
 												if (saveCache.size() == 0){
@@ -958,8 +953,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												} else {
 													checkSaveCache(saveCache, yuvInfoList.get(0));
 												}
-												yuvInfoList.set(0, yuvInfoList.get(1));
-												//errorCache = null;
+												yuvInfoList.set(0, yuvInfoList.get(1).clone());
 											}
 											break;
 										case -1:
@@ -982,7 +976,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											} else {
 												checkSaveCache(saveCache, yuvInfoList.get(0));
 											}
-											yuvInfoList.set(0, yuvInfoList.get(1));
+											yuvInfoList.set(0, yuvInfoList.get(1).clone());
 											break;
 										default:
 											break;
@@ -1001,8 +995,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							yuvInfo.cacheName = System.currentTimeMillis() + "";
 							handleImage(yuvInfo, null);
 						}
-						//coordMessage.what = BARCODE_RECT_COORD;
-						//handler.sendMessage(coordMessage);
 					} else {
 						message.obj = null;
 						handler.sendMessage(message);
@@ -1019,13 +1011,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		private void checkSaveCache(ArrayList<YuvInfo> saveCache, YuvInfo saving){
 			for (int i = saveCache.size() - 1; i >= 0; i--){
 				CoordsMapResult coordsMapResult = AfterProcess.coordsMap(saveCache.get(i).textResult, saving.textResult, wid, hgt);
-				Log.e("Save: ", saveCache.get(i).textResult.length + " " + saving.textResult.length);
-				Log.e("NEW CoordsMapResult", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped);
+				//Log.e("Save: ", saveCache.get(i).textResult.length + " " + saving.textResult.length);
+				//Log.e("NEW CoordsMapResult", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped);
 				if (coordsMapResult.basedImg == -1 || (coordsMapResult.basedImg == 1 && coordsMapResult.isAllCodeMapped)){
-					Log.e("remove!", "");
+					//Log.e("remove!", "");
 					break;
 				} else if (coordsMapResult.basedImg == 2 && coordsMapResult.isAllCodeMapped){
-					Log.e("delete!", "");
+					//Log.e("delete!", "");
 					handleImage(saving, saveCache.get(i).cacheName);
 					saveCache.remove(saveCache.get(i));
 				} else {
@@ -1055,7 +1047,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				@Override
 				public void run() {
 					try {
-						long startSaveFile = System.currentTimeMillis();
+						//long startSaveFile = System.currentTimeMillis();
 						deleteErroCache(deleCacheName);
 						YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvInfo.yuvImage.getYuvData(),
 								yuvInfo.yuvImage.getWidth(), yuvInfo.yuvImage.getHeight()), ImageFormat.NV21, yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth(), null);
@@ -1070,19 +1062,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						fileOutputStream.close();
 						ArrayList<String> codeFormatList = new ArrayList<>();
 						ArrayList<String> codeTextList = new ArrayList<>();
-						/*ArrayList<TextResult> textResults = new ArrayList<>();
-						for (int i = 0; i < yuvInfo.textResult.length; i++){
-							boolean flag = false;
-							for (int j = 0; j < textResults.size(); j++){
-								if (yuvInfo.textResult[i].barcodeFormat == textResults.get(j).barcodeFormat && yuvInfo.textResult[i].barcodeText.equals(textResults.get(j).barcodeText)){
-									flag = true;
-								}
-							}
-							if (!flag){
-								textResults.add(yuvInfo.textResult[i]);
-							}
-						}
-						yuvInfo.textResult = textResults.toArray(new TextResult[textResults.size()]);*/
 						ArrayList<RectPoint[]> pointList = frameUtil.rotatePoints(yuvInfo.textResult,
 								yuvInfo.yuvImage.getHeight(), yuvInfo.yuvImage.getWidth());
 						for (TextResult result1 : yuvInfo.textResult) {
@@ -1101,8 +1080,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						dbrImage.setDecodeTime(duringTime);
 						dbrImage.setTemplateType(templateType);
 						dbrImage.save();
-						long endSaveFile = System.currentTimeMillis();
-						//Logger.d("save file time : " + (endSaveFile - startSaveFile));
+						//long endSaveFile = System.currentTimeMillis();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
