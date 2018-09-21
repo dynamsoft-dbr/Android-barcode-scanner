@@ -4,13 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +18,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,11 +25,8 @@ import android.widget.Toast;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
-
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,10 +77,6 @@ public class SettingActivity extends BaseActivity {
 	TextView tvBinarizationBlockSize;
 	@BindView(R.id.et_binarization_block_size)
 	EditText etBinarizationBlockSize;
-	//@BindView(R.id.tv_max_dimof_full_image_as_barcode_zone)
-	//TextView tvMaxDimofFullImageAsBarcodeZone;
-	//@BindView(R.id.et_max_dimof_full_image_as_barcode_zone)
-	//EditText etMaxDimofFullImageAsBarcodeZone;
 	@BindView(R.id.tv_max_barcode_count)
 	TextView tvMaxBarcodeCount;
 	@BindView(R.id.et_max_barcode_count)

@@ -1,6 +1,5 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,9 +26,6 @@ import java.util.List;
 
 import cn.bingoogolapple.baseadapter.BGADivider;
 
-/**
- * Created by Elemen on 2018/8/29.
- */
 public class PanoramaFragment extends BaseFragment {
 	private RecyclerView rlvHistory;
 	private ProgressBar progressBar;

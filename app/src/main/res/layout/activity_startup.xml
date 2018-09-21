@@ -383,6 +383,7 @@
 		</LinearLayout>
 	</LinearLayout>-->
 	<RelativeLayout
+		android:id="@+id/tv_url"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		app:layout_constraintBottom_toBottomOf="parent"
@@ -396,7 +397,6 @@
 			android:layout_marginRight="242dp"
 			/>
 		<TextView
-			android:id="@+id/tv_url"
 			android:layout_width="200dp"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="16dp"

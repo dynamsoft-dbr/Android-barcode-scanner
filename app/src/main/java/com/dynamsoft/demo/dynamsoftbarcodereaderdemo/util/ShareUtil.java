@@ -1,6 +1,4 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util;
-
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

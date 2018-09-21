@@ -2,46 +2,22 @@ package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.Switch;
-import android.widget.Toast;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryContentPagerAdapter;
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryListAdapter;
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
-import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-
-import org.litepal.LitePal;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.bingoogolapple.baseadapter.BGADivider;
-import cn.bingoogolapple.baseadapter.BGAOnItemChildClickListener;
 
 public class HistoryActivity extends BaseActivity implements OnTabSelectListener {
 	@BindView(R.id.vp_history_content)

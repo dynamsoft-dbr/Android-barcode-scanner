@@ -1,10 +1,7 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean;
 
-import com.dynamsoft.barcode.Point;
-
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
-
 import java.util.ArrayList;
 
 public class DBRImage extends LitePalSupport {

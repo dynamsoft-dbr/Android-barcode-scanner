@@ -8,8 +8,6 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
-import com.dynamsoft.barcode.Point;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.R;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 

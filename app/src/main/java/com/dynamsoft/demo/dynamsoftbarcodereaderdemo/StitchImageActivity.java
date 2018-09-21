@@ -1,6 +1,5 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -22,23 +20,16 @@ import com.dynamsoft.barcode.afterprocess.jni.BarcodeRecognitionResult;
 import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
 import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
 import com.dynamsoft.barcode.BarcodeReader;
-import com.dynamsoft.barcode.BarcodeReaderException;
 import com.dynamsoft.barcode.EnumImagePixelFormat;
-import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 
-import junit.framework.Assert;
-
-import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -46,9 +37,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by Elemen on 2018/8/9.
- */
+
 public class StitchImageActivity extends AppCompatActivity {
     @BindView(R.id.scale_imageview)
     SubsamplingScaleImageView scaleImageview;

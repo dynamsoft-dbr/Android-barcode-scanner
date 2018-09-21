@@ -6,8 +6,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.xml.transform.Templates;
-
 @JsonObject
 public class DBRSetting implements Serializable {
 

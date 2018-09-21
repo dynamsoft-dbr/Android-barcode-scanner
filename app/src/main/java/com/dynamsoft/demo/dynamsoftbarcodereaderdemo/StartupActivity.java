@@ -1,7 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
 import android.content.Intent;
-import android.graphics.ImageFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,8 +13,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 
 import butterknife.BindView;
@@ -24,10 +21,6 @@ import butterknife.OnClick;
 
 
 public class StartupActivity extends AppCompatActivity {
-	private static final int PRC_PHOTO_PICKER = 1;
-	private static final int RC_CHOOSE_PHOTO = 1;
-	private static final String TAG = "StartupActivity";
-
 	private static final Slide SLIDE_RIGHT = new Slide(Gravity.RIGHT);
 	private static final Slide SLIDE_LEFT = new Slide(Gravity.LEFT);
 	DBRCache mCache;

@@ -7,9 +7,6 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-/**
- * Created by Elemen on 2018/7/16.
- */
 public class HistoryPreviewViewPager extends ViewPager {
 
 	public HistoryPreviewViewPager(@NonNull Context context) {
