@@ -51,11 +51,12 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 	private Handler handler;
 	private HistoryContentPagerAdapter historyContentPagerAdapter;
 	private final int PAGE_TYPE = 0x0001;
-	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap"};
+	private final String[] mTitles = {"General Scan", "Best Coverage", "Overlap", "Customized"};
 	private List<Fragment> mFragmentList = new ArrayList<>();
 	private OverlapHistoryFragment overLapFg;
 	private GeneralScanFragment generalSanFg;
 	private BestCoverageFragment bestCoverageFg;
+	private CustomFragment customFg;
 	//private PanoramaFragment panoramaFg;
 
 	@Override
@@ -76,10 +77,12 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		overLapFg = new OverlapHistoryFragment();
 		generalSanFg = new GeneralScanFragment();
 		bestCoverageFg = new BestCoverageFragment();
+		customFg = new CustomFragment();
 		//panoramaFg = new PanoramaFragment();
 		mFragmentList.add(generalSanFg);
 		mFragmentList.add(bestCoverageFg);
 		mFragmentList.add(overLapFg);
+		mFragmentList.add(customFg);
 		//mFragmentList.add(panoramaFg);
 
 		historyContentPagerAdapter = new HistoryContentPagerAdapter(getSupportFragmentManager(), mTitles, mFragmentList);
@@ -92,6 +95,8 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 				vpHistoryContent.setCurrentItem(1);
 			} else if (type.equals("OverlapSetting")) {
 				vpHistoryContent.setCurrentItem(2);
+			} else if (type.equals("CustomSetting")) {
+				vpHistoryContent.setCurrentItem(3);
 			}
 		}
 		generalScanTab.setOnTabSelectListener(this);
@@ -144,9 +149,9 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 			case 2:
 				overLapFg.clearHistoryList();
 				break;
-			/*case 3:
-				overLapFg.clearHistoryList();
-				break;*/
+			case 3:
+				customFg.clearHistoryList();
+				break;
 			default:
 				break;
 		}

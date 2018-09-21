@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -79,12 +80,24 @@ public class AlgorithmSettingActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mImageParameter.setLocalizationAlgorithmPriority(algorithmSetting);
+        mSetting.setImageParameter(mImageParameter);
+        Intent intent = new Intent();
+        intent.putExtra("AlgorithmSetting", mSetting);
+        setResult(RESPONSE_ALGORITHM_SETTING, intent);
+        super.onBackPressed();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_share).setVisible(false);
         menu.findItem(R.id.menu_capture).setVisible(false);
         menu.findItem(R.id.menu_file).setVisible(false);
         menu.findItem(R.id.menu_scanning).setVisible(false);
         menu.findItem(R.id.menu_Setting).setVisible(false);
+        menu.findItem(R.id.menu_Done).setVisible(true);
         return super.onPrepareOptionsMenu(menu);
     }
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -154,14 +167,5 @@ public class AlgorithmSettingActivity extends BaseActivity {
         if (!arrayList.contains(getResources().getString(R.string.fullimageasbarcodezone))){
             tvFullImageAsBarcodeZone.setText("");
         }
-    }
-    @Override
-    public void onBackPressed(){
-        mImageParameter.setLocalizationAlgorithmPriority(algorithmSetting);
-        mSetting.setImageParameter(mImageParameter);
-        Intent intent = new Intent();
-        intent.putExtra("AlgorithmSetting", mSetting);
-        setResult(RESPONSE_ALGORITHM_SETTING, intent);
-        super.onBackPressed();
     }
 }

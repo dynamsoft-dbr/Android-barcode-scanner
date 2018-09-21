@@ -166,13 +166,12 @@ public class SettingActivity extends BaseActivity {
 			try {
 				mSettingCache.put("beepSound", String.valueOf(beepSoundEnable));
 				mSettingCache.put("Overlap", String.valueOf(overlapEnable));
+				mSettingCache.put("Setting", LoganSquare.serialize(mSetting));
 				if ("CustomSetting".equals(templateType)) {
-					mSettingCache.put(templateType, LoganSquare.serialize(mSetting));
 					Intent intent = new Intent(SettingActivity.this, MainActivity.class);
 					intent.putExtra("templateType", templateType);
 					startActivity(intent);
 				} else {
-					mSettingCache.put("Setting", LoganSquare.serialize(mSetting));
 					super.onBackPressed();
 				}
 			}
@@ -264,7 +263,7 @@ public class SettingActivity extends BaseActivity {
 		spBarcodeInvertMode.setAdapter(barcodeInvertModeSpinnerAdapter);
 		spColourImageConvertMode.setAdapter(colourImageConvertModeSpinnerAdapter);
 		mSettingCache = DBRCache.get(this, "SettingCache");
-		templateType = getIntent().getStringExtra("templateType");
+		templateType = mSettingCache.getAsString("templateType");
 		try {
 			mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
 		} catch (Exception ex) {

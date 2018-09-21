@@ -121,6 +121,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	private final int REQUEST_SETTING = 0x0002;
 	private boolean isDestroy = false;
 	private boolean beepSoundEnabled;
+	private boolean overlapEnabled;
 	@BindView(R.id.cameraView)
 	CameraView cameraView;
 	@BindView(R.id.tv_flash)
@@ -151,6 +152,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	Button btnDone;
 	@BindView(R.id.line_done)
 	RelativeLayout lineDone;
+	@BindView(R.id.tv_border)
+	TextView tvBorder;
 	private BarcodeReader reader;
 	private TextResult[] result;
 	String templateType;
@@ -244,6 +247,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		frameUtil = new FrameUtil();
 		mCache = DBRCache.get(this, 1000 * 1000 * 50, 16);
 		setupFotoapparat();
+		hudView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				detectStart = false;
+				selectMode();
+				return true;
+			}
+		});
+		tvBorder.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				detectStart = false;
+				selectMode();
+				return true;
+			}
+		});
 		/*File file = new File(Environment.getExternalStorageDirectory(),"1534411536760");
 		byte[] buffer = null;
 		try {
@@ -261,13 +280,189 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			ex.printStackTrace();
 		}*/
 	}
-
+	private void selectMode() {
+		View dialogView = LayoutInflater.from(this).inflate(R.layout.select_mode, null);
+		LinearLayout selectGeneral = (LinearLayout)dialogView.findViewById(R.id.select_general);
+		LinearLayout selectBestCoverage = (LinearLayout)dialogView.findViewById(R.id.select_best_coverage);
+		LinearLayout selectOverlap = (LinearLayout)dialogView.findViewById(R.id.select_overlap);
+		LinearLayout selectCustom = (LinearLayout)dialogView.findViewById(R.id.select_custom);
+		LinearLayout borderGeneral = (LinearLayout)dialogView.findViewById(R.id.border_general);
+		LinearLayout borderBestCoverage = (LinearLayout)dialogView.findViewById(R.id.border_best_coverage);
+		LinearLayout borderOverlap = (LinearLayout)dialogView.findViewById(R.id.border_overlap);
+		LinearLayout borderCustom = (LinearLayout)dialogView.findViewById(R.id.border_custom);
+		if (templateType.equals("GeneralSetting")) {
+			borderGeneral.setVisibility(View.VISIBLE);
+			borderBestCoverage.setVisibility(View.GONE);
+			borderOverlap.setVisibility(View.GONE);
+			borderCustom.setVisibility(View.GONE);
+		} else if (templateType.equals("MultiBestSetting")) {
+			borderGeneral.setVisibility(View.GONE);
+			borderBestCoverage.setVisibility(View.VISIBLE);
+			borderOverlap.setVisibility(View.GONE);
+			borderCustom.setVisibility(View.GONE);
+		} else if (templateType.equals("OverlapSetting")) {
+			borderGeneral.setVisibility(View.GONE);
+			borderBestCoverage.setVisibility(View.GONE);
+			borderOverlap.setVisibility(View.VISIBLE);
+			borderCustom.setVisibility(View.GONE);
+		} else if (templateType.equals("CustomSetting")) {
+			borderGeneral.setVisibility(View.GONE);
+			borderBestCoverage.setVisibility(View.GONE);
+			borderOverlap.setVisibility(View.GONE);
+			borderCustom.setVisibility(View.VISIBLE);
+		}
+		final AlertDialog selectModeDialog = new AlertDialog.Builder(MainActivity.this).create();
+		selectModeDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				detectStart = true;
+			}
+		});
+		selectGeneral.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					String setting = mSettingCache.getAsString("Setting");
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setExpectedBarcodesCount(0);
+					imgP.setAntiDamageLevel(9);
+					imgP.setDeblurLevel(9);
+					imgP.setLocalizationAlgorithmPriority(null);
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+					templateType = "GeneralSetting";
+					overlapEnabled = false;
+					detectStart = true;
+					lineDone.setVisibility(View.VISIBLE);
+					btnStart.setVisibility(View.GONE);
+					btnFinish.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.GONE);
+					mScanCount.setVisibility(View.GONE);
+					mMenu.findItem(R.id.menu_file).setVisible(true);
+					mMenu.findItem(R.id.menu_capture).setVisible(true);
+					mMenu.findItem(R.id.menu_scanning).setVisible(true);
+					if (isSingleMode) {
+						mMenu.findItem(R.id.menu_capture).setIcon(R.mipmap.capture_able);
+						mMenu.findItem(R.id.menu_scanning).setIcon(R.mipmap.video_unable);
+					} else {
+						mMenu.findItem(R.id.menu_capture).setIcon(R.mipmap.capture_unable);
+						mMenu.findItem(R.id.menu_scanning).setIcon(R.mipmap.video_able);
+					}
+					selectModeDialog.dismiss();
+					setToolbarTitle("General Scan");
+				}
+				catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		selectBestCoverage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					String setting = mSettingCache.getAsString("Setting");
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
+					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(null);
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+					templateType = "MultiBestSetting";
+					overlapEnabled = false;
+					detectStart = true;
+					lineDone.setVisibility(View.VISIBLE);
+					btnStart.setVisibility(View.GONE);
+					btnFinish.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.GONE);
+					mScanCount.setVisibility(View.GONE);
+					mMenu.findItem(R.id.menu_file).setVisible(true);
+					mMenu.findItem(R.id.menu_capture).setVisible(true);
+					mMenu.findItem(R.id.menu_scanning).setVisible(true);
+					if (isSingleMode) {
+						mMenu.findItem(R.id.menu_capture).setIcon(R.mipmap.capture_able);
+						mMenu.findItem(R.id.menu_scanning).setIcon(R.mipmap.video_unable);
+					} else {
+						mMenu.findItem(R.id.menu_capture).setIcon(R.mipmap.capture_unable);
+						mMenu.findItem(R.id.menu_scanning).setIcon(R.mipmap.video_able);
+					}
+					setToolbarTitle("Best Coverage");
+					selectModeDialog.dismiss();
+				} catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		selectOverlap.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					String setting = mSettingCache.getAsString("Setting");
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
+					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+						add("ConnectedBlock");
+						add("Lines");
+						add("Statistics");
+						add("FullImageAsBarcodeZone");
+					}});
+					dbrSetting.setImageParameter(imgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+					templateType = "OverlapSetting";
+					overlapEnabled = true;
+					detectStart = true;
+					lineDone.setVisibility(View.GONE);
+					btnFinish.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.VISIBLE);
+					btnStart.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.VISIBLE);
+					if (isSingleMode) {
+						btnCapture.setVisibility(View.GONE);
+						isSingleMode = false;
+					}
+					mMenu.findItem(R.id.menu_file).setVisible(false);
+					mMenu.findItem(R.id.menu_capture).setVisible(false);
+					mMenu.findItem(R.id.menu_scanning).setVisible(false);
+					selectModeDialog.dismiss();
+					setToolbarTitle("Overlap");
+				} catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		selectCustom.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				selectModeDialog.dismiss();
+				mSettingCache.put("templateType", "CustomSetting");
+				startActivity(new Intent(MainActivity.this, SettingActivity.class));
+			}
+		});
+		selectModeDialog.setView(dialogView);
+		selectModeDialog.show();
+	}
 	private void initTemplate() {
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			mSettingCache = DBRCache.get(this, "SettingCache");
 			templateType = mSettingCache.getAsString("templateType");
 			String beepSound = mSettingCache.getAsString("beepSound");
+			if ("CustomSetting".equals(templateType)) {
+				String overlap = mSettingCache.getAsString("Overlap");
+				overlapEnabled = Boolean.parseBoolean(overlap);
+			} else if ("OverlapSetting".equals(templateType)) {
+				overlapEnabled = true;
+			} else {
+				overlapEnabled = false;
+			}
 			if (beepSound != null) {
 				beepSoundEnabled = Boolean.parseBoolean(beepSound);
 			} else {
@@ -279,6 +474,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
 					imgP.setExpectedBarcodesCount(0);
+					imgP.setAntiDamageLevel(9);
+					imgP.setDeblurLevel(9);
+					imgP.setLocalizationAlgorithmPriority(null);
 					dbrSetting.setImageParameter(imgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
@@ -286,6 +484,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					DBRSetting dbrSetting = new DBRSetting();
 					DBRSetting.ImageParameter imgP = new DBRSetting.ImageParameter();
 					imgP.setExpectedBarcodesCount(0);
+					imgP.setAntiDamageLevel(9);
+					imgP.setDeblurLevel(9);
+					imgP.setLocalizationAlgorithmPriority(null);
 					dbrSetting.setImageParameter(imgP);
 					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
@@ -305,6 +506,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					imgP.setAntiDamageLevel(7);
 					imgP.setDeblurLevel(9);
 					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(null);
 					dbrSetting.setImageParameter(imgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
@@ -314,6 +516,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					imgP.setAntiDamageLevel(7);
 					imgP.setDeblurLevel(9);
 					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(null);
 					dbrSetting.setImageParameter(imgP);
 					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
@@ -330,8 +533,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (setting != null) {
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setAntiDamageLevel(5);
-					imgP.setDeblurLevel(5);
+					imgP.setAntiDamageLevel(7);
+					imgP.setDeblurLevel(9);
 					imgP.setExpectedBarcodesCount(512);
 					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
 						add("ConnectedBlock");
@@ -348,6 +551,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					imgP.setAntiDamageLevel(7);
 					imgP.setDeblurLevel(9);
 					imgP.setExpectedBarcodesCount(512);
+					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+						add("ConnectedBlock");
+						add("Lines");
+						add("Statistics");
+						add("FullImageAsBarcodeZone");
+					}});
 					dbrSetting.setImageParameter(imgP);
 					mSettingCache.put("Setting", LoganSquare.serialize(dbrSetting));
 					reader.initRuntimeSettingsWithString(LoganSquare.serialize(dbrSetting), 2);
@@ -370,9 +579,23 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				reader.initRuntimeSettingsWithString(LoganSquare.serialize(panorma), 2);
 				setToolbarTitle("Panorma");
 			} else if ("CustomSetting".equals(templateType)){
-				String setting = mSettingCache.getAsString("CustomSetting");
+				if (overlapEnabled) {
+					lineDone.setVisibility(View.GONE);
+					btnFinish.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.VISIBLE);
+					btnStart.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.VISIBLE);
+				} else {
+					lineDone.setVisibility(View.VISIBLE);
+					btnStart.setVisibility(View.GONE);
+					btnFinish.setVisibility(View.GONE);
+					slidingDrawer.setVisibility(View.GONE);
+					mScanCount.setVisibility(View.GONE);
+				}
+				detectStart = true;
+				String setting = mSettingCache.getAsString("Setting");
 				reader.initRuntimeSettingsWithString(setting, 2);
-				setToolbarTitle("Custom");
+				setToolbarTitle("Customized");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -394,7 +617,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			menu.findItem(R.id.menu_scanning).setVisible(false);
 			menu.findItem(R.id.menu_Setting).setVisible(true);
 		}
-		if ("OverlapSetting".equals(templateType)) {
+		if (overlapEnabled) {
 			menu.findItem(R.id.menu_file).setVisible(false);
 			menu.findItem(R.id.menu_capture).setVisible(false);
 			menu.findItem(R.id.menu_scanning).setVisible(false);
@@ -569,6 +792,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
 	}
+
 	private void showResults(TextResult[] results){
 		View dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog, null);
 		ListView resultListView = (ListView)dialogView.findViewById(R.id.lv_result_list);
@@ -738,7 +962,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	private void switchToMulti() {
 		isSingleMode = false;
-		if ("OverlapSetting".equals(templateType)) {
+		if (overlapEnabled) {
 			slidingDrawer.setVisibility(View.VISIBLE);
 			mScanCount.setVisibility(View.VISIBLE);
 		} else {
@@ -813,7 +1037,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					duringTime = endDetectTime - startDetectTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for (int i = 0; i < result.length; i++) {
-						if (result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 50) {
+						if (result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 10) {
 							resultArrayList.add(result[i]);
 						}
 					}
@@ -834,7 +1058,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					Message message = handler.obtainMessage();
 					message.what = DETECT_BARCODE;
 					if (result != null && result.length > 0) {
-						if ("OverlapSetting".equals(templateType)) {
+						if (overlapEnabled) {
 							if (frameTime == 0) {
 								yuvInfo = new YuvInfo();
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
@@ -854,9 +1078,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								}
 								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
-								/*if (coordsMapResult.resultArr.length == 5){
-									Log.e("", "");
-								}*/
 								if (coordsMapResult != null) {
 									LocalizationResult localizationResult1;
 									TextResult textResult1;
@@ -866,7 +1087,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									//Log.e("SavingCacheSize: ", saveCache.size() + "");
 									switch (coordsMapResult.basedImg) {
 										case 0:
-											//coordMessage.obj = frameUtil.handlePoints(yuvInfoList.get(1).textResult, previewScale, hgt, wid);
 											message.obj = yuvInfoList.get(1).textResult;
 											handler.sendMessage(message);
 											if (saveCache.size() == 0) {
@@ -983,7 +1203,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									}
 								}
 							}
-						} else if ("GeneralSetting".equals(templateType) || ("MultiBestSetting").equals(templateType)) {
+						} else {
 							Message resultMessage = handler.obtainMessage();
 							resultMessage.what = BARCODE_RESULT;
 							resultMessage.obj = result;
@@ -1022,7 +1242,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					saveCache.remove(saveCache.get(i));
 				} else {
 					handleImage(saving, null);
-					saveCache.add(saving.clone());
+					if (saveCache.size() < 17) {
+						saveCache.add(saving.clone());
+					} else {
+						saveCache.remove(0);
+						saveCache.add(saving.clone());
+					}
 					break;
 				}
 			}

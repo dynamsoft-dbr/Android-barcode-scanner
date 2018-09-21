@@ -245,33 +245,12 @@ public class SimpleSettingActivity extends BaseActivity {
         if ((requestCode == REQUEST_ONED_SETTING && resultCode == RESPONSE_ONED_SETTING)) {
             mSetting = (DBRSetting) data.getSerializableExtra("OneDSetting");
             mImageParameter = mSetting.getImageParameter();
-			/*ArrayList<String> formats = mSetting.getBarcodeFormatIds();
-			if (formats.contains("CODE_39") && formats.contains("CODE_128") &&
-					formats.contains("CODE_93") && formats.contains("CODABAR") &&
-					formats.contains("ITF") && formats.contains("EAN_13") &&
-					formats.contains("EAN_8") && formats.contains("UPC_E") &&
-					formats.contains("INDUSTRIAL_25") && formats.contains("UPC_A")){
-				mOned.setChecked(true);
-			} else {
-				mOned.setChecked(false);
-			}*/
         }
     }
     CheckBox.OnCheckedChangeListener onCKBCheckedChange = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             switch (buttonView.getId()){
-				/*case R.id.ckboned:
-					if (mOned.isChecked()) {
-						tempFormats = mSetting.getBarcodeFormatIds();
-						tempFormats.addAll(oneDFormats);
-						mSetting.setBarcodeFormatIds(tempFormats);
-					}else {
-						tempFormats = mSetting.getBarcodeFormatIds();
-						tempFormats.removeAll(oneDFormats);
-						mSetting.setBarcodeFormatIds(tempFormats);
-					}
-					break;*/
                 case R.id.simple_ckbpdf417:
                     if (mPDF417.isChecked()){
                         tempFormats = mImageParameter.getBarcodeFormatIds();

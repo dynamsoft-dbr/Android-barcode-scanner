@@ -10,14 +10,97 @@
 		android:id="@+id/vp_history_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@+id/tablerow"/>
+		android:layout_marginBottom="130dp"/>
 
 	<uk.co.senab.photoview.PhotoView
 		android:id="@+id/pv_photo_detail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@+id/tablerow"/>
-	<TableRow
+		android:layout_marginBottom="130dp"/>
+	<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
+		android:id="@+id/result_sliding_drawer"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:layout_width="match_parent"
+		android:layout_height="300dp"
+		android:layout_alignParentBottom="true"
+		app:elevation="4dp">
+
+		<LinearLayout
+			android:id="@id/non_slidable_view"
+			android:layout_width="match_parent"
+			android:layout_height="170dp">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"/>
+		</LinearLayout>
+
+		<FrameLayout
+			android:id="@id/slidable_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@android:color/white">
+
+			<ListView
+				android:id="@+id/lv_barcode_list"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginTop="35dp"
+				android:layoutAnimation="@anim/listview_layout_anim"/>
+			<TableRow
+				android:id="@+id/result_drag_view"
+				android:layout_width="match_parent"
+				android:layout_height="35dp"
+				android:background="#fff1f2f6"
+				android:orientation="horizontal"
+				android:descendantFocusability="blocksDescendants"
+				android:focusableInTouchMode="true">
+
+				<ImageButton
+					android:layout_width="16dp"
+					android:layout_height="16dp"
+					android:layout_marginLeft="16dp"
+					android:duplicateParentState="true"
+					android:clickable="true"
+					android:focusable="true"
+					android:layout_gravity="center"
+					android:background="@drawable/icon_history"/>
+				<TextView
+					android:id="@+id/tv_decode_time"
+					android:layout_width="180dp"
+					android:layout_height="match_parent"
+					android:text="Total time spent: 0"
+					android:textSize="16sp"
+					android:textColor="#ff7c7c7c"
+					android:layout_marginLeft="15dp"
+					android:gravity="center_vertical"
+					android:clickable="true"
+					android:focusable="true"
+					android:duplicateParentState="true"/>
+				<ImageButton
+					android:layout_width="105dp"
+					android:layout_height="match_parent"
+					android:duplicateParentState="true"
+					android:clickable="true"
+					android:focusable="true"
+					android:background="@color/transparent"/>
+
+				<TextView
+					android:id="@+id/tv_barcode_count"
+					android:layout_width="80dp"
+					android:layout_height="match_parent"
+					android:duplicateParentState="true"
+					android:clickable="true"
+					android:focusable="true"
+					android:gravity="center_vertical"
+					android:text="QTY:"
+					android:textColor="#ff7c7c7c"
+					android:textSize="16sp"/>
+			</TableRow>
+		</FrameLayout>
+	</com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer>
+	<!--<TableRow
 		android:id="@+id/tablerow"
 		android:layout_above="@+id/lv_code_list"
 		android:layout_width="match_parent"
@@ -43,26 +126,6 @@
 			android:layout_above="@+id/lv_code_list"
 			android:layout_weight="2"/>
 	</TableRow>
-	<!--<com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer
-		android:id="@+id/sliding_drawer1"
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:app="http://schemas.android.com/apk/res-auto"
-		android:layout_width="match_parent"
-		android:layout_height="400dp"
-		android:layout_alignParentBottom="true"
-		app:elevation="4dp">
-		<LinearLayout
-			android:id="@id/non_slidable_view"
-			android:layout_width="match_parent"
-			android:layout_height="300dp">
-
-		<TextView
-			android:id="@+id/tv_border"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
-		</LinearLayout>
-
-	</com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer>-->
 	<ListView
 		android:background="#ffffff"
 		android:layout_alignParentBottom="true"
@@ -71,7 +134,7 @@
 		android:layoutAnimation="@anim/listview_layout_anim"
 		android:dividerHeight="1dp"
 		android:layout_width="match_parent"
-		android:layout_height="160dp"/>
+		android:layout_height="160dp"/>-->
 
 	<ProgressBar
 		android:visibility="gone"

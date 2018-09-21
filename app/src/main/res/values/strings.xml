@@ -67,12 +67,21 @@
     <string name="general_scan">General Scan</string>
     <string name="overlap">Overlap</string>
     <string name="panorma">Panorma</string>
-    <string name="one_off_scan">One-off scan</string>
+    <string name="one_off_scan">One-off scan to find at least 1 barcode</string>
     <string name="one_off_scan_with_a_thorough_search">One-off scan with a thorough search</string>
     <string name="continuous_scan_filter_duplicates">Continuous scan; filter duplicates</string>
+    <string name="advanced_mode">Advanced mode with all the possible settings</string>
     <string name="continuous_scan_stitch_video_frames">Continuous scan; stitch video frames</string>
+    <string name="custom">Customized</string>
     <string name="add_now">Add Now</string>
     <string name="start_to_scan_some_barcodes">Start to scan some barcodes</string>
     <string name="you_have_no_files">You have no files</string>
     <string name="title_activity_simple_setting">SimpleSettingActivity</string>
+    <string name="general_show_detail">Scan in single frame with the default settings of our SDK. Your modification to the simple barcode reading settings will be saved to Best Coverage, Overlap and Customized as well.</string>
+    <string name="best_coverage_show_detail">Scan in single frame with the best efforts of our SDK. Your modification to the simple barcode reading settings will be saved to Best Coverage, Overlap and Customized as well.</string>
+    <string name="overlap_show_detail">Scan in multiple frames with the best efforts of our SDK. This mode works the best for multiple barcodes on 1 image. All barcode results will be added up and saved to history.</string>
+    <string name="custom_show_detai">With this advanced mode, you get to know Dynamsoft Barcode Reader SDK with its flexible decode settings. You can enjoy all the features in General, Best Coverage and Overlap in this mode.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

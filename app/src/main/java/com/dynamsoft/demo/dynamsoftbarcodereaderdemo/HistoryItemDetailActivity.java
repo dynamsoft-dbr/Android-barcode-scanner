@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
@@ -48,6 +49,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.FrameUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.ShareUtil;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.weight.HistoryPreviewViewPager;
+import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 
 import org.json.JSONObject;
 import org.litepal.LitePal;
@@ -71,7 +73,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private final int DECODE_FAILED = 0X0045;
 	@BindView(R.id.vp_history_detail)
 	HistoryPreviewViewPager vpHistoryDetail;
-	@BindView(R.id.lv_code_list)
+	@BindView(R.id.lv_barcode_list)
 	ListView lvCodeList;
 	@BindView(R.id.pb_progress)
 	ProgressBar pbProgress;
@@ -81,6 +83,10 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	TextView tvDecodeTime;
 	@BindView(R.id.tv_barcode_count)
 	TextView tvBarcodeCount;
+	@BindView(R.id.result_sliding_drawer)
+	SlidingDrawer slidingDrawer;
+	@BindView(R.id.result_drag_view)
+	TableRow dragView;
 	private DBRCache mCache;
 	private String[] fileNames;
 	private int intentPosition;
@@ -132,6 +138,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		setToolbarBackgroud("#ffffff");
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
+		slidingDrawer.setDragView(dragView);
 		initBarcodeReader();
 		shareUtil = new ShareUtil(this);
 		simpleAdapter = new SimpleAdapter(this, recentCodeList,
@@ -386,7 +393,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 					decodeTime = endTime - startTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for (int i = 0; i < textResults.length; i++) {
-						if (textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 30) {
+						if (textResults[i] != null && textResults[i].localizationResult.extendedResultArray[0].confidence > 10) {
 							resultArrayList.add(textResults[i]);
 						}
 					}

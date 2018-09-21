@@ -16,6 +16,28 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/textview_width">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:gravity="start|center_vertical"
+                    android:text="If multi frame"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/sc_overlapEnable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    android:enabled="true"/>
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -179,32 +201,6 @@
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_beep_sound"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    android:enabled="true"/>
-            </RelativeLayout>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="9dp"
-                android:background="#fff3f3f3" />
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/textview_width">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:gravity="start|center_vertical"
-                    android:text="Overlap"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/sc_overlapEnable"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
