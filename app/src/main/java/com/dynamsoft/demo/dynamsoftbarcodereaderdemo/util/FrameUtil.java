@@ -4,10 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 
+import com.dynamsoft.barcode.Point;
 import com.dynamsoft.barcode.TextResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.fotoapparat.parameter.Resolution;
 
@@ -212,5 +214,38 @@ public class FrameUtil {
 			rectCoord.add(points);
 		}
 		return rectCoord;
+	}
+	public static TextResult[] sortPoints(TextResult[] textResults) {
+		for (int i = 0; i < textResults.length; i++) {
+			Point[] points = new Point[]{textResults[i].localizationResult.resultPoints[0], textResults[i].localizationResult.resultPoints[1], textResults[i].localizationResult.resultPoints[2], textResults[i].localizationResult.resultPoints[3]};
+			int[] xy = new int[]{points[0].x*points[0].x + points[0].y*points[0].y, points[1].x*points[1].x + points[1].y*points[1].y, points[2].x*points[2].x + points[2].y*points[2].y, points[3].x*points[3].x + points[3].y *points[3].y};
+			int minIndex = 0;
+			int min = xy[0];
+			for (int j = 1; j < 3; j++){
+				if (xy[j] < min){
+					minIndex = j;
+					min = xy[j];
+				}
+			}
+			int maxIndex = (minIndex + 2) % 4;
+			textResults[i].localizationResult.resultPoints[0] = points[minIndex];
+			textResults[i].localizationResult.resultPoints[1] = points[(minIndex + 1) % 4];
+			textResults[i].localizationResult.resultPoints[2] = points[maxIndex];
+			textResults[i].localizationResult.resultPoints[3] = points[(minIndex + 3) % 4];
+
+			/*Point newPoint = new Point();
+			newPoint.x = points[maxIndex].x - points[minIndex].x;
+			newPoint.y = points[maxIndex].y - points[minIndex].y;
+			textResults[i].localizationResult.resultPoints[0] = points[minIndex];
+			textResults[i].localizationResult.resultPoints[2] = points[maxIndex];
+			if (newPoint.x * (points[3 - minIndex].y - points[minIndex].y) - (points[3 - minIndex].x - points[minIndex].x) * newPoint.y > 0) {
+				textResults[i].localizationResult.resultPoints[1] = points[3 - maxIndex];
+				textResults[i].localizationResult.resultPoints[3] = points[3 - minIndex];
+			} else {
+				textResults[i].localizationResult.resultPoints[1] = points[3 - minIndex];
+				textResults[i].localizationResult.resultPoints[3] = points[3 - maxIndex];
+			}*/
+		}
+		return textResults;
 	}
 }

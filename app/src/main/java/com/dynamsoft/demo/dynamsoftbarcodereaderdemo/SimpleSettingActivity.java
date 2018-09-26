@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -76,7 +77,7 @@ public class SimpleSettingActivity extends BaseActivity {
         ButterKnife.bind(this);
         setToolbarBackgroud("#000000");
         setToolbarNavIcon(R.drawable.ic_action_back_dark);
-        setToolbarTitle("Setting");
+        setToolbarTitle("Settings");
         setToolbarTitleColor("#ffffff");
         initUI();
         initSetting();
@@ -93,10 +94,18 @@ public class SimpleSettingActivity extends BaseActivity {
                 intent.putExtra("DBRSetting", mSetting);
                 startActivityForResult(intent, REQUEST_ONED_SETTING);
                 break;
-            case R.id.tv_scale_down_threshold:
+            case R.id.simple_tv_scale_down_threshold:
                 etScaleDownThreshold.setText(tvScaleDownThreshold.getText());
                 tvScaleDownThreshold.setVisibility(View.GONE);
                 etScaleDownThreshold.setVisibility(View.VISIBLE);
+                break;
+            case R.id.simple_iv_scale_down_threshold:
+                AlertDialog builder1 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle("Tooltips").setMessage(R.string.scale_down_threshold_tip).create();
+                builder1.show();
+                break;
+            case R.id.simple_iv_barcode_invert_mode:
+                AlertDialog builder2 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle("Tooltips").setMessage(R.string.barcode_invert_mode_tip).create();
+                builder2.show();
                 break;
             default:
                 break;

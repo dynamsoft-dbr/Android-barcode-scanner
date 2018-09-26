@@ -1,5 +1,6 @@
 package com.dynamsoft.demo.dynamsoftbarcodereaderdemo;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -113,7 +114,7 @@ public class SettingActivity extends BaseActivity {
 		ButterKnife.bind(this);
 		setToolbarBackgroud("#000000");
 		setToolbarNavIcon(R.drawable.ic_action_back_dark);
-		setToolbarTitle("Setting");
+		setToolbarTitle("Settings");
 		setToolbarTitleColor("#ffffff");
 		initSpinner();
 		initSetting();
@@ -179,7 +180,74 @@ public class SettingActivity extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	public void onTipsClicked(View view) {
+		AlertDialog builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).create();
+		builder.setTitle("Tooltips");
+		switch (view.getId()) {
+			case R.id.iv_expected_barcode_count:
+				builder.setMessage(getText(R.string.expected_barcode_count_tip));
+				builder.show();
+				break;
+			case R.id.iv_timeout:
+				builder.setMessage(getText(R.string.timeout_tip));
+				builder.show();
+				break;
+			case R.id.iv_deblur_level:
+				builder.setMessage(getText(R.string.deblur_level_tip));
+				builder.show();
+				break;
+			case R.id.iv_anti_damage_level:
+				builder.setMessage(getText(R.string.anti_damage_level_tip));
+				builder.show();
+				break;
+			case R.id.iv_text_filter_mode:
+				builder.setMessage(getText(R.string.text_filter_mode_tip));
+				builder.show();
+				break;
+			case R.id.iv_region_predetection_mode:
+				builder.setMessage(getText(R.string.region_predetection_mode_tip));
+				builder.show();
+				break;
+			case R.id.iv_scale_down_threshold:
+				builder.setMessage(getText(R.string.scale_down_threshold_tip));
+				builder.show();
+				break;
+			case R.id.iv_colour_image_convert_mode:
+				builder.setMessage(getText(R.string.colour_image_convert_mode_tip));
+				builder.show();
+				break;
+			case R.id.iv_barcode_invert_mode:
+				builder.setMessage(getText(R.string.barcode_invert_mode_tip));
+				builder.show();
+				break;
+			case R.id.iv_gray_equalization_sensitivity:
+				builder.setMessage(getText(R.string.gray_equalization_sensitivity_tip));
+				builder.show();
+				break;
+			case R.id.iv_texture_detection_sensitivity:
+				builder.setMessage(getText(R.string.texture_detection_sensitivity_tip));
+				builder.show();
+				break;
+			case R.id.iv_binarization_block_size:
+				builder.setMessage(getText(R.string.binarization_block_size_tip));
+				builder.show();
+				break;
+			case R.id.iv_localization_algorithm_priority:
+				builder.setMessage(getText(R.string.localization_algorithm_priority_tip));
+				builder.show();
+				break;
+			case R.id.iv_max_barcode_count:
+				builder.setMessage(getText(R.string.max_barcode_count_tip));
+				builder.show();
+				break;
+			case R.id.iv_enable_fill_binary_vacancy:
+				builder.setMessage(getText(R.string.enable_fill_binary_vacancy_tip));
+				builder.show();
+				break;
+			default:
+				break;
+		}
+	}
 	public void onClicked(View view) {
 		switch (view.getId()) {
 			case R.id.setoned:
@@ -212,11 +280,6 @@ public class SettingActivity extends BaseActivity {
 				tvBinarizationBlockSize.setVisibility(View.GONE);
 				etBinarizationBlockSize.setVisibility(View.VISIBLE);
 				break;
-			/*case R.id.tv_max_dimof_full_image_as_barcode_zone:
-				etMaxDimofFullImageAsBarcodeZone.setText(tvMaxDimofFullImageAsBarcodeZone.getText());
-				tvMaxDimofFullImageAsBarcodeZone.setVisibility(View.GONE);
-				etMaxDimofFullImageAsBarcodeZone.setVisibility(View.VISIBLE);
-				break;*/
 			case R.id.tv_max_barcode_count:
 				etMaxBarcodeCount.setText(tvMaxBarcodeCount.getText());
 				tvMaxBarcodeCount.setVisibility(View.GONE);

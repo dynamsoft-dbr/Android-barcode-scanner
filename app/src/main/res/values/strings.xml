@@ -81,7 +81,20 @@
     <string name="best_coverage_show_detail">Scan in single frame with the best efforts of our SDK. Your modification to the simple barcode reading settings will be saved to Best Coverage, Overlap and Customized as well.</string>
     <string name="overlap_show_detail">Scan in multiple frames with the best efforts of our SDK. This mode works the best for multiple barcodes on 1 image. All barcode results will be added up and saved to history.</string>
     <string name="custom_show_detai">With this advanced mode, you get to know Dynamsoft Barcode Reader SDK with its flexible decode settings. You can enjoy all the features in General, Best Coverage and Overlap in this mode.</string>
-
+    <string name="scale_down_threshold_tip">It stores the threshold value of the image shrinking. If the shorter edge size is larger than the given value, the library will calculate the required height and width of the barcode image and shrink the image to that size before localization. Otherwise, it will perform barcode localization on the original image.</string>
+    <string name="barcode_invert_mode_tip">It stores the barcode invert mode which decides whether to invert colour before binarization. This mode is designed to fit the scenarios which light barcode located at dark background, for example, a white QR in a black paper.</string>
+    <string name="expected_barcode_count_tip"></string>
+    <string name="timeout_tip"></string>
+    <string name="deblur_level_tip"></string>
+    <string name="anti_damage_level_tip"></string>
+    <string name="text_filter_mode_tip"></string>
+    <string name="region_predetection_mode_tip"></string>
+    <string name="colour_image_convert_mode_tip"></string>
+    <string name="gray_equalization_sensitivity_tip"></string>
+    <string name="texture_detection_sensitivity_tip"></string>
+    <string name="binarization_block_size_tip"></string>
+    <string name="localization_algorithm_priority_tip"></string>
+    <string name="max_barcode_count_tip"></string>
+    <string name="enable_fill_binary_vacancy_tip"></string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

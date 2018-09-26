@@ -21,6 +21,7 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -974,8 +975,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 	class CodeFrameProcesser implements FrameProcessor {
 		YuvImage yuvImage;
 		private YuvInfo yuvInfo;
+		private int singleFrame = 0;
 		private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 		private ArrayList<YuvInfo> saveCache = new ArrayList<>();
+		private ArrayList<YuvInfo> singleYuvList = new ArrayList<>();
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
@@ -1182,16 +1185,98 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								}
 							}
 						} else {
-							Message resultMessage = handler.obtainMessage();
-							resultMessage.what = BARCODE_RESULT;
-							resultMessage.obj = result;
-							handler.sendMessage(resultMessage);
-							detectStart = false;
+							result = FrameUtil.sortPoints(result);
 							yuvInfo = new YuvInfo();
 							yuvInfo.textResult = result;
 							yuvInfo.yuvImage = yuvImage;
 							yuvInfo.cacheName = System.currentTimeMillis() + "";
-							handleImage(yuvInfo, null);
+							Message resultMessage = handler.obtainMessage();
+							resultMessage.what = BARCODE_RESULT;
+							if (singleYuvList.size() == 0) {
+								singleYuvList.add(yuvInfo.clone());
+								resultMessage.obj = result;
+								handler.sendMessage(resultMessage);
+								handleImage(yuvInfo, null);
+								singleYuvList.set(0, yuvInfo.clone());
+								detectStart = false;
+							} else {
+								if (singleYuvList.size() == 1) {
+									singleYuvList.add(yuvInfo.clone());
+								} else {
+									singleYuvList.set(1, yuvInfo.clone());
+								}
+								if (singleYuvList.get(0).textResult.length == singleYuvList.get(1).textResult.length) {
+									boolean ifFind = false;
+									TextResult[] findResults = new TextResult[singleYuvList.get(0).textResult.length];
+									for (int i = 0; i < singleYuvList.get(0).textResult.length; i++) {
+										for (int j = 0; j < singleYuvList.get(1).textResult.length; j++) {
+											if (singleYuvList.get(0).textResult[i].barcodeText.equals(singleYuvList.get(1).textResult[j].barcodeText) && (singleYuvList.get(0).textResult[i].barcodeFormat == singleYuvList.get(1).textResult[j].barcodeFormat)) {
+												ifFind = true;
+												findResults[i] = singleYuvList.get(1).textResult[j];
+												break;
+											} else {
+												ifFind = false;
+											}
+										}
+										if (!ifFind) {
+											break;
+										}
+									}
+									if (ifFind) {
+										boolean flag = false;
+										for (int i = 0; i < singleYuvList.get(0).textResult.length; i++) {
+											for (int j = 0; j < 4; j++) {
+												Log.e("X:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) + "");
+												Log.e("Y:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) + "");
+												if (Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) < hgt * 0.02 || Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) < hgt * 0.02) {
+													flag = true;
+												} else {
+													flag = false;
+													break;
+												}
+											}
+											if (!flag) {
+												break;
+											}
+										}
+										if (flag) {
+											singleFrame++;
+											if (singleFrame < 6) {
+												singleYuvList.set(0, yuvInfo.clone());
+											} else {
+												resultMessage.obj = result;
+												handler.sendMessage(resultMessage);
+												handleImage(yuvInfo, null);
+												singleYuvList.set(0, yuvInfo.clone());
+												detectStart = false;
+												singleFrame = 0;
+											}
+										} else {
+											resultMessage.obj = result;
+											handler.sendMessage(resultMessage);
+											handleImage(yuvInfo, null);
+											singleYuvList.set(0, yuvInfo.clone());
+											detectStart = false;
+											singleFrame = 0;
+										}
+
+									} else {
+										resultMessage.obj = result;
+										handler.sendMessage(resultMessage);
+										handleImage(yuvInfo, null);
+										singleYuvList.set(0, yuvInfo.clone());
+										detectStart = false;
+										singleFrame = 0;
+									}
+								} else {
+									resultMessage.obj = result;
+									handler.sendMessage(resultMessage);
+									handleImage(yuvInfo, null);
+									singleYuvList.set(0, yuvInfo.clone());
+									detectStart = false;
+									singleFrame = 0;
+								}
+							}
 						}
 					} else {
 						message.obj = null;

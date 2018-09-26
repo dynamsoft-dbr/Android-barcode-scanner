@@ -216,6 +216,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_expected_barcode_count_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -225,6 +226,14 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
 
+                <ImageView
+                    android:id="@+id/iv_expected_barcode_count"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:onClick="onTipsClicked"
+                    android:layout_toRightOf="@+id/tv_expected_barcode_count_1"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <TextView
                     android:id="@+id/tv_expected_barcode_count"
                     android:layout_width="wrap_content"
@@ -261,6 +270,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_timeout_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -269,7 +279,14 @@
                     android:text="@string/timeout"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_timeout"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_timeout_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <TextView
                     android:id="@+id/tv_timeout"
                     android:layout_width="wrap_content"
@@ -305,6 +322,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_deblur_level_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -313,7 +331,14 @@
                     android:text="@string/deblurlevel"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_deblur_level"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_deblur_level_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_deblur_level"
                     android:layout_alignParentRight="true"
@@ -332,6 +357,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_anti_damage_level"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -340,7 +366,14 @@
                     android:text="@string/anti_damage_level"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_anti_damage_level"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_anti_damage_level"
+                    android:onClick="onTipsClicked"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_anti_damage_level"
                     android:layout_width="wrap_content"
@@ -359,6 +392,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_text_filter_mode_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -367,7 +401,14 @@
                     android:text="@string/text_filter_mode"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_text_filter_mode"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_text_filter_mode_1"
+                    android:onClick="onTipsClicked"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_text_filter_mode"
                     android:layout_width="wrap_content"
@@ -386,6 +427,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_region_predetection_mode_1"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/textview_width"
                     android:layout_marginLeft="20dp"
@@ -394,7 +436,14 @@
                     android:text="@string/region_predetection_mode"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_region_predetection_mode"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_region_predetection_mode_1"
+                    android:onClick="onTipsClicked"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_region_predetection_mode"
                     android:layout_width="wrap_content"
@@ -413,6 +462,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_scale_down_threshold_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -421,7 +471,14 @@
                     android:text="@string/scale_down_Threshold"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_scale_down_threshold"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_scale_down_threshold_1"
+                    android:onClick="onTipsClicked"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <TextView
                     android:id="@+id/tv_scale_down_threshold"
                     android:layout_width="wrap_content"
@@ -457,6 +514,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_colour_image_convert_mode_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -465,7 +523,14 @@
                     android:text="@string/colour_image_convert_mode"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_colour_image_convert_mode"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_colour_image_convert_mode_1"
+                    android:onClick="onTipsClicked"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_colour_image_convert_mode"
                     android:layout_width="wrap_content"
@@ -484,6 +549,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_barcode_invert_mode_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -492,7 +558,14 @@
                     android:text="@string/barcode_invert_mode"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_barcode_invert_mode"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_barcode_invert_mode_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_barcode_invert_mode"
                     android:layout_width="wrap_content"
@@ -511,6 +584,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_gray_equalization_sensitivity_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -519,7 +593,14 @@
                     android:text="@string/gray_equalization_sensitivity"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_gray_equalization_sensitivity"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_gray_equalization_sensitivity_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_gray_equalization_sensitivity"
                     android:layout_width="wrap_content"
@@ -538,6 +619,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_texture_detection_sensitivity_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -546,7 +628,14 @@
                     android:text="@string/texture_detection_sensitivity"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_texture_detection_sensitivity"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_texture_detection_sensitivity_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <Spinner
                     android:id="@+id/sp_texture_detection_sensitivity"
                     android:layout_width="wrap_content"
@@ -565,6 +654,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_binarization_block_size_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -573,7 +663,14 @@
                     android:text="@string/binarization_block_size"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_binarization_block_size"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_binarization_block_size_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <TextView
                     android:id="@+id/tv_binarization_block_size"
                     android:layout_width="wrap_content"
@@ -609,6 +706,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_localization_algorithm_priority_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -617,7 +715,14 @@
                     android:text="@string/localization_algorithm_priority"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_localization_algorithm_priority"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_localization_algorithm_priority_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <ImageView
                     android:id="@+id/setalgorithm"
                     android:layout_width="20dp"
@@ -642,6 +747,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_max_barcode_count_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -650,7 +756,14 @@
                     android:text="@string/max_barcode_count"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_max_barcode_count"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_max_barcode_count_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <TextView
                     android:id="@+id/tv_max_barcode_count"
                     android:layout_width="wrap_content"
@@ -685,6 +798,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_enable_fill_binary_vacancy_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -693,7 +807,14 @@
                     android:text="@string/enable_fill_binary_vacancy"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_enable_fill_binary_vacancy"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_enable_fill_binary_vacancy_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/guide"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_enable_fill_binary_vacancy"
                     android:layout_width="wrap_content"
