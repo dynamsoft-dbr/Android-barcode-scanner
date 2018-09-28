@@ -258,6 +258,16 @@ public class SettingActivity extends BaseActivity {
 				builder.setTitle(R.string.enable_fill_binary_vacancy);
 				builder.show();
 				break;
+			case R.id.iv_beepsound:
+				builder.setTitle(R.string.beep_sound);
+				builder.setMessage(getText(R.string.beep_sound_tip));
+				builder.show();
+				break;
+			case R.id.iv_if_multi_frame:
+				builder.setTitle(R.string.if_multi_frame);
+				builder.setMessage(getText(R.string.if_multi_frame_tip));
+				builder.show();
+				break;
 			default:
 				break;
 		}

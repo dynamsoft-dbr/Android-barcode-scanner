@@ -21,6 +21,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_if_multi_frame_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -29,7 +30,14 @@
                     android:text="If multi frame"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_if_multi_frame"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_if_multi_frame_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/icon_question"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_overlapEnable"
                     android:layout_width="wrap_content"
@@ -190,6 +198,7 @@
                 android:layout_height="@dimen/textview_width">
 
                 <TextView
+                    android:id="@+id/tv_beepsound_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
@@ -198,7 +207,14 @@
                     android:text="@string/beep_sound"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
-
+                <ImageView
+                    android:id="@+id/iv_beepsound"
+                    android:layout_width="16dp"
+                    android:layout_height="48dp"
+                    android:layout_toRightOf="@id/tv_beepsound_1"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="onTipsClicked"
+                    android:src="@mipmap/icon_question"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_beep_sound"
                     android:layout_width="wrap_content"

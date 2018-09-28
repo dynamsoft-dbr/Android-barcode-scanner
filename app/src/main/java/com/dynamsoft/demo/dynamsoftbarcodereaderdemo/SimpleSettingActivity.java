@@ -107,6 +107,10 @@ public class SimpleSettingActivity extends BaseActivity {
                 AlertDialog builder2 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.barcode_invert_mode).setMessage(R.string.barcode_invert_mode_tip).create();
                 builder2.show();
                 break;
+            case R.id.simple_iv_beepsound:
+                AlertDialog builder3 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.beep_sound).setMessage(R.string.beep_sound_tip).create();
+                builder3.show();
+                break;
             default:
                 break;
         }

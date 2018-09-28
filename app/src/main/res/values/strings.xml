@@ -96,5 +96,8 @@
     <string name="localization_algorithm_priority_tip">Sets the priority of localization algorithms to decide the ordering of the following four localization algorithms.</string>
     <string name="max_barcode_count_tip">Sets the maximum number of barcodes to read. This will limit the number of barcodes returned by library.</string>
     <string name="enable_fill_binary_vacancy_tip">Sets whether to enable fill binary vacancy.</string>
+    <string name="if_multi_frame">If multi frame</string>
+    <string name="if_multi_frame_tip">Whether to scan barcode in multi-frame modes.</string>
+    <string name="beep_sound_tip">Whether to beep once a barcode is found.</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
