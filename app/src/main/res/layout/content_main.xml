@@ -148,7 +148,7 @@
 					android:clickable="true"
 					android:focusable="true"
 					android:gravity="center"
-					android:text="Pull up to see more results"
+					android:text="More results"
 					android:textColor="#ff7c7c7c"
 					android:textSize="16sp"/>
 				<LinearLayout

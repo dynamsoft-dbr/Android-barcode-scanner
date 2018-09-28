@@ -612,13 +612,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					//Logger.d("sliding drawer 0");
 					isDrawerExpand = false;
 					recentCodeList.clear();
-					dragText.setText("Pull up to see more results");
+					dragText.setText("More results");
 					ivPull.setImageResource(R.drawable.arrow_up);
 				} else if (slidingDrawer.getState() == SlidingDrawer.EXPANDED) {
 					//Logger.d("sliding drawer 1");
 					isDrawerExpand = true;
 					ivPull.setImageResource(R.drawable.arrow_down);
-					dragText.setText("Pull down to continue");
+					dragText.setText("Scroll down to continue");
 					hudView.clear();
 
 				}
@@ -1226,9 +1226,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										boolean flag = false;
 										for (int i = 0; i < singleYuvList.get(0).textResult.length; i++) {
 											for (int j = 0; j < 4; j++) {
-												Log.e("X:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) + "");
-												Log.e("Y:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) + "");
-												if (Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) < hgt * 0.02 || Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) < hgt * 0.02) {
+												//Log.e("X:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) + "");
+												//Log.e("Y:", Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) + "");
+												if (Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].x - findResults[i].localizationResult.resultPoints[j].x) < hgt * 0.05 || Math.abs(singleYuvList.get(0).textResult[i].localizationResult.resultPoints[j].y - findResults[i].localizationResult.resultPoints[j].y) < hgt * 0.05) {
 													flag = true;
 												} else {
 													flag = false;
