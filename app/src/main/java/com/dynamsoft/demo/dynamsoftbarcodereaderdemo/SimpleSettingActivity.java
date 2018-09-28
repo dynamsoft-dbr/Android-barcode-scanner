@@ -100,11 +100,11 @@ public class SimpleSettingActivity extends BaseActivity {
                 etScaleDownThreshold.setVisibility(View.VISIBLE);
                 break;
             case R.id.simple_iv_scale_down_threshold:
-                AlertDialog builder1 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle("Tooltips").setMessage(R.string.scale_down_threshold_tip).create();
+                AlertDialog builder1 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.scale_down_Threshold).setMessage(R.string.scale_down_threshold_tip).create();
                 builder1.show();
                 break;
             case R.id.simple_iv_barcode_invert_mode:
-                AlertDialog builder2 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle("Tooltips").setMessage(R.string.barcode_invert_mode_tip).create();
+                AlertDialog builder2 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.barcode_invert_mode).setMessage(R.string.barcode_invert_mode_tip).create();
                 builder2.show();
                 break;
             default:

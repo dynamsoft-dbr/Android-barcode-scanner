@@ -222,7 +222,7 @@
                     android:layout_toRightOf="@id/simple_tv_scale_down_threshold_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <EditText
                     android:id="@+id/simple_et_scale_down_threshold"
                     android:layout_width="wrap_content"
@@ -264,7 +264,7 @@
                     android:layout_height="48dp"
                     android:layout_toRightOf="@id/simple_tv_barcode_invert_mode_1"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"
+                    android:src="@mipmap/icon_question"
                     android:onClick="onClicked"/>
                 <Spinner
                     android:id="@+id/simple_sp_barcode_invert_mode"

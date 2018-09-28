@@ -233,7 +233,7 @@
                     android:onClick="onTipsClicked"
                     android:layout_toRightOf="@+id/tv_expected_barcode_count_1"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <TextView
                     android:id="@+id/tv_expected_barcode_count"
                     android:layout_width="wrap_content"
@@ -286,7 +286,7 @@
                     android:layout_toRightOf="@id/tv_timeout_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <TextView
                     android:id="@+id/tv_timeout"
                     android:layout_width="wrap_content"
@@ -338,7 +338,7 @@
                     android:layout_toRightOf="@id/tv_deblur_level_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_deblur_level"
                     android:layout_alignParentRight="true"
@@ -373,7 +373,7 @@
                     android:layout_toRightOf="@id/tv_anti_damage_level"
                     android:onClick="onTipsClicked"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_anti_damage_level"
                     android:layout_width="wrap_content"
@@ -408,7 +408,7 @@
                     android:layout_toRightOf="@id/tv_text_filter_mode_1"
                     android:onClick="onTipsClicked"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_text_filter_mode"
                     android:layout_width="wrap_content"
@@ -443,7 +443,7 @@
                     android:layout_toRightOf="@id/tv_region_predetection_mode_1"
                     android:onClick="onTipsClicked"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_region_predetection_mode"
                     android:layout_width="wrap_content"
@@ -478,7 +478,7 @@
                     android:layout_toRightOf="@id/tv_scale_down_threshold_1"
                     android:onClick="onTipsClicked"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <TextView
                     android:id="@+id/tv_scale_down_threshold"
                     android:layout_width="wrap_content"
@@ -530,7 +530,7 @@
                     android:layout_toRightOf="@id/tv_colour_image_convert_mode_1"
                     android:onClick="onTipsClicked"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_colour_image_convert_mode"
                     android:layout_width="wrap_content"
@@ -565,7 +565,7 @@
                     android:layout_toRightOf="@id/tv_barcode_invert_mode_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_barcode_invert_mode"
                     android:layout_width="wrap_content"
@@ -600,7 +600,7 @@
                     android:layout_toRightOf="@id/tv_gray_equalization_sensitivity_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_gray_equalization_sensitivity"
                     android:layout_width="wrap_content"
@@ -635,7 +635,7 @@
                     android:layout_toRightOf="@id/tv_texture_detection_sensitivity_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <Spinner
                     android:id="@+id/sp_texture_detection_sensitivity"
                     android:layout_width="wrap_content"
@@ -670,7 +670,7 @@
                     android:layout_toRightOf="@id/tv_binarization_block_size_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <TextView
                     android:id="@+id/tv_binarization_block_size"
                     android:layout_width="wrap_content"
@@ -722,7 +722,7 @@
                     android:layout_toRightOf="@id/tv_localization_algorithm_priority_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <ImageView
                     android:id="@+id/setalgorithm"
                     android:layout_width="20dp"
@@ -763,7 +763,7 @@
                     android:layout_toRightOf="@id/tv_max_barcode_count_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <TextView
                     android:id="@+id/tv_max_barcode_count"
                     android:layout_width="wrap_content"
@@ -814,7 +814,7 @@
                     android:layout_toRightOf="@id/tv_enable_fill_binary_vacancy_1"
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
-                    android:src="@mipmap/guide"/>
+                    android:src="@mipmap/icon_question"/>
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/sc_enable_fill_binary_vacancy"
                     android:layout_width="wrap_content"

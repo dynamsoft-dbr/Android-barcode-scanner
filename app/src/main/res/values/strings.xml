@@ -81,20 +81,20 @@
     <string name="best_coverage_show_detail">Scan in single frame with the best efforts of our SDK.</string>
     <string name="overlap_show_detail">Scan in multiple frames with the best efforts of our SDK. This mode works the best for multiple barcodes on 1 image. All barcode results will be added up and saved to history.</string>
     <string name="custom_show_detai">With this advanced mode, you get to know Dynamsoft Barcode Reader SDK with its flexible decode settings. Both single-frame and multi-frame scanning is supported.</string>
-    <string name="scale_down_threshold_tip">It stores the threshold value of the image shrinking. If the shorter edge size is larger than the given value, the library will calculate the required height and width of the barcode image and shrink the image to that size before localization. Otherwise, it will perform barcode localization on the original image.</string>
-    <string name="barcode_invert_mode_tip">It stores the barcode invert mode which decides whether to invert colour before binarization. This mode is designed to fit the scenarios which light barcode located at dark background, for example, a white QR in a black paper.</string>
-    <string name="expected_barcode_count_tip"></string>
-    <string name="timeout_tip"></string>
-    <string name="deblur_level_tip"></string>
-    <string name="anti_damage_level_tip"></string>
-    <string name="text_filter_mode_tip"></string>
-    <string name="region_predetection_mode_tip"></string>
-    <string name="colour_image_convert_mode_tip"></string>
-    <string name="gray_equalization_sensitivity_tip"></string>
-    <string name="texture_detection_sensitivity_tip"></string>
-    <string name="binarization_block_size_tip"></string>
-    <string name="localization_algorithm_priority_tip"></string>
-    <string name="max_barcode_count_tip"></string>
-    <string name="enable_fill_binary_vacancy_tip"></string>
+    <string name="expected_barcode_count_tip">The expected number of barcodes to read for each image (0 represents at least 1 barcode)</string>
+    <string name="timeout_tip">Sets the maximum amount of time (in milliseconds) it should spend searching for a barcode per page.</string>
+    <string name="deblur_level_tip">Higher deblur level will reach a better deblur ability during decoding.</string>
+    <string name="anti_damage_level_tip">More localization algorithm will be used in the case of a higher anti-damage level.</string>
+    <string name="text_filter_mode_tip">Whether to filter text to obtain a clearer image for decoding.</string>
+    <string name="region_predetection_mode_tip">Whether to pre-detect existing region for barcodes search.</string>
+    <string name="scale_down_threshold_tip">Sets the threshold value of the image shrinking. If the shorter edge size is larger than the given value, the library will calculate the required height and width of the barcode image and shrink the image to that size before localization. Otherwise, it will perform barcode localization on the original image.</string>
+    <string name="colour_image_convert_mode_tip">Sets whether to convert colour images to grayscale which is used in region pre-detection.</string>
+    <string name="barcode_invert_mode_tip">The ink colour for barcodes search.</string>
+    <string name="gray_equalization_sensitivity_tip">Sets the sensitivity used for gray equalization. The higher the value, the more likely gray equalization will be activated. Effective for images with low comparison between black and white colour. May cause adverse effect on images with high level of black and white colour comparison.</string>
+    <string name="texture_detection_sensitivity_tip">The higher value you set, the more efforts it will take to detect texture.</string>
+    <string name="binarization_block_size_tip">Set the block size for the process of binarization. Block size means the size of a pixel neighborhood that is used to calculate a threshold value for the pixel.</string>
+    <string name="localization_algorithm_priority_tip">Sets the priority of localization algorithms to decide the ordering of the following four localization algorithms.</string>
+    <string name="max_barcode_count_tip">Sets the maximum number of barcodes to read. This will limit the number of barcodes returned by library.</string>
+    <string name="enable_fill_binary_vacancy_tip">Sets whether to enable fill binary vacancy.</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
