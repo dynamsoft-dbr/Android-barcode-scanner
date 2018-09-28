@@ -105,32 +105,7 @@
                     android:paddingRight="16dp" />
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/borden_height"
-                android:background="#fff3f3f3" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/textview_width">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:gravity="start|center_vertical"
-                    android:text="@string/aztec"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/simple_ckbaztec"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="16dp" />
-            </RelativeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -158,7 +133,32 @@
                     android:layout_alignParentRight="true"
                     android:paddingRight="16dp" />
             </RelativeLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/borden_height"
+                android:background="#fff3f3f3" />
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/textview_width">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/aztec"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/simple_ckbaztec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:paddingRight="16dp" />
+            </RelativeLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="9dp"
