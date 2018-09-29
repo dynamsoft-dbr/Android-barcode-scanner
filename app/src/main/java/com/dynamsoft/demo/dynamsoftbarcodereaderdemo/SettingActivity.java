@@ -116,8 +116,6 @@ public class SettingActivity extends BaseActivity {
 		setToolbarNavIcon(R.drawable.ic_action_back_dark);
 		setToolbarTitle("Settings");
 		setToolbarTitleColor("#ffffff");
-		initSpinner();
-		initSetting();
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
 		etTimeout.setOnEditorActionListener(onEditFinish);
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
@@ -134,6 +132,8 @@ public class SettingActivity extends BaseActivity {
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
 		mAZTEC.setOnCheckedChangeListener(onCKBCheckedChange);
+		initSpinner();
+		initSetting();
 	}
 
 	@Override
@@ -181,7 +181,14 @@ public class SettingActivity extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	public void onTipsClicked(View view) {
-		AlertDialog builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).create();
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+		builder.create();
+		builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		switch (view.getId()) {
 			case R.id.iv_expected_barcode_count:
 				builder.setMessage(getText(R.string.expected_barcode_count_tip));

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaActionSound;
 import android.media.MediaPlayer;
@@ -20,8 +21,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +65,7 @@ import org.litepal.LitePal;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -772,16 +776,23 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	}
 
-	private void showResults(TextResult[] results){
-		View dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog, null);
-		ListView resultListView = (ListView)dialogView.findViewById(R.id.lv_result_list);
-		TextView resultTime = (TextView)dialogView.findViewById(R.id.tv_result_decode_time);
-		TextView resultCount = (TextView)dialogView.findViewById(R.id.tv_result_count);
+	private void showResults(TextResult[] results) {
+		View dialogView;
+		if (results.length == 1) {
+			dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog_1, null);
+		} else if (results.length == 2) {
+			dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog_2, null);
+		} else {
+			dialogView = LayoutInflater.from(this).inflate(R.layout.result_dialog, null);
+		}
+		ListView resultListView = (ListView) dialogView.findViewById(R.id.lv_result_list);
+		TextView resultTime = (TextView) dialogView.findViewById(R.id.tv_result_decode_time);
+		TextView resultCount = (TextView) dialogView.findViewById(R.id.tv_result_count);
 		resultTime.setText("Total time spent: " + String.valueOf(duringTime) + "ms");
 		resultCount.setText("Total: " + String.valueOf(results.length));
 
 		final ArrayList<Map<String, String>> resultMapList = new ArrayList<>();
-		for (int i = 0; i < results.length; i++){
+		for (int i = 0; i < results.length; i++) {
 			Map<String, String> temp = new HashMap<>();
 			temp.put("Barcode", String.valueOf(i + 1));
 			temp.put("Format", DBRUtil.getCodeFormat(results[i].barcodeFormat + ""));
@@ -806,7 +817,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		resultBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
-			  detectStart = true;
+				detectStart = true;
 			}
 		});
 		resultBuilder.setView(dialogView);
@@ -818,14 +829,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				MediaPlayer mediaPlayer = new MediaPlayer();
 				mediaPlayer = MediaPlayer.create(this, R.raw.beepsound);
 				mediaPlayer.start();
-				Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
+				Vibrator vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
 			} else {
-				Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
+				Vibrator vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
 			}
 		} else {
-			Vibrator vibrator = (Vibrator)this.getSystemService(VIBRATOR_SERVICE);
+			Vibrator vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 			vibrator.vibrate(500);
 		}
 	}
@@ -979,6 +990,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		private ArrayList<YuvInfo> yuvInfoList = new ArrayList<>();
 		private ArrayList<YuvInfo> saveCache = new ArrayList<>();
 		private ArrayList<YuvInfo> singleYuvList = new ArrayList<>();
+		private byte[] b;
+
 		@Override
 		public void process(@NonNull Frame frame) {
 			try {
@@ -989,10 +1002,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						obtainPreviewMsg.what = OBTAIN_PREVIEW_SIZE;
 						handler.sendMessage(obtainPreviewMsg);
 					}
-					yuvImage = new YuvImage(frame.getImage(), ImageFormat.NV21,
-							frame.getSize().width, frame.getSize().height, null);
 					wid = frame.getSize().width;
 					hgt = frame.getSize().height;
+					if (b == null) {
+					 	b = createPreviewBuffer(wid, hgt);
+					}
+					System.arraycopy(frame.getImage(), 0, b, 0, frame.getImage().length);
+					yuvImage = new YuvImage(b
+							, ImageFormat.NV21,
+							wid, hgt, null);
 					/*try {
 						YuvImage newYuv = new YuvImage(FrameUtil.rotateYUVDegree90(yuvImage.getYuvData(),
 								yuvImage.getWidth(), yuvImage.getHeight()), ImageFormat.NV21, yuvImage.getHeight(), yuvImage.getWidth(), null);
@@ -1018,7 +1036,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					duringTime = endDetectTime - startDetectTime;
 					ArrayList<TextResult> resultArrayList = new ArrayList<>();
 					for (int i = 0; i < result.length; i++) {
-						if (result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 10) {
+						if (result[i] != null && result[i].localizationResult.extendedResultArray[0].confidence > 20) {
 							resultArrayList.add(result[i]);
 						}
 					}
@@ -1039,13 +1057,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					Message message = handler.obtainMessage();
 					message.what = DETECT_BARCODE;
 					if (result != null && result.length > 0) {
+						result = FrameUtil.sortPoints(result);
 						if (overlapEnabled) {
 							if (frameTime == 0) {
 								yuvInfo = new YuvInfo();
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
 								yuvInfo.yuvImage = yuvImage;
 								yuvInfo.textResult = result;
-								yuvInfoList.add(yuvInfo.clone());
+								yuvInfoList.add(yuvInfo);
 								frameTime++;
 							} else if (frameTime == 1) {
 								yuvInfo = new YuvInfo();
@@ -1053,9 +1072,9 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								yuvInfo.yuvImage = yuvImage;
 								yuvInfo.cacheName = System.currentTimeMillis() + "";
 								if (yuvInfoList.size() == 1) {
-									yuvInfoList.add(yuvInfo.clone());
+									yuvInfoList.add(yuvInfo);
 								} else {
-									yuvInfoList.set(1, yuvInfo.clone());
+									yuvInfoList.set(1, yuvInfo);
 								}
 								CoordsMapResult coordsMapResult = AfterProcess.coordsMap
 										(yuvInfoList.get(0).textResult, yuvInfoList.get(1).textResult, wid, hgt);
@@ -1064,19 +1083,19 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									TextResult textResult1;
 									LocalizationResult localizationResult2;
 									TextResult textResult2;
-									//Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
-									//Log.e("SavingCacheSize: ", saveCache.size() + "");
+									Log.e("CoordmapResult: ", coordsMapResult.basedImg + " " + coordsMapResult.isAllCodeMapped + "");
+									Log.e("SavingCacheSize: ", saveCache.size() + "");
 									switch (coordsMapResult.basedImg) {
 										case 0:
 											message.obj = yuvInfoList.get(1).textResult;
 											handler.sendMessage(message);
 											if (saveCache.size() == 0) {
-												saveCache.add(yuvInfoList.get(0).clone());
+												saveCache.add(yuvInfoList.get(0));
 												handleImage(yuvInfoList.get(0), null);
 											} else {
 												checkSaveCache(saveCache, yuvInfoList.get(0));
 											}
-											yuvInfoList.set(0, yuvInfoList.get(1).clone());
+											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										case 1:
 											TextResult[] mapResultInImage2 = new TextResult[coordsMapResult.mapResultInImageTwo.length];
@@ -1111,8 +1130,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 //																			yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].x + " " + yuvInfoList.get(0).textResult[0].localizationResult.resultPoints[3].y + " " );
 												//handleImage(yuvInfoList.get(0), yuvInfoList.get(0).cacheName);
 												if (saveCache.size() == 0){
-													YuvInfo yuvInfo1 = new YuvInfo();
-													saveCache.add(yuvInfoList.get(0).clone());
+													saveCache.add(yuvInfoList.get(0));
 													handleImage(yuvInfoList.get(0), null);
 												} else {
 													checkSaveCache(saveCache, yuvInfoList.get(0));
@@ -1121,12 +1139,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 												yuvInfoList.get(0).textResult = newResultBase1;
 												yuvInfoList.get(1).textResult = mapResultInImage2;
 												if (saveCache.size() == 0){
-													saveCache.add(yuvInfoList.get(0).clone());
+													saveCache.add(yuvInfoList.get(0));
 													handleImage(yuvInfoList.get(0), null);
 												} else {
 													checkSaveCache(saveCache, yuvInfoList.get(0));
 												}
-												yuvInfoList.set(0, yuvInfoList.get(1).clone());
+												yuvInfoList.set(0, yuvInfoList.get(1));
 											}
 											break;
 										case 2:
@@ -1145,22 +1163,22 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											handler.sendMessage(message);
 											if (coordsMapResult.isAllCodeMapped) {
 												yuvInfoList.get(1).textResult = newResultBase2;
-												yuvInfoList.set(0, yuvInfoList.get(1).clone());
+												yuvInfoList.set(0, yuvInfoList.get(1));
 											} else {
 												yuvInfoList.get(1).textResult = newResultBase2;
 												if (saveCache.size() == 0){
-													saveCache.add(yuvInfoList.get(0).clone());
+													saveCache.add(yuvInfoList.get(0));
 													handleImage(yuvInfoList.get(0), null);
 												} else {
 													checkSaveCache(saveCache, yuvInfoList.get(0));
 												}
-												yuvInfoList.set(0, yuvInfoList.get(1).clone());
+												yuvInfoList.set(0, yuvInfoList.get(1));
 											}
 											break;
 										case -1:
 											message.obj = yuvInfoList.get(1).textResult;
 											if (saveCache.size() == 0){
-												saveCache.add(yuvInfoList.get(0).clone());
+												saveCache.add(yuvInfoList.get(0));
 												handleImage(yuvInfoList.get(0), null);
 											} else {
 												checkSaveCache(saveCache, yuvInfoList.get(0));
@@ -1172,12 +1190,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											message.obj = yuvInfoList.get(1).textResult;
 											handler.sendMessage(message);
 											if (saveCache.size() == 0){
-												saveCache.add(yuvInfoList.get(0).clone());
+												saveCache.add(yuvInfoList.get(0));
 												handleImage(yuvInfoList.get(0), null);
 											} else {
 												checkSaveCache(saveCache, yuvInfoList.get(0));
 											}
-											yuvInfoList.set(0, yuvInfoList.get(1).clone());
+											yuvInfoList.set(0, yuvInfoList.get(1));
 											break;
 										default:
 											break;
@@ -1185,7 +1203,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 								}
 							}
 						} else {
-							result = FrameUtil.sortPoints(result);
 							yuvInfo = new YuvInfo();
 							yuvInfo.textResult = result;
 							yuvInfo.yuvImage = yuvImage;
@@ -1193,17 +1210,17 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 							Message resultMessage = handler.obtainMessage();
 							resultMessage.what = BARCODE_RESULT;
 							if (singleYuvList.size() == 0) {
-								singleYuvList.add(yuvInfo.clone());
+								singleYuvList.add(yuvInfo);
 								resultMessage.obj = result;
 								handler.sendMessage(resultMessage);
 								handleImage(yuvInfo, null);
-								singleYuvList.set(0, yuvInfo.clone());
+								singleYuvList.set(0, yuvInfo);
 								detectStart = false;
 							} else {
 								if (singleYuvList.size() == 1) {
-									singleYuvList.add(yuvInfo.clone());
+									singleYuvList.add(yuvInfo);
 								} else {
-									singleYuvList.set(1, yuvInfo.clone());
+									singleYuvList.set(1, yuvInfo);
 								}
 								if (singleYuvList.get(0).textResult.length == singleYuvList.get(1).textResult.length) {
 									boolean ifFind = false;
@@ -1242,12 +1259,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										if (flag) {
 											singleFrame++;
 											if (singleFrame < 6) {
-												singleYuvList.set(0, yuvInfo.clone());
+												singleYuvList.set(0, yuvInfo);
 											} else {
 												resultMessage.obj = result;
 												handler.sendMessage(resultMessage);
 												handleImage(yuvInfo, null);
-												singleYuvList.set(0, yuvInfo.clone());
+												singleYuvList.set(0, yuvInfo);
 												detectStart = false;
 												singleFrame = 0;
 											}
@@ -1255,7 +1272,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 											resultMessage.obj = result;
 											handler.sendMessage(resultMessage);
 											handleImage(yuvInfo, null);
-											singleYuvList.set(0, yuvInfo.clone());
+											singleYuvList.set(0, yuvInfo);
 											detectStart = false;
 											singleFrame = 0;
 										}
@@ -1264,7 +1281,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 										resultMessage.obj = result;
 										handler.sendMessage(resultMessage);
 										handleImage(yuvInfo, null);
-										singleYuvList.set(0, yuvInfo.clone());
+										singleYuvList.set(0, yuvInfo);
 										detectStart = false;
 										singleFrame = 0;
 									}
@@ -1272,7 +1289,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 									resultMessage.obj = result;
 									handler.sendMessage(resultMessage);
 									handleImage(yuvInfo, null);
-									singleYuvList.set(0, yuvInfo.clone());
+									singleYuvList.set(0, yuvInfo);
 									detectStart = false;
 									singleFrame = 0;
 								}
@@ -1306,14 +1323,35 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				} else {
 					handleImage(saving, null);
 					if (saveCache.size() < 17) {
-						saveCache.add(saving.clone());
+						saveCache.add(saving);
 					} else {
 						saveCache.remove(0);
-						saveCache.add(saving.clone());
+						saveCache.add(saving);
 					}
 					break;
 				}
 			}
+		}
+		private byte[] createPreviewBuffer(int wid, int hgt) {
+			int bitsPerPixel = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
+			long sizeInBits = hgt * wid * bitsPerPixel;
+			int bufferSize = (int) Math.ceil(sizeInBits / 8.0d) + 1;
+
+			//
+			// NOTICE: This code only works when using play services v. 8.1 or higher.
+			//
+
+			// Creating the byte array this way and wrapping it, as opposed to using .allocate(),
+			// should guarantee that there will be an array to work with.
+			byte[] byteArray = new byte[bufferSize];
+			ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+			if (!buffer.hasArray() || (buffer.array() != byteArray)) {
+				// I don't think that this will ever happen.  But if it does, then we wouldn't be
+				// passing the preview content to the underlying detector later.
+				throw new IllegalStateException("Failed to create valid buffer for camera source.");
+			}
+
+			return byteArray;
 		}
 		private void deleteErroCache(String name) {
 			if (name == null) {

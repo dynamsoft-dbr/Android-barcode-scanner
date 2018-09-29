@@ -100,15 +100,42 @@ public class SimpleSettingActivity extends BaseActivity {
                 etScaleDownThreshold.setVisibility(View.VISIBLE);
                 break;
             case R.id.simple_iv_scale_down_threshold:
-                AlertDialog builder1 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.scale_down_Threshold).setMessage(R.string.scale_down_threshold_tip).create();
+                android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+                builder1.setTitle(R.string.scale_down_Threshold);
+                builder1.setMessage(R.string.scale_down_threshold_tip);
+                builder1.create();
+                builder1.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
                 builder1.show();
                 break;
             case R.id.simple_iv_barcode_invert_mode:
-                AlertDialog builder2 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.barcode_invert_mode).setMessage(R.string.barcode_invert_mode_tip).create();
+                android.app.AlertDialog.Builder builder2 = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+                builder2.setTitle(R.string.barcode_invert_mode);
+                builder2.setMessage(R.string.barcode_invert_mode_tip);
+                builder2.create();
+                builder2.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
                 builder2.show();
                 break;
             case R.id.simple_iv_beepsound:
-                AlertDialog builder3 = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme)).setTitle(R.string.beep_sound).setMessage(R.string.beep_sound_tip).create();
+                android.app.AlertDialog.Builder builder3 = new android.app.AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomDialogTheme));
+                builder3.setTitle(R.string.beep_sound);
+                builder3.setMessage(R.string.beep_sound_tip);
+                builder3.create();
+                builder3.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
                 builder3.show();
                 break;
             default:

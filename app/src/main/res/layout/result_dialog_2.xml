@@ -34,7 +34,7 @@
         <ListView
             android:id="@+id/lv_result_list"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="160dp">
         </ListView>
     </LinearLayout>
     <LinearLayout

@@ -451,7 +451,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			DBRCache mSettingCache = DBRCache.get(this, "SettingCache");
 			String templateType = mSettingCache.getAsString("templateType");
-			reader.initRuntimeSettingsWithString(mSettingCache.getAsString(templateType), 2);
+			reader.initRuntimeSettingsWithString(mSettingCache.getAsString("Setting"), 2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
