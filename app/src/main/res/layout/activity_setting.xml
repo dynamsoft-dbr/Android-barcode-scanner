@@ -27,7 +27,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginStart="20dp"
                     android:gravity="start|center_vertical"
-                    android:text="If multi frame"
+                    android:text="@string/if_multi_frame"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
                 <ImageView

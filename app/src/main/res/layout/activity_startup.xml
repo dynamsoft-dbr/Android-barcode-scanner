@@ -7,31 +7,26 @@
 	android:layout_height="match_parent"
 	android:background="#fff1f2f7"
 	tools:layout_editor_absoluteY="25dp">
-
-	<Button
-		android:id="@+id/btn_history"
-		android:layout_width="25dp"
-		android:layout_height="25dp"
-		android:layout_marginRight="68dp"
-		android:layout_marginTop="20dp"
-		android:background="@drawable/icon_history"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.914"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
-
-	<TextView
-		android:id="@+id/tv_history"
+	<LinearLayout
 		android:layout_width="wrap_content"
-		android:layout_height="23dp"
-		android:text="History"
-		android:textSize="18sp"
-		android:gravity="center"
-		android:layout_marginTop="18dp"
+		android:layout_height="wrap_content"
+		android:id="@+id/btn_history"
+		android:layout_marginTop="20dp"
+		android:layout_marginRight="25dp"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.914"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toTopOf="parent">
+		<Button
+			android:layout_width="25dp"
+			android:layout_height="25dp"
+			android:background="@drawable/icon_history" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="28dp"
+			android:text="History"
+			android:textSize="18sp"
+			android:gravity="center" />
+	</LinearLayout>
 	<TextView
 		android:id="@+id/tv_startup_title"
 		android:layout_width="wrap_content"

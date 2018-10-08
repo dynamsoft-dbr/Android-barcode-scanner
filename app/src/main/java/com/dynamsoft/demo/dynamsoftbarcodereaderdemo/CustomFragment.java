@@ -132,7 +132,7 @@ public class CustomFragment extends BaseFragment {
             public void run() {
                 List<DBRImage> allImageList = LitePal.findAll(DBRImage.class);
                 for (DBRImage dbrImage : allImageList) {
-                    if ("GeneralSetting".equals(dbrImage.getTemplateType())) {
+                    if ("CustomSetting".equals(dbrImage.getTemplateType())) {
                         imageList.add(dbrImage);
                     }
                 }

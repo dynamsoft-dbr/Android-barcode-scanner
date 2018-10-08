@@ -69,7 +69,9 @@ public class OverlapHistoryFragment extends BaseFragment {
 			public void onClick(View v) {
 				DBRCache mCache = DBRCache.get(getActivity(), "SettingCache");
 				mCache.put("templateType", "OverlapSetting");
-				startActivity(new Intent(getActivity(), MainActivity.class));
+				Intent intent = new Intent(getActivity(), MainActivity.class);
+				intent.putExtra("fromHistory", "1");
+				startActivity(intent);
 			}
 		});
 		return v;

@@ -11,7 +11,7 @@
 		android:layout_height="56dp"
 		android:background="?attr/colorPrimary"
 		app:navigationIcon="@drawable/ic_action_back"
-		app:theme="@style/AppTheme.AppBarOverlay"
+		android:theme="@style/AppTheme.AppBarOverlay"
 		app:popupTheme="@style/ToolbarPopupTheme">
 		<TextView
 			android:id="@+id/tv_toolbar_title"

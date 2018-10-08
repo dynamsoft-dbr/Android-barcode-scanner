@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -38,6 +39,7 @@ import com.dynamsoft.barcode.afterprocess.jni.InputParasOfSwitchImagesFun;
 import com.dynamsoft.barcode.afterprocess.jni.StitchImageResult;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.adapter.HistoryDetailViewPagerAdapter;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
+import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRSetting;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.HistoryItemBean;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectCoordinate;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.RectPoint;
@@ -50,7 +52,10 @@ import com.pierfrancescosoffritti.slidingdrawer.SlidingDrawer;
 import org.litepal.LitePal;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,10 +87,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	SlidingDrawer slidingDrawer;
 	@BindView(R.id.result_drag_view)
 	TableRow dragView;
-	private DBRCache mCache;
-	private String[] fileNames;
 	private int intentPosition;
-	private ArrayList<HistoryItemBean> listItem;
 	private ArrayList<DBRImage> imageList;
 	private HistoryDetailViewPagerAdapter adapter;
 	private SimpleAdapter simpleAdapter;
@@ -94,6 +96,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	private int pageType;
 	private ShareUtil shareUtil;
 	private Long decodeTime;
+	private String imgPath;
 	private String spentTime;
 	private int angle;
 	private int scaleValue = -1;
@@ -129,7 +132,6 @@ public class HistoryItemDetailActivity extends BaseActivity {
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		ButterKnife.bind(this);
-		mCache = DBRCache.get(this);
 		setToolbarBackgroud("#ffffff");
 		setToolbarTitle("Barcode Detail");
 		setToolbarTitleColor("#000000");
@@ -252,7 +254,9 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		builder.setNegativeButton("Share picture", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Bitmap shotBitmap = shareUtil.getScreenShot(HistoryItemDetailActivity.this);
+				Bitmap shotBitmap;
+				//shareUtil.getScreenShot(HistoryItemDetailActivity.this);
+				shotBitmap = FrameUtil.rotateBitmap(decodeFile(imgPath), DBRUtil.readPictureDegree(imgPath));
 				if (shotBitmap != null) {
 					ArrayList<Uri> imageUris = new ArrayList<>();
 					Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
@@ -322,6 +326,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		vpHistoryDetail.setAdapter(adapter);
 		vpHistoryDetail.setCurrentItem(intentPosition);
 		fillCodeList(intentPosition);
+		imgPath = imageList.get(intentPosition).getCodeImgPath();
 	}
 
 	private void fillCodeList(int position) {
@@ -351,36 +356,37 @@ public class HistoryItemDetailActivity extends BaseActivity {
 				paint.setStrokeWidth(9f);
 				paint.setColor(getResources().getColor(R.color.aboutOK));
 				paint.setAntiAlias(true);
-				String imgPath;
 				String fileName;
 				Path path = new Path();
 				Bitmap oriBitmap;
 				BitmapFactory.Options opts = new BitmapFactory.Options();
-				if (imgLocation == 0) {
-					opts.inSampleSize = 4;
-					scaleValue = 4;
-					imgPath = new File(getExternalFilesDir("photos"),
-							getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath();
-					fileName = new File(getExternalFilesDir("photos"),
-							getIntent().getStringExtra("photoname") + ".jpg").getName();
-					oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
-				} else {
-					opts.inSampleSize = 2;
-					scaleValue = 2;
-					imgPath = getIntent().getStringExtra("FilePath");
-					fileName = new File(getIntent().getStringExtra("FilePath")).getName();
-					oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
-					angle = DBRUtil.readPictureDegree(imgPath);
-				}
-				if (oriBitmap == null) {
-					Message message = mHandler.obtainMessage();
-					message.what = DECODE_FAILED;
-					mHandler.sendMessage(message);
-					return;
-				}
-				Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
-				TextResult[] textResults;
 				try {
+					if (imgLocation == 0) {
+						opts.inSampleSize = 4;
+						scaleValue = 4;
+						imgPath = new File(Environment.getExternalStorageDirectory() + "/dbr-preview-img",
+								getIntent().getStringExtra("photoname") + ".jpg").getAbsolutePath();
+						fileName = new File(Environment.getExternalStorageDirectory() + "/dbr-preview-img",
+								getIntent().getStringExtra("photoname") + ".jpg").getName();
+						oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
+					} else {
+						opts.inSampleSize = 2;
+						scaleValue = 2;
+						imgPath = getIntent().getStringExtra("FilePath");
+						fileName = new File(getIntent().getStringExtra("FilePath")).getName();
+						//InputStream inputStream = new FileInputStream(imgPath);
+						//FileOutputStream outputStream = new FileOutputStream(Environment.getExternalStorageState() + "/dbr-preview-img/" + fileName);
+						oriBitmap = BitmapFactory.decodeFile(imgPath, opts);
+						angle = DBRUtil.readPictureDegree(imgPath);
+					}
+					if (oriBitmap == null) {
+						Message message = mHandler.obtainMessage();
+						message.what = DECODE_FAILED;
+						mHandler.sendMessage(message);
+						return;
+					}
+					Bitmap rectBitmap = oriBitmap.copy(Bitmap.Config.RGB_565, true);
+					TextResult[] textResults;
 					long startTime = System.currentTimeMillis();
 					textResults = reader.decodeBufferedImage(rectBitmap, "Custom");
 					long endTime = System.currentTimeMillis();
@@ -431,6 +437,7 @@ public class HistoryItemDetailActivity extends BaseActivity {
 						rectCoordinate.setRectCoord(pointList);
 						String rectCoord = LoganSquare.serialize(rectCoordinate);
 						dbrImage.setCodeText(codeTextList);
+						dbrImage.setTemplateType(getIntent().getStringExtra("templateType"));
 						dbrImage.setCodeFormat(codeFormatList);
 						dbrImage.setFileName(fileName);
 						dbrImage.setRectCoord(rectCoord);
@@ -450,8 +457,66 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		try {
 			reader = new BarcodeReader(getString(R.string.dbr_license));
 			DBRCache mSettingCache = DBRCache.get(this, "SettingCache");
-			String templateType = mSettingCache.getAsString("templateType");
-			reader.initRuntimeSettingsWithString(mSettingCache.getAsString("Setting"), 2);
+			String templateType = getIntent().getStringExtra("templateType");
+			if ("GeneralSetting".equals(templateType)) {
+				String setting = mSettingCache.getAsString("Setting");
+				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setExpectedBarcodesCount(0);
+					newImgP.setAntiDamageLevel(9);
+					newImgP.setDeblurLevel(9);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					dbrSetting.setImageParameter(newImgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+				}
+			} else if ("MultiBestSetting".equals(templateType)) {
+				String setting = mSettingCache.getAsString("Setting");
+				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					dbrSetting.setImageParameter(newImgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+				}
+			} else if ("OverlapSetting".equals(templateType)) {
+				String setting = mSettingCache.getAsString("Setting");
+				if (setting != null) {
+					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+						add("ConnectedBlock");
+						add("Lines");
+						add("Statistics");
+						add("FullImageAsBarcodeZone");
+					}});
+					dbrSetting.setImageParameter(newImgP);
+					setting = LoganSquare.serialize(dbrSetting);
+					reader.initRuntimeSettingsWithString(setting, 2);
+				}
+			} else if ("CustomSetting".equals(templateType)) {
+				reader.initRuntimeSettingsWithString(mSettingCache.getAsString("Setting"), 2);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

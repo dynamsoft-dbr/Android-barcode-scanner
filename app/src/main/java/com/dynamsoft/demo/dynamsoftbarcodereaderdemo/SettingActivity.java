@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.SwitchCompat;
 import android.view.KeyEvent;
@@ -132,8 +133,8 @@ public class SettingActivity extends BaseActivity {
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
 		mAZTEC.setOnCheckedChangeListener(onCKBCheckedChange);
-		initSpinner();
-		initSetting();
+		//initSpinner();
+		//initSetting();
 	}
 
 	@Override
@@ -433,7 +434,7 @@ public class SettingActivity extends BaseActivity {
 		});
 	}
 	private void initSetting(){
-		mSettingCache = DBRCache.get(this, "SettingCache");
+		//mSettingCache = DBRCache.get(this, "SettingCache");
 		String beepSound = mSettingCache.getAsString("beepSound");
 		if (beepSound == null) {
 			mSettingCache.put("beepSound", "true");
@@ -441,7 +442,7 @@ public class SettingActivity extends BaseActivity {
 		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
 		scOverlap.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("Overlap")));
 		try {
-			//mSetting = LoganSquare.parse(mSettingCache.getAsString(templateType), DBRSetting.class);
+			//mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
 			//mImageParameter = mSetting.getImageParameter();
 			tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
 			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
@@ -561,8 +562,10 @@ public class SettingActivity extends BaseActivity {
 				case R.id.ckbpdf417:
 					if (mPDF417.isChecked()){
 						tempFormats = mImageParameter.getBarcodeFormatIds();
-						tempFormats.add("PDF417");
-						mImageParameter.setBarcodeFormatIds(tempFormats);
+						if (!tempFormats.contains("PDF417")) {
+							tempFormats.add("PDF417");
+							mImageParameter.setBarcodeFormatIds(tempFormats);
+						}
 					}else {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("PDF417");
@@ -572,8 +575,10 @@ public class SettingActivity extends BaseActivity {
 				case R.id.ckbqrcode:
 					if (mQRCode.isChecked()) {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
-						tempFormats.add("QR_CODE");
-						mImageParameter.setBarcodeFormatIds(tempFormats);
+						if (!tempFormats.contains("QR_CODE")) {
+							tempFormats.add("QR_CODE");
+							mImageParameter.setBarcodeFormatIds(tempFormats);
+						}
 					}else {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("QR_CODE");
@@ -583,8 +588,10 @@ public class SettingActivity extends BaseActivity {
 				case R.id.ckbdatamatrix:
 					if (mDataMatrix.isChecked()) {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
-						tempFormats.add("DATAMATRIX");
-						mImageParameter.setBarcodeFormatIds(tempFormats);
+						if (!tempFormats.contains("DATAMATRIX")) {
+							tempFormats.add("DATAMATRIX");
+							mImageParameter.setBarcodeFormatIds(tempFormats);
+						}
 					}else {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("DATAMATRIX");
@@ -594,8 +601,10 @@ public class SettingActivity extends BaseActivity {
 				case R.id.ckbaztec:
 					if (mAZTEC.isChecked()) {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
-						tempFormats.add("AZTEC");
-						mImageParameter.setBarcodeFormatIds(tempFormats);
+						if (!tempFormats.contains("AZTEC")) {
+							tempFormats.add("AZTEC");
+							mImageParameter.setBarcodeFormatIds(tempFormats);
+						}
 					} else {
 						tempFormats = mImageParameter.getBarcodeFormatIds();
 						tempFormats.remove("AZTEC");
@@ -753,4 +762,17 @@ public class SettingActivity extends BaseActivity {
 			mImageParameter = mSetting.getImageParameter();
 		}
 	}
+
+	@Override
+	protected void onResume() {
+		initSetting();
+		super.onResume();
+	}
+
+	@Override
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		initSpinner();
+	}
+
 }

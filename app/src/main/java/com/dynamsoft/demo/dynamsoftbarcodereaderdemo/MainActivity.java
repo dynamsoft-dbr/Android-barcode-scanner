@@ -308,11 +308,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setExpectedBarcodesCount(0);
-					imgP.setAntiDamageLevel(9);
-					imgP.setDeblurLevel(9);
-					imgP.setLocalizationAlgorithmPriority(null);
-					dbrSetting.setImageParameter(imgP);
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setExpectedBarcodesCount(0);
+					newImgP.setAntiDamageLevel(9);
+					newImgP.setDeblurLevel(9);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 					templateType = "GeneralSetting";
@@ -348,11 +352,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setAntiDamageLevel(7);
-					imgP.setDeblurLevel(9);
-					imgP.setExpectedBarcodesCount(512);
-					imgP.setLocalizationAlgorithmPriority(null);
-					dbrSetting.setImageParameter(imgP);
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 					templateType = "MultiBestSetting";
@@ -387,16 +395,20 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setAntiDamageLevel(7);
-					imgP.setDeblurLevel(9);
-					imgP.setExpectedBarcodesCount(512);
-					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
 						add("ConnectedBlock");
 						add("Lines");
 						add("Statistics");
 						add("FullImageAsBarcodeZone");
 					}});
-					dbrSetting.setImageParameter(imgP);
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 					templateType = "OverlapSetting";
@@ -425,8 +437,10 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onClick(View v) {
 				selectModeDialog.dismiss();
-				mSettingCache.put("templateType", "CustomSetting");
-				startActivity(new Intent(MainActivity.this, SettingActivity.class));
+				if (!templateType.equals("CustomSetting")) {
+					mSettingCache.put("templateType", "CustomSetting");
+					startActivity(new Intent(MainActivity.this, SettingActivity.class));
+				}
 			}
 		});
 		selectModeDialog.setView(dialogView);
@@ -456,11 +470,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (setting != null) {
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setExpectedBarcodesCount(0);
-					imgP.setAntiDamageLevel(9);
-					imgP.setDeblurLevel(9);
-					imgP.setLocalizationAlgorithmPriority(null);
-					dbrSetting.setImageParameter(imgP);
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setExpectedBarcodesCount(0);
+					newImgP.setAntiDamageLevel(9);
+					newImgP.setDeblurLevel(9);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
@@ -486,11 +504,15 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (setting != null) {
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setAntiDamageLevel(7);
-					imgP.setDeblurLevel(9);
-					imgP.setExpectedBarcodesCount(512);
-					imgP.setLocalizationAlgorithmPriority(null);
-					dbrSetting.setImageParameter(imgP);
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(null);
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
@@ -516,16 +538,20 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				if (setting != null) {
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
-					imgP.setAntiDamageLevel(7);
-					imgP.setDeblurLevel(9);
-					imgP.setExpectedBarcodesCount(512);
-					imgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+					DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+					newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+					newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+					newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+					newImgP.setAntiDamageLevel(7);
+					newImgP.setDeblurLevel(9);
+					newImgP.setExpectedBarcodesCount(512);
+					newImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
 						add("ConnectedBlock");
 						add("Lines");
 						add("Statistics");
 						add("FullImageAsBarcodeZone");
 					}});
-					dbrSetting.setImageParameter(imgP);
+					dbrSetting.setImageParameter(newImgP);
 					setting = LoganSquare.serialize(dbrSetting);
 					reader.initRuntimeSettingsWithString(setting, 2);
 				} else {
@@ -680,16 +706,73 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 			intent.putExtra("page_type", 2);
 			intent.putExtra("FilePath", filePath);
+			intent.putExtra("templateType", templateType);
 			startActivity(intent);
 		}
 		if (requestCode == REQUEST_SETTING) {
-			String setting = "";
 			mSettingCache = DBRCache.get(this, "SettingCache");
 			beepSoundEnabled = Boolean.parseBoolean(mSettingCache.getAsString("beepSound"));
-			setting = mSettingCache.getAsString("Setting");
 			try {
 				reader = new BarcodeReader(getString(R.string.dbr_license));
-				reader.initRuntimeSettingsWithString(setting, 2);
+				if ("GeneralSetting".equals(templateType)) {
+					String setting = mSettingCache.getAsString("Setting");
+					if (setting != null) {
+						DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+						DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+						DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+						newImgP.setExpectedBarcodesCount(0);
+						newImgP.setAntiDamageLevel(9);
+						newImgP.setDeblurLevel(9);
+						newImgP.setLocalizationAlgorithmPriority(null);
+						newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+						newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+						newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+						dbrSetting.setImageParameter(newImgP);
+						setting = LoganSquare.serialize(dbrSetting);
+						reader.initRuntimeSettingsWithString(setting, 2);
+					}
+				} else if ("MultiBestSetting".equals(templateType)) {
+					String setting = mSettingCache.getAsString("Setting");
+					if (setting != null) {
+						DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+						DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+						DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+						newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+						newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+						newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+						newImgP.setAntiDamageLevel(7);
+						newImgP.setDeblurLevel(9);
+						newImgP.setExpectedBarcodesCount(512);
+						newImgP.setLocalizationAlgorithmPriority(null);
+						dbrSetting.setImageParameter(newImgP);
+						setting = LoganSquare.serialize(dbrSetting);
+						reader.initRuntimeSettingsWithString(setting, 2);
+					}
+				} else if ("OverlapSetting".equals(templateType)) {
+					String setting = mSettingCache.getAsString("Setting");
+					if (setting != null) {
+						DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
+						DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
+						DBRSetting.ImageParameter newImgP = new DBRSetting.ImageParameter();
+						newImgP.setScaleDownThreshold(imgP.getScaleDownThreshold());
+						newImgP.setBarcodeInvertMode(imgP.getBarcodeInvertMode());
+						newImgP.setBarcodeFormatIds(imgP.getBarcodeFormatIds());
+						newImgP.setAntiDamageLevel(7);
+						newImgP.setDeblurLevel(9);
+						newImgP.setExpectedBarcodesCount(512);
+						newImgP.setLocalizationAlgorithmPriority(new ArrayList<String>() {{
+							add("ConnectedBlock");
+							add("Lines");
+							add("Statistics");
+							add("FullImageAsBarcodeZone");
+						}});
+						dbrSetting.setImageParameter(newImgP);
+						setting = LoganSquare.serialize(dbrSetting);
+						reader.initRuntimeSettingsWithString(setting, 2);
+					}
+				} else if ("CustomSetting".equals(templateType)) {
+					reader.initRuntimeSettingsWithString(mSettingCache.getAsString("Setting"), 2);
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -904,11 +987,11 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				shootSound();
 				PhotoResult photoResult = fotoapparat.takePicture();
 				final String photoName = System.currentTimeMillis() + "";
-				photoResult.saveToFile(new File(getExternalFilesDir("photos"), photoName + ".jpg"
+				photoResult.saveToFile(new File(path, photoName + ".jpg"
 				)).whenDone(new WhenDoneListener<Unit>() {
 					@Override
 					public void whenDone(@Nullable Unit it) {
-						Logger.d("save img done~!");
+//						Logger.d("save img done~!");
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -918,6 +1001,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 						Intent intent = new Intent(MainActivity.this, HistoryItemDetailActivity.class);
 						intent.putExtra("page_type", 0);
 						intent.putExtra("photoname", photoName);
+						intent.putExtra("templateType", templateType);
 						startActivity(intent);
 					}
 				});
@@ -943,9 +1027,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		btnDone.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-				intent.putExtra("templateType", templateType);
-				startActivity(intent);
+				int pageType = getIntent().getIntExtra("fromHistory", 0);
+				if (pageType == 0) {
+					Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+					intent.putExtra("templateType", templateType);
+					startActivity(intent);
+				} else if (pageType == 1) {
+					MainActivity.super.onBackPressed();
+				}
 			}
 		});
 	}

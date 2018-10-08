@@ -25,7 +25,7 @@ public class StartupActivity extends AppCompatActivity {
 	private static final Slide SLIDE_LEFT = new Slide(Gravity.LEFT);
 	DBRCache mCache;
 	@BindView(R.id.btn_history)
-	Button btnHistory;
+	View btnHistory;
 	@BindView(R.id.tv_startup_title)
 	TextView tvStartupTitle;
 	@BindView(R.id.btn_general_show_detail)
@@ -44,8 +44,6 @@ public class StartupActivity extends AppCompatActivity {
 	View btnMultiBal;
 	@BindView(R.id.btn_custom)
 	View btnCustom;
-	@BindView(R.id.tv_history)
-	TextView tvHistory;
 	@BindView(R.id.tv_general)
 	LinearLayout tvGeneral;
 	@BindView(R.id.tv_best_coverage)
@@ -64,29 +62,43 @@ public class StartupActivity extends AppCompatActivity {
 	LinearLayout viewCustom;
 
 	@Override
+	protected void onResume() {
+		tvCustom.setVisibility(View.GONE);
+		tvBestCoverage.setVisibility(View.GONE);
+		tvGeneral.setVisibility(View.GONE);
+		tvOverlap.setVisibility(View.GONE);
+		viewBestCoverage.setVisibility(View.VISIBLE);
+		viewOverlap.setVisibility(View.VISIBLE);
+		viewCustom.setVisibility(View.VISIBLE);
+		viewGeneral.setVisibility(View.VISIBLE);
+		super.onResume();
+	}
+
+	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_startup);
 		ButterKnife.bind(this);
 	}
 
-	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.tv_history, R.id.tv_url, R.id.btn_custom, R.id.btn_general_show_detail, R.id.btn_best_coverage_show_detail, R.id.btn_overlap_show_detail, R.id.btn_custom_show_detail, R.id.tv_custom, R.id.tv_overlap, R.id.tv_best_coverage, R.id.tv_general})
+	@OnClick({R.id.btn_history, R.id.btn_general, R.id.btn_multi_best, R.id.btn_multi_bal, R.id.tv_url, R.id.btn_custom, R.id.btn_general_show_detail, R.id.btn_best_coverage_show_detail, R.id.btn_overlap_show_detail, R.id.btn_custom_show_detail, R.id.tv_custom, R.id.tv_overlap, R.id.tv_best_coverage, R.id.tv_general})
 	public void onViewClicked(View view) {
 		mCache = DBRCache.get(this, "SettingCache");
 		switch (view.getId()) {
 			case R.id.btn_history:
 				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
 				break;
-			case R.id.tv_history:
-				startActivity(new Intent(StartupActivity.this, HistoryActivity.class));
-				break;
 			case R.id.btn_general:
 				mCache.put("templateType", "GeneralSetting");
-				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				Intent intent = new Intent(StartupActivity.this, MainActivity.class);
+				intent.putExtra("fromHistory", 0);
+				startActivity(intent);
 				break;
 			case R.id.btn_multi_best:
 				mCache.put("templateType", "MultiBestSetting");
-				startActivity(new Intent(StartupActivity.this, MainActivity.class));
+				Intent intent1 = new Intent(StartupActivity.this, MainActivity.class);
+				intent1.putExtra("fromHistory", 0);
+				startActivity(intent1);
 				break;
 			case R.id.btn_multi_bal:
 				mCache.put("templateType", "OverlapSetting");

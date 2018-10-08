@@ -73,16 +73,14 @@ public class AlgorithmSettingActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public void onBackPressed() {
         mImageParameter.setLocalizationAlgorithmPriority(algorithmSetting);
         mSetting.setImageParameter(mImageParameter);
         Intent intent = new Intent();
         intent.putExtra("AlgorithmSetting", mSetting);
         setResult(RESPONSE_ALGORITHM_SETTING, intent);
         super.onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_share).setVisible(false);
@@ -90,7 +88,7 @@ public class AlgorithmSettingActivity extends BaseActivity {
         menu.findItem(R.id.menu_file).setVisible(false);
         menu.findItem(R.id.menu_scanning).setVisible(false);
         menu.findItem(R.id.menu_Setting).setVisible(false);
-        menu.findItem(R.id.menu_Done).setVisible(true);
+        menu.findItem(R.id.menu_Done).setVisible(false);
         return super.onPrepareOptionsMenu(menu);
     }
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
