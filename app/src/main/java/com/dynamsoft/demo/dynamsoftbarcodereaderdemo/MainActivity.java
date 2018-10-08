@@ -949,7 +949,6 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 	private void fulFillRecentList(TextResult[] result) {
 		recentCodeList.clear();
-		//dragView.setText(result[0].barcodeText);
 		for (TextResult aResult1 : result) {
 			Map<String, String> recentCodeItem = new HashMap<>();
 			recentCodeItem.put("format", DBRUtil.getCodeFormat(aResult1.barcodeFormat + ""));
