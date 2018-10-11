@@ -15,7 +15,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#f3f3f3"
+                android:textColor="#ff7c7c7c"
+                android:height="70dp"
+                android:paddingLeft="20dp"
+                android:gravity="center_vertical"
+                android:text="@string/custom_tips"/>
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/textview_width">
@@ -27,7 +35,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginStart="20dp"
                     android:gravity="start|center_vertical"
-                    android:text="@string/if_multi_frame"
+                    android:text="@string/mode"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp" />
                 <ImageView
@@ -38,13 +46,12 @@
                     android:layout_marginLeft="5dp"
                     android:onClick="onTipsClicked"
                     android:src="@mipmap/icon_question"/>
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/sc_overlapEnable"
+                <Spinner
+                    android:id="@+id/sp_mode"
+                    android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    android:enabled="true"/>
+                    android:layout_marginRight="16dp" />
             </RelativeLayout>
 
             <TextView

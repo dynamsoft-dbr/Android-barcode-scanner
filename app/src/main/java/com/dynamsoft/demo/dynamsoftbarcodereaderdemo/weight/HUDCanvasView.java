@@ -45,7 +45,7 @@ public class HUDCanvasView extends View {
 		paddingRight = getPaddingRight();
 		paddingBottom = getPaddingBottom();
 
-		Log.d("hud", "padding info : " + paddingLeft + " * " + paddingTop);
+		//Log.d("hud", "padding info : " + paddingLeft + " * " + paddingTop);
 	}
 
 	public HUDCanvasView(Context context, AttributeSet attrs, int defStyle) {

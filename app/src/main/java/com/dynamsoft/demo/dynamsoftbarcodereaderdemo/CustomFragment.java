@@ -21,6 +21,7 @@ import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.bean.DBRImage;
 import com.dynamsoft.demo.dynamsoftbarcodereaderdemo.util.DBRCache;
 import org.litepal.LitePal;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import cn.bingoogolapple.baseadapter.BGADivider;
@@ -83,6 +84,20 @@ public class CustomFragment extends BaseFragment {
     @Override
     public void onResume() {
         imageList = LitePal.where("templateType = ?", "CustomSetting").find(DBRImage.class);
+        ArrayList<DBRImage> deleteImage = new ArrayList<>();
+        for (int i = 0; i < imageList.size() - 1; i++){
+            for (int j = imageList.size() - 1; j > i; j--){
+                if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+                    deleteImage.add(imageList.get(j));
+                    imageList.remove(imageList.get(j));
+                }
+            }
+        }
+        if (deleteImage.size() != 0) {
+            for (DBRImage dbrimage : deleteImage) {
+                LitePal.deleteAll(DBRImage.class, "fileName = ? and decodeTime = ?", dbrimage.getFileName(), String.valueOf(dbrimage.getDecodeTime()));
+            }
+        }
         Collections.reverse(imageList);
         if (imageList.size() > 16) {
             imageList = imageList.subList(0, 16);
@@ -104,7 +119,20 @@ public class CustomFragment extends BaseFragment {
     }
 
     private void fillHistoryList() {
-        imageList = LitePal.where("templateType = ?", "CustomSetting").find(DBRImage.class);
+        imageList = LitePal.where("templateType = ?", "CustomSetting").find(DBRImage.class);ArrayList<DBRImage> deleteImage = new ArrayList<>();
+        for (int i = 0; i < imageList.size() - 1; i++){
+            for (int j = imageList.size() - 1; j > i; j--){
+                if (imageList.get(i).getFileName().equals(imageList.get(j).getFileName())){
+                    deleteImage.add(imageList.get(j));
+                    imageList.remove(imageList.get(j));
+                }
+            }
+        }
+        if (deleteImage.size() != 0) {
+            for (DBRImage dbrimage : deleteImage) {
+                LitePal.deleteAll(DBRImage.class, "fileName = ? and decodeTime = ?", dbrimage.getFileName(), String.valueOf(dbrimage.getDecodeTime()));
+            }
+        }
         Collections.reverse(imageList);
         if (imageList.size() > 16) {
             imageList = imageList.subList(0, 16);

@@ -18,14 +18,14 @@ public class FrameUtil {
 	private int viewHeight;
 	private boolean dependOnWid;
 
-	public static Bitmap rotateBitmap(Bitmap origin, int degree) {
+	public static Bitmap rotateBitmap(Bitmap origin) {
 		if (origin == null) {
 			return null;
 		}
 		int width = origin.getWidth();
 		int height = origin.getHeight();
 		Matrix matrix = new Matrix();
-		matrix.setRotate(degree);
+		matrix.setRotate(90);
 		Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
 		origin.recycle();
 		return newBM;

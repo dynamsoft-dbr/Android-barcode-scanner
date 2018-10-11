@@ -99,5 +99,7 @@
     <string name="if_multi_frame">If multi frame:</string>
     <string name="if_multi_frame_tip">Whether to scan barcode in multi-frame modes.</string>
     <string name="beep_sound_tip">Whether to beep once a barcode is found.</string>
+    <string name="custom_tips">Please modify the settings below according to your usage scenario and click on "Done" to scan barcode.</string>
+    <string name="mode">Mode:</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

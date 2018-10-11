@@ -254,12 +254,12 @@ public class HistoryItemDetailActivity extends BaseActivity {
 		builder.setNegativeButton("Share picture", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Bitmap shotBitmap;
-				//shareUtil.getScreenShot(HistoryItemDetailActivity.this);
-				shotBitmap = FrameUtil.rotateBitmap(decodeFile(imgPath), DBRUtil.readPictureDegree(imgPath));
+				Bitmap shotBitmap = decodeFile(imgPath);
+
 				if (shotBitmap != null) {
 					ArrayList<Uri> imageUris = new ArrayList<>();
-					Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null));
+					String s = MediaStore.Images.Media.insertImage(getContentResolver(), shotBitmap, null, null);
+					Uri uri = Uri.parse(s);
 					imageUris.add(uri);
 					shareUtil.shareMultiImages(imageUris, HistoryItemDetailActivity.this);
 				}

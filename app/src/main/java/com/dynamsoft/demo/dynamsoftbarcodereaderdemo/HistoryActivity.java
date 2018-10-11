@@ -65,13 +65,13 @@ public class HistoryActivity extends BaseActivity implements OnTabSelectListener
 		vpHistoryContent.setAdapter(historyContentPagerAdapter);
 		String type = getIntent().getStringExtra("templateType");
 		if (type != null) {
-			if (type.equals("GeneralSetting")) {
+			if ("GeneralSetting".equals(type)) {
 				vpHistoryContent.setCurrentItem(0);
-			} else if (type.equals("MultiBestSetting")) {
+			} else if ("MultiBestSetting".equals(type)) {
 				vpHistoryContent.setCurrentItem(1);
-			} else if (type.equals("OverlapSetting")) {
+			} else if ("OverlapSetting".equals(type)) {
 				vpHistoryContent.setCurrentItem(2);
-			} else if (type.equals("CustomSetting")) {
+			} else if ("CustomSetting".equals(type)) {
 				vpHistoryContent.setCurrentItem(3);
 			}
 		}

@@ -43,11 +43,12 @@ public class SettingActivity extends BaseActivity {
 	private List<String> one2Ten = new ArrayList<>();
 	private List<String> colourImageConvertMode = new ArrayList<>();
 	private List<String> barcodeInvertMode = new ArrayList<>();
+	private List<String> mode = new ArrayList<>();
 	private ArrayList<String> tempFormats;
 	private ArrayAdapter<String> one2tenSpinnerAdapter;
-	private ArrayAdapter<String> isEnableSpinnerAdapter;
 	private ArrayAdapter<String> barcodeInvertModeSpinnerAdapter;
 	private ArrayAdapter<String> colourImageConvertModeSpinnerAdapter;
+	private ArrayAdapter<String> modeAdapter;
 	private final int REQUEST_ONED_SETTING = 0x0001;
 	private final int REQUEST_ALGORITHM_SETTING = 0x0002;
 	private final int RESPONSE_ONED_SETTING = 0x0001;
@@ -91,8 +92,6 @@ public class SettingActivity extends BaseActivity {
 	SwitchCompat scTextFilterMode;
 	@BindView(R.id.sc_beep_sound)
 	SwitchCompat scBeepSound;
-	@BindView(R.id.sc_overlapEnable)
-	SwitchCompat scOverlap;
 	@BindView(R.id.sp_deblur_level)
 	Spinner spDeblurLevel;
 	@BindView(R.id.sp_anti_damage_level)
@@ -105,6 +104,8 @@ public class SettingActivity extends BaseActivity {
 	Spinner spBarcodeInvertMode;
 	@BindView(R.id.sp_colour_image_convert_mode)
 	Spinner spColourImageConvertMode;
+	@BindView(R.id.sp_mode)
+	Spinner spMode;
 	@Override
 	protected int getLayoutId() {
 		return R.layout.activity_setting;
@@ -115,7 +116,7 @@ public class SettingActivity extends BaseActivity {
 		ButterKnife.bind(this);
 		setToolbarBackgroud("#000000");
 		setToolbarNavIcon(R.drawable.ic_action_back_dark);
-		setToolbarTitle("Settings");
+		setToolbarTitle("Advanced");
 		setToolbarTitleColor("#ffffff");
 		etExpectedBarcodeCount.setOnEditorActionListener(onEditFinish);
 		etTimeout.setOnEditorActionListener(onEditFinish);
@@ -128,7 +129,6 @@ public class SettingActivity extends BaseActivity {
 		scRegionPredetectionMode.setOnCheckedChangeListener(onSCCheckedChange);
 		scTextFilterMode.setOnCheckedChangeListener(onSCCheckedChange);
 		scBeepSound.setOnCheckedChangeListener(onSCCheckedChange);
-		scOverlap.setOnCheckedChangeListener(onSCCheckedChange);
 		mDataMatrix.setOnCheckedChangeListener(onCKBCheckedChange);
 		mQRCode.setOnCheckedChangeListener(onCKBCheckedChange);
 		mPDF417.setOnCheckedChangeListener(onCKBCheckedChange);
@@ -272,7 +272,7 @@ public class SettingActivity extends BaseActivity {
 				builder.show();
 				break;
 			case R.id.iv_if_multi_frame:
-				builder.setTitle(R.string.if_multi_frame);
+				builder.setTitle(R.string.mode);
 				builder.setMessage(getText(R.string.if_multi_frame_tip));
 				builder.show();
 				break;
@@ -332,6 +332,11 @@ public class SettingActivity extends BaseActivity {
 		colourImageConvertModeSpinnerAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, colourImageConvertMode);
 		colourImageConvertModeSpinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
+		mode.add("Single-Frame Scan");
+		mode.add("Multi-Frame Scan");
+		modeAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, mode);
+		modeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
 		for (int i = 0; i < 10; i++) {
 			one2Ten.add(String.valueOf(i));
 		}
@@ -344,6 +349,7 @@ public class SettingActivity extends BaseActivity {
 		spTextureDetectionSensitivity.setAdapter(one2tenSpinnerAdapter);
 		spBarcodeInvertMode.setAdapter(barcodeInvertModeSpinnerAdapter);
 		spColourImageConvertMode.setAdapter(colourImageConvertModeSpinnerAdapter);
+		spMode.setAdapter(modeAdapter);
 		mSettingCache = DBRCache.get(this, "SettingCache");
 		templateType = mSettingCache.getAsString("templateType");
 		try {
@@ -432,6 +438,21 @@ public class SettingActivity extends BaseActivity {
 
 			}
 		});
+		spMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if (position == 0) {
+					overlapEnable = false;
+				} else {
+					overlapEnable = true;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 	}
 	private void initSetting(){
 		//mSettingCache = DBRCache.get(this, "SettingCache");
@@ -440,7 +461,6 @@ public class SettingActivity extends BaseActivity {
 			mSettingCache.put("beepSound", "true");
 		}
 		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
-		scOverlap.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("Overlap")));
 		try {
 			//mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
 			//mImageParameter = mSetting.getImageParameter();
@@ -448,6 +468,11 @@ public class SettingActivity extends BaseActivity {
 			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 			spDeblurLevel.setSelection(mImageParameter.getDeblurLevel());
 			spAntiDamageLevel.setSelection(mImageParameter.getAntiDamageLevel());
+			if (Boolean.parseBoolean(mSettingCache.getAsString("Overlap"))) {
+				spMode.setSelection(1);
+			} else {
+				spMode.setSelection(0);
+			}
 			if ("Enable".equals(mImageParameter.getTextFilterMode())){
 				scTextFilterMode.setChecked(true);
 			} else {
@@ -534,9 +559,6 @@ public class SettingActivity extends BaseActivity {
 					break;
 				case R.id.sc_beep_sound:
 					beepSoundEnable = scBeepSound.isChecked();
-					break;
-				case R.id.sc_overlapEnable:
-					overlapEnable = scOverlap.isChecked();
 					break;
 				default:
 					break;
