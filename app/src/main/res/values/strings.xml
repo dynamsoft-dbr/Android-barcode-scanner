@@ -25,7 +25,7 @@
     <string name="datamatrix">DataMatrix</string>
     <string name="beep_sound">Beep Sound:</string>
     <string name="dynamsoft_website_url">https://www.dynamsoft.com/Products/barcode-scanner-sdk-android.aspx</string>
-    <string name="dbr_license">f0068MgAAAE+6yk5Gn3IG+mevmaKs+7duqRT1WgoEYCrysRscljE8TD3ScqO9mdjNYA1ka0rJ+P/1byTC3Q0tScT5i66qIpE=
+    <string name="dbr_license">f0068MgAAAB2sQTwYtExe+aBNoumS5JUCbXEiXwI+UyBFbKWD/fmfrVSzTlMuOTOzoEuQAmuv+OD8CLq1UhxRG/ctFeCHU3U=
     </string>
     <string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
     <string name="title_activity_barcode_type">BarcodeType</string>
