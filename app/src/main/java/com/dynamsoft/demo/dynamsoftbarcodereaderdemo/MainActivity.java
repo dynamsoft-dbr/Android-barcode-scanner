@@ -93,6 +93,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static io.fotoapparat.selector.FlashSelectorsKt.off;
 import static io.fotoapparat.selector.FlashSelectorsKt.torch;
+import static io.fotoapparat.selector.FocusModeSelectorsKt.continuousFocusVideo;
 import static io.fotoapparat.selector.LensPositionSelectorsKt.back;
 
 public class MainActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
@@ -966,6 +967,12 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 				.lensPosition(back())
 				.frameProcessor(new CodeFrameProcesser())
 				.build();
+		fotoapparat.updateConfiguration(
+				UpdateConfiguration.builder()
+						.focusMode(continuousFocusVideo())
+						.build()
+		);
+
 	}
 
 	public void shootSound() {
