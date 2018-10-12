@@ -23,6 +23,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="28dp"
+			android:layout_marginLeft="4dp"
 			android:text="History"
 			android:textSize="18sp"
 			android:gravity="center" />

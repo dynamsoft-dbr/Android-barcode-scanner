@@ -306,6 +306,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onClick(View v) {
 				try {
+					hudView.clear();
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
@@ -350,6 +351,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onClick(View v) {
 				try {
+					hudView.clear();
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
@@ -393,6 +395,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 			@Override
 			public void onClick(View v) {
 				try {
+					hudView.clear();
 					String setting = mSettingCache.getAsString("Setting");
 					DBRSetting dbrSetting = LoganSquare.parse(setting, DBRSetting.class);
 					DBRSetting.ImageParameter imgP = dbrSetting.getImageParameter();
@@ -437,6 +440,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 		selectCustom.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				hudView.clear();
 				selectModeDialog.dismiss();
 				if (!templateType.equals("CustomSetting")) {
 					mSettingCache.put("templateType", "CustomSetting");

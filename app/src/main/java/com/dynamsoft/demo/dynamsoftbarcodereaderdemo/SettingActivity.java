@@ -455,15 +455,15 @@ public class SettingActivity extends BaseActivity {
 		});
 	}
 	private void initSetting(){
-		//mSettingCache = DBRCache.get(this, "SettingCache");
+		mSettingCache = DBRCache.get(this, "SettingCache");
 		String beepSound = mSettingCache.getAsString("beepSound");
 		if (beepSound == null) {
 			mSettingCache.put("beepSound", "true");
 		}
 		scBeepSound.setChecked(Boolean.parseBoolean(mSettingCache.getAsString("beepSound")));
 		try {
-			//mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
-			//mImageParameter = mSetting.getImageParameter();
+			mSetting = LoganSquare.parse(mSettingCache.getAsString("Setting"), DBRSetting.class);
+			mImageParameter = mSetting.getImageParameter();
 			tvExpectedBarcodeCount.setText(String.valueOf(mImageParameter.getExpectedBarcodesCount()));
 			tvTimeout.setText(String.valueOf(mImageParameter.getTimeout()));
 			spDeblurLevel.setSelection(mImageParameter.getDeblurLevel());

@@ -17,13 +17,18 @@
             android:orientation="vertical">
 
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
                 android:background="#f3f3f3"
-                android:gravity="start|center_vertical"
-                android:text="@string/barcode_format"
-                android:textColor="#ff7c7c7c" />
+                android:layout_height="30dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/barcode_format"
+                    android:textColor="#ff7c7c7c" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"

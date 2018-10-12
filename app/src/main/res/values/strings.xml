@@ -30,7 +30,7 @@
     <string name="title_activity_decode_local_picture">DecodeLocalPicture</string>
     <string name="title_activity_barcode_type">BarcodeType</string>
     <string name="template_name">Template Name:</string>>
-    <string name="barcode_format">&#160;&#160;&#160;&#160;&#160;&#160;Barcode Format:</string>
+    <string name="barcode_format">Barcode Format:</string>
     <string name="oned">OneD</string>
     <string name="expected_barcode_count">Expected Barcodes Count:</string>
     <string name="timeout">Timeout:</string>

@@ -131,7 +131,7 @@
 					android:focusable="true"
 					android:duplicateParentState="true"/>
 				<ImageButton
-					android:layout_width="25dp"
+					android:layout_width="65dp"
 					android:layout_height="50dp"
 					android:duplicateParentState="true"
 					android:clickable="true"
@@ -147,19 +147,20 @@
 					android:duplicateParentState="true"
 					android:clickable="true"
 					android:focusable="true"
-					android:gravity="center"
+					android:paddingRight="10dp"
+					android:gravity="center_vertical|right"
 					android:text="More results"
 					android:textColor="#ff7c7c7c"
 					android:textSize="16sp"/>
 				<LinearLayout
 					android:layout_height="50dp"
-					android:layout_width="100dp"
+					android:layout_width="40dp"
 					android:orientation="vertical"
 					android:duplicateParentState="true"
 					android:clickable="true"
 					android:focusable="true">
 					<ImageButton
-						android:layout_width="100dp"
+						android:layout_width="match_parent"
 						android:layout_height="14dp"
 						android:duplicateParentState="true"
 						android:clickable="true"
@@ -178,7 +179,7 @@
 						android:layout_gravity="center_vertical"
 						android:gravity="center"/>
 					<ImageButton
-						android:layout_width="100dp"
+						android:layout_width="match_parent"
 						android:layout_height="14dp"
 						android:duplicateParentState="true"
 						android:clickable="true"
