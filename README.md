@@ -5,6 +5,10 @@ The sample demonstrates how to create an Android barcode scanner with Dynamsoft 
 
 ![Android barcode scanner](https://www.codepool.biz/wp-content/uploads/images/android-barcode-setting.png)
 
+## What You Should Know
+- [![](https://img.shields.io/badge/Download-Offline%20SDK-orange)](https://www.dynamsoft.com/barcode-reader/downloads)
+- [![](https://img.shields.io/badge/Get-30--day%20FREE%20Trial%20License-blue)](https://www.dynamsoft.com/customer/license/trialLicense/?product=dbr)
+
 Getting Started
 ---------------
 1. Build the project.
@@ -18,9 +22,6 @@ Google Play Download
 -----------
 https://play.google.com/store/apps/details?id=com.dynamsoft.demo.dynamsoftbarcodereaderdemo
 
-License
---------
-Get the [trial license](https://www.dynamsoft.com/CustomerPortal/Portal/Triallicense.aspx).
 
 Blog
 -----
